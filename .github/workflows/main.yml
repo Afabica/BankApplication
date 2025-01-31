@@ -1,0 +1,90 @@
+name: Build and Test Spring Boot and Next.js
+
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-nextjs:
+    runs-on: ubuntu-22.04
+    steps:
+      # Step 1: Checkout code from the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js for Next.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 23.1
+
+      # Step 3: Cache node_modules to speed up builds
+      - name: Cache Node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # Step 4: Build the Next.js app
+      - name: Install and Build Next.js app
+        run: |
+          cd frontend
+          npm install --force
+          npm run build
+
+      # Step 5: Run Next.js tests
+      - name: Test Next.js app
+        run: |
+          cd frontend
+          npm run test
+
+  build-springboot:
+    runs-on: ubuntu-22.04
+    steps:
+      # Step 1: Checkout code from the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up JDK for Spring Boot
+      - name: Set up JDK
+        uses: actions/setup-java@v3 
+        with:
+          java-version: 21
+          java-package: jdk
+          cache: 'gradle'
+          architecture: x64
+          check-latest: false
+          server-id: github
+          overwrite-settings: true
+          distribution: 'temurin'
+
+
+      # Step 3: Cache Gradle dependencies
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('backend/**/build.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # Step 4: Build Spring Boot app
+      - name: Build amd Test Spring Boot app
+        run: |
+          cd backend  # Ensure this is the correct path to your backend directory
+          # gradle bootrun 
+               ./gradlew clean build  test --no-daemon
+
+      # Step 5: Run Spring Boot tests
+      - name: Package JAR 
+        run: |
+          cd backend
+          # gradle build
+          ./gradlew bootJar --no-daemon
