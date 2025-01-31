@@ -1,0 +1,143 @@
+//package com.example.demo.controller;
+//
+//import com.example.demo.model.LoginUser;
+//import com.example.demo.service.UserService;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.web.bind.annotation.*;
+//
+//import jakarta.servlet.http.HttpSession;
+//import java.util.List;
+//
+//@RestController
+//@RequestMapping("/api")
+//public class LoginCont {
+//
+//    @Autowired
+//    private UserService userService;
+//
+//    /**
+//     * Fetch all users
+//     */
+//    @GetMapping("/all")
+//    public ResponseEntity<List<LoginUser>> getAllUsers() {
+//        List<LoginUser> users = userService.findAllUser();
+//        return ResponseEntity.ok(users);
+//    }
+//
+//    /**
+//     * Register a new user
+//     */
+//    @PostMapping("/register")
+//    public ResponseEntity<String> registerUser(@RequestBody LoginUser userDto) {
+//        try {
+//            userService.registerUser(userDto);
+//            return ResponseEntity.ok("User registered successfully");
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+//        }
+//    }
+//
+//    /**
+//     * Authenticate user and return JWT token (with encryption)
+//     */
+//    @PostMapping("/login")
+//    public ResponseEntity<String> login(@RequestBody LoginUser loginDto, HttpSession session) {
+//        try {
+//            String token = userService.authenticate(loginDto);
+//            session.setAttribute("authenticatedUser", loginDto.getUsername());
+//            return ResponseEntity.ok("Login successful. Token: " + token);
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.status(401).body("Error: " + e.getMessage());
+//        }
+//    }
+//
+//    /**
+//     * Authenticate user and return JWT token (without encryption)
+//     */
+//    @PostMapping("/loginwith")
+//    public ResponseEntity<String> loginWithoutEncryption(@RequestBody LoginUser loginDto, HttpSession session) {
+//        String token = userService.authenticateWithoutEncryption(loginDto);
+//        if (token != null) {
+//            return ResponseEntity.ok("Login Successful!");
+//        } else {
+//            return ResponseEntity.status(401).body("Invalid credentials");
+//        }
+//    }
+//}
+//
+
+package com.example.demo.controller;
+
+import com.example.demo.model.LoginUser;
+import com.example.demo.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api")
+public class LoginCont {
+
+    @Autowired
+    private UserService userService;
+
+    /**
+     * Fetch all users
+     */
+    @GetMapping("/all")
+    public ResponseEntity<List<LoginUser>> getAllUsers() {
+        List<LoginUser> users = userService.findAllUser();
+        return ResponseEntity.ok(users);
+    }
+
+    /**
+     * Register a new user
+     */
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody LoginUser userDto) {
+        try {
+            userService.registerUser(userDto);
+            return ResponseEntity.ok("User registered successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Authenticate user and return JWT token (with encryption)
+     */
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginUser loginDto, HttpSession session) {
+        try {
+            String token = userService.authenticate(loginDto);
+            session.setAttribute("user", loginDto.getUsername());
+            return ResponseEntity.ok("Login successful. Token: " + token);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(401).body("Error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Authenticate user and return JWT token (without encryption)
+     */
+    @PostMapping("/loginwith")
+    public ResponseEntity<String> loginWithoutEncryption(@RequestBody LoginUser loginDto, HttpSession session) {
+        try {
+            String token = userService.authenticateWithoutEncryption(loginDto);
+           // session.setAttribute("user", loginDto.getUsername());
+            return ResponseEntity.ok("Login successful (No Encryption). Token: " + token);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(401).body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/home")
+    public String getHome() {
+        return "Home";
+    }
+}
+

@@ -1,0 +1,17 @@
+#Connecetion String 
+BlobEndpoint=https://bankapp.blob.core.windows.net/;QueueEndpoint=https://bankapp.queue.core.windows.net/;FileEndpoint=https://bankapp.file.core.windows.net/;TableEndpoint=https://bankapp.table.core.windows.net/;SharedAccessSignature=sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-31T17:31:15Z&st=2024-12-31T09:31:15Z&sip=0.0.0.0-255.255.255.255&spr=https,http&sig=DwyIS%2FBGoveT1GluQyVIGx7MthfzjuKx%2FtshUtavjBw%3D
+
+#SAS token 
+sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-31T17:31:15Z&st=2024-12-31T09:31:15Z&sip=0.0.0.0-255.255.255.255&spr=https,http&sig=DwyIS%2FBGoveT1GluQyVIGx7MthfzjuKx%2FtshUtavjBw%3D
+
+#Blob service SAS URL 
+https://bankapp.blob.core.windows.net/?sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-31T17:31:15Z&st=2024-12-31T09:31:15Z&sip=0.0.0.0-255.255.255.255&spr=https,http&sig=DwyIS%2FBGoveT1GluQyVIGx7MthfzjuKx%2FtshUtavjBw%3D
+
+#FILE service SAS URL 
+https://bankapp.file.core.windows.net/?sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-31T17:31:15Z&st=2024-12-31T09:31:15Z&sip=0.0.0.0-255.255.255.255&spr=https,http&sig=DwyIS%2FBGoveT1GluQyVIGx7MthfzjuKx%2FtshUtavjBw%3D
+
+#Queue service SAS URL 
+https://bankapp.queue.core.windows.net/?sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-31T17:31:15Z&st=2024-12-31T09:31:15Z&sip=0.0.0.0-255.255.255.255&spr=https,http&sig=DwyIS%2FBGoveT1GluQyVIGx7MthfzjuKx%2FtshUtavjBw%3D
+
+#Table service SAS URL
+https://bankapp.table.core.windows.net/?sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-31T17:31:15Z&st=2024-12-31T09:31:15Z&sip=0.0.0.0-255.255.255.255&spr=https,http&sig=DwyIS%2FBGoveT1GluQyVIGx7MthfzjuKx%2FtshUtavjBw%3D

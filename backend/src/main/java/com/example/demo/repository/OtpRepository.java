@@ -1,0 +1,22 @@
+package com.example.demo.repository;
+
+import com.example.demo.model.OTPUser;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
+@Repository
+public interface OtpRepository extends JpaRepository<OTPUser, Long> {
+    OTPUser findByPhoneNumber(String phoneNumber);
+    OTPUser findByOtpCode(String otpCode);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM OTPUser o WHERE o.expiresAt < :now")
+    void deleteExpiredOtps(LocalDateTime now);
+}
+
