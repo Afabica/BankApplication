@@ -1,0 +1,31 @@
+/* styles/HomePage.module.css */
+.mainPage {
+  padding: 20px;
+  background-color: #fff;
+}
+
+h1 {
+  font-size: 36px;
+  color: #333;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.adsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  animation: fadeInPage 1.5s ease-out;
+}
+
+/* Fade-in for entire page */
+@keyframes fadeInPage {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+

@@ -1,0 +1,45 @@
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { parseCookies } from 'nookies';
+import {devode} from 'jwt-decode';
+
+
+const withAuth = (WrappedComponent) => {
+  return (props) => {
+    const router = useRouter();
+
+    useEffect(() => {
+      const checkAuth = () => {
+        const cookies = parseCookies(); // Get cookies
+        const token = cookies.jwt; // Retrieve the JWT from cookies
+
+        if (!token) {
+          // Redirect if no token exists
+          router.push('/signin');
+          return;
+        }
+
+        try {
+          const decodedToken = decode(token); // Decode the JWT
+          const isTokenExpired = decodedToken.exp * 1000 < Date.now(); // Check expiration
+
+          if (isTokenExpired) {
+            // Redirect if token is expired
+            router.push('/signin');
+          }
+        } catch (error) {
+          console.error('Invalid token:', error);
+          router.push('/signin'); // Redirect if token is invalid
+        }
+      };
+
+      checkAuth(); // Execute the checkAuth function
+    }, [router]); // Dependency ensures it runs when router changes
+
+    // If the user is authenticated, render the wrapped component
+    return <WrappedComponent {...props} />;
+  };
+};
+
+export default withAuth;
+

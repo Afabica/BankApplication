@@ -1,0 +1,44 @@
+/* HomeSlider.css */
+
+/* Main container for the slider */
+.sliderContainer {
+  position: relative;
+  width: 100%;                /* Full width */
+  max-width: 1200px;          /* Optional: Limit the max width */
+  height: 400px;              /* Fixed height for the slider */
+  margin: 0 auto;             /* Center the slider */
+  overflow: hidden;           /* Prevent overflow */
+}
+
+/* Slick slider wrapper */
+.slick-slider {
+  width: 100%;
+  height: 100%;
+}
+
+/* Each slide in the slider */
+.slick-slide {
+  display: flex;              /* Center images inside the slide */
+  justify-content: center;
+  align-items: center;
+  width: 100%;                /* Full width for each slide */
+  height: 100%;               /* Full height for each slide */
+  overflow: hidden;           /* Hide any overflowing image content */
+  background-color: #f4f4f4;  /* Optional: Add a background color for empty space */
+}
+
+/* Styling for images inside the slides */
+.slick-slide img {
+  max-width: 100%;            /* Scale the image to the full width of its container */
+  max-height: 100%;           /* Scale the image to the full height of its container */
+  width: 100%;                /* Force the image to stretch horizontally */
+  height: 100%;               /* Force the image to stretch vertically */
+  object-fit: cover;          /* Maintain aspect ratio and crop excess */
+  object-position: center;    /* Center the image inside the slide */
+  border-radius: 8px;         /* Optional: Add rounded corners */
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+

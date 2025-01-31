@@ -1,0 +1,228 @@
+/* home.css */
+
+/* General Styles */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  overflow-x: hidden;
+  background-color: #f9f9f9;
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(to bottom, #004aad, #002b5e);
+  color: white;
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  margin: 0;
+  font-weight: bold;
+}
+
+.hero-description {
+  font-size: 1.2rem;
+  margin-top: 15px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.8;
+}
+
+/* Features Section */
+.features-section {
+  padding: 50px 20px;
+  background-color: #fff;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #004aad;
+}
+
+.features-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.feature-item {
+  flex: 1 1 calc(33.333% - 40px);
+  max-width: 300px;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.feature-title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #004aad;
+}
+
+.feature-description {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+  padding: 50px 20px;
+  background: linear-gradient(to bottom, #f1f1f1, #ffffff);
+  text-align: center;
+}
+
+/* Footer Section */
+.footer {
+  background-color: #002b5e;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.footer a:hover {
+  text-decoration: none;
+}
+
+/* Slider Section */
+section > .slick-slider {
+  margin: 0 auto;
+  width: 100%;
+}
+
+section > .slick-slider .slick-slide img {
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+
+  .feature-item {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+}
+
+.NavCont {
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
+
+/* Default layout for large screens */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Left side and right side navigation items */
+.navbar-left,
+.navbar-right {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navbar-left li,
+.navbar-right li {
+  margin-right: 1rem;
+}
+
+/* Remove the right margin from the last item on each side */
+.navbar-left li:last-child,
+.navbar-right li:last-child {
+  margin-right: 0;
+}
+
+/* Call-to-action button styling */
+.cta-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.cta-button:hover {
+  background-color: #0056b3;
+}
+
+/* Media Queries for Responsiveness */
+
+/* Medium devices (tablets) */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column; /* Stack navbar items vertically */
+  }
+  
+  /* Center the navbar items on smaller screens */
+  .navbar-left,
+  .navbar-right {
+    flex-direction: column;
+    align-items: center;
+    margin: 0.5rem 0;
+  }
+  
+  .navbar-left li,
+  .navbar-right li {
+    margin: 0.5rem 0; /* Add space between each item */
+  }
+}
+
+/* Small devices (mobile phones) */
+@media (max-width: 480px) {
+  .NavCont {
+    padding: 0.5rem;
+  }
+
+  .navbar-left,
+  .navbar-right {
+    width: 100%; /* Full-width for easier tapping on mobile */
+  }
+
+  /* Adjust call-to-action button styling */
+  .cta-button {
+    width: 100%; /* Make CTA button full width on mobile */
+    text-align: center;
+    padding: 1rem;
+    font-size: 1.2rem; /* Larger text for readability */
+  }
+}

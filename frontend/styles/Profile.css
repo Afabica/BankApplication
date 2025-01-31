@@ -1,0 +1,126 @@
+/* Profile Page Styles */
+.profile-page {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 100%;
+    background-color: #2c3e50;
+    height: 100%;
+    color: white;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direciton: column;
+}
+
+.sidebar h2 {
+  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.sidebar-nav a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 15px;
+  font-size: 18px;
+  padding: 5px 0;
+}
+
+.sidebar-nav a:hover {
+  color: #1abc9c;
+}
+
+/* Profile Main Section */
+.profile-main {
+  flex: 1;
+  padding: 30px;
+  background-color: #f4f4f9;
+}
+
+/* Profile Header */
+.profile-header {
+  margin-bottom: 30px;
+}
+
+.profile-header h1 {
+  font-size: 32px;
+  color: #34495e;
+  font-weight: bold;
+}
+
+/* Profile Content */
+.profile-content {
+  display: flex;
+  gap: 30px;
+}
+
+.profile-avatar {
+  flex: 0 0 200px;
+  text-align: center;
+}
+
+.avatar-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #1abc9c;
+}
+
+.profile-details {
+  flex: 1;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.profile-details h2 {
+  margin-top: 0;
+  font-size: 28px;
+  color: #2c3e50;
+}
+
+.profile-details p {
+  font-size: 18px;
+  margin: 10px 0;
+  color: #34495e;
+}
+
+/* Profile Action Buttons */
+.profile-actions {
+  margin-top: 30px;
+}
+
+.profile-actions .edit-button, .profile-actions .save-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin-right: 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.profile-actions .edit-button {
+  background-color: #1abc9c;
+  color: white;
+}
+
+.profile-actions .save-button {
+  background-color: #34495e;
+  color: white;
+}
+
+.profile-actions .edit-button:hover {
+  background-color: #16a085;
+}
+
+.profile-actions .save-button:hover {
+  background-color: #2c3e50;
+}

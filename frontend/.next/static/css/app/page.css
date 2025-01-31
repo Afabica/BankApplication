@@ -1,0 +1,755 @@
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/slick-carousel/slick/slick.css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************/
+/* Slider */
+.slick-slider
+{
+    position: relative;
+
+    display: block;
+    box-sizing: border-box;
+
+    -webkit-user-select: none;
+            user-select: none;
+
+    -webkit-touch-callout: none;
+    -khtml-user-select: none;
+    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.slick-list
+{
+    position: relative;
+
+    display: block;
+    overflow: hidden;
+
+    margin: 0;
+    padding: 0;
+}
+.slick-list:focus
+{
+    outline: none;
+}
+.slick-list.dragging
+{
+    cursor: pointer;
+    cursor: hand;
+}
+
+.slick-slider .slick-track,
+.slick-slider .slick-list
+{
+    transform: translate3d(0, 0, 0);
+}
+
+.slick-track
+{
+    position: relative;
+    top: 0;
+    left: 0;
+
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.slick-track:before,
+.slick-track:after
+{
+    display: table;
+
+    content: '';
+}
+.slick-track:after
+{
+    clear: both;
+}
+.slick-loading .slick-track
+{
+    visibility: hidden;
+}
+
+.slick-slide
+{
+    display: none;
+    float: left;
+
+    height: 100%;
+    min-height: 1px;
+}
+[dir='rtl'] .slick-slide
+{
+    float: right;
+}
+.slick-slide img
+{
+    display: block;
+}
+.slick-slide.slick-loading img
+{
+    display: none;
+}
+.slick-slide.dragging img
+{
+    pointer-events: none;
+}
+.slick-initialized .slick-slide
+{
+    display: block;
+}
+.slick-loading .slick-slide
+{
+    visibility: hidden;
+}
+.slick-vertical .slick-slide
+{
+    display: block;
+
+    height: auto;
+
+    border: 1px solid transparent;
+}
+.slick-arrow.slick-hidden {
+    display: none;
+}
+
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/slick-carousel/slick/slick-theme.css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************/
+@charset 'UTF-8';
+/* Slider */
+.slick-loading .slick-list
+{
+    background: #fff url(/_next/static/media/ajax-loader.0b80f665.gif) center center no-repeat;
+}
+
+/* Icons */
+@font-face
+{
+    font-family: 'slick';
+    font-weight: normal;
+    font-style: normal;
+
+    src: url(/_next/static/media/slick.25572f22.eot);
+    src: url(/_next/static/media/slick.25572f22.eot?#iefix) format('embedded-opentype'), url(/_next/static/media/slick.653a4cbb.woff) format('woff'), url(/_next/static/media/slick.6aa1ee46.ttf) format('truetype'), url(/_next/static/media/slick.f895cfdf.svg#slick) format('svg');
+}
+/* Arrows */
+.slick-prev,
+.slick-next
+{
+    font-size: 0;
+    line-height: 0;
+
+    position: absolute;
+    top: 50%;
+
+    display: block;
+
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    transform: translate(0, -50%);
+
+    cursor: pointer;
+
+    color: transparent;
+    border: none;
+    outline: none;
+    background: transparent;
+}
+.slick-prev:hover,
+.slick-prev:focus,
+.slick-next:hover,
+.slick-next:focus
+{
+    color: transparent;
+    outline: none;
+    background: transparent;
+}
+.slick-prev:hover:before,
+.slick-prev:focus:before,
+.slick-next:hover:before,
+.slick-next:focus:before
+{
+    opacity: 1;
+}
+.slick-prev.slick-disabled:before,
+.slick-next.slick-disabled:before
+{
+    opacity: .25;
+}
+
+.slick-prev:before,
+.slick-next:before
+{
+    font-family: 'slick';
+    font-size: 20px;
+    line-height: 1;
+
+    opacity: .75;
+    color: white;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.slick-prev
+{
+    left: -25px;
+}
+[dir='rtl'] .slick-prev
+{
+    right: -25px;
+    left: auto;
+}
+.slick-prev:before
+{
+    content: '←';
+}
+[dir='rtl'] .slick-prev:before
+{
+    content: '→';
+}
+
+.slick-next
+{
+    right: -25px;
+}
+[dir='rtl'] .slick-next
+{
+    right: auto;
+    left: -25px;
+}
+.slick-next:before
+{
+    content: '→';
+}
+[dir='rtl'] .slick-next:before
+{
+    content: '←';
+}
+
+/* Dots */
+.slick-dotted.slick-slider
+{
+    margin-bottom: 30px;
+}
+
+.slick-dots
+{
+    position: absolute;
+    bottom: -25px;
+
+    display: block;
+
+    width: 100%;
+    padding: 0;
+    margin: 0;
+
+    list-style: none;
+
+    text-align: center;
+}
+.slick-dots li
+{
+    position: relative;
+
+    display: inline-block;
+
+    width: 20px;
+    height: 20px;
+    margin: 0 5px;
+    padding: 0;
+
+    cursor: pointer;
+}
+.slick-dots li button
+{
+    font-size: 0;
+    line-height: 0;
+
+    display: block;
+
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+
+    cursor: pointer;
+
+    color: transparent;
+    border: 0;
+    outline: none;
+    background: transparent;
+}
+.slick-dots li button:hover,
+.slick-dots li button:focus
+{
+    outline: none;
+}
+.slick-dots li button:hover:before,
+.slick-dots li button:focus:before
+{
+    opacity: 1;
+}
+.slick-dots li button:before
+{
+    font-family: 'slick';
+    font-size: 6px;
+    line-height: 20px;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 20px;
+    height: 20px;
+
+    content: '•';
+    text-align: center;
+
+    opacity: .25;
+    color: black;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.slick-dots li.slick-active button:before
+{
+    opacity: .75;
+    color: black;
+}
+
+/*!*******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./styles/HomeSlider.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************/
+/* HomeSlider.css */
+
+/* Main container for the slider */
+.sliderContainer {
+  position: relative;
+  width: 100%;                /* Full width */
+  max-width: 1200px;          /* Optional: Limit the max width */
+  height: 400px;              /* Fixed height for the slider */
+  margin: 0 auto;             /* Center the slider */
+  overflow: hidden;           /* Prevent overflow */
+}
+
+/* Slick slider wrapper */
+.slick-slider {
+  width: 100%;
+  height: 100%;
+}
+
+/* Each slide in the slider */
+.slick-slide {
+  display: flex;              /* Center images inside the slide */
+  justify-content: center;
+  align-items: center;
+  width: 100%;                /* Full width for each slide */
+  height: 100%;               /* Full height for each slide */
+  overflow: hidden;           /* Hide any overflowing image content */
+  background-color: #f4f4f4;  /* Optional: Add a background color for empty space */
+}
+
+/* Styling for images inside the slides */
+.slick-slide img {
+  max-width: 100%;            /* Scale the image to the full width of its container */
+  max-height: 100%;           /* Scale the image to the full height of its container */
+  width: 100%;                /* Force the image to stretch horizontally */
+  height: 100%;               /* Force the image to stretch vertically */
+  object-fit: cover;          /* Maintain aspect ratio and crop excess */
+  object-position: center;    /* Center the image inside the slide */
+  border-radius: 8px;         /* Optional: Add rounded corners */
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+
+/*!*****************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./styles/homepage.css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************/
+/* home.css */
+
+/* General Styles */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  overflow-x: hidden;
+  background-color: #f9f9f9;
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(to bottom, #004aad, #002b5e);
+  color: white;
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  margin: 0;
+  font-weight: bold;
+}
+
+.hero-description {
+  font-size: 1.2rem;
+  margin-top: 15px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.8;
+}
+
+/* Features Section */
+.features-section {
+  padding: 50px 20px;
+  background-color: #fff;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #004aad;
+}
+
+.features-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.feature-item {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: calc(33.333% - 40px);
+  max-width: 300px;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.feature-title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #004aad;
+}
+
+.feature-description {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+  padding: 50px 20px;
+  background: linear-gradient(to bottom, #f1f1f1, #ffffff);
+  text-align: center;
+}
+
+/* Footer Section */
+.footer {
+  background-color: #002b5e;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.footer a:hover {
+  text-decoration: none;
+}
+
+/* Slider Section */
+section > .slick-slider {
+  margin: 0 auto;
+  width: 100%;
+}
+
+section > .slick-slider .slick-slide img {
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+
+  .feature-item {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+}
+
+.NavCont {
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
+
+/* Default layout for large screens */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Left side and right side navigation items */
+.navbar-left,
+.navbar-right {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navbar-left li,
+.navbar-right li {
+  margin-right: 1rem;
+}
+
+/* Remove the right margin from the last item on each side */
+.navbar-left li:last-child,
+.navbar-right li:last-child {
+  margin-right: 0;
+}
+
+/* Call-to-action button styling */
+.cta-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.cta-button:hover {
+  background-color: #0056b3;
+}
+
+/* Media Queries for Responsiveness */
+
+/* Medium devices (tablets) */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column; /* Stack navbar items vertically */
+  }
+  
+  /* Center the navbar items on smaller screens */
+  .navbar-left,
+  .navbar-right {
+    flex-direction: column;
+    align-items: center;
+    margin: 0.5rem 0;
+  }
+  
+  .navbar-left li,
+  .navbar-right li {
+    margin: 0.5rem 0; /* Add space between each item */
+  }
+}
+
+/* Small devices (mobile phones) */
+@media (max-width: 480px) {
+  .NavCont {
+    padding: 0.5rem;
+  }
+
+  .navbar-left,
+  .navbar-right {
+    width: 100%; /* Full-width for easier tapping on mobile */
+  }
+
+  /* Adjust call-to-action button styling */
+  .cta-button {
+    width: 100%; /* Make CTA button full width on mobile */
+    text-align: center;
+    padding: 1rem;
+    font-size: 1.2rem; /* Larger text for readability */
+  }
+}
+
+/*!****************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./styles/NavDash.css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************/
+.NavCont {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #34495e;
+  color: white;
+  padding: 10px 20px;
+  width: auto;
+  position: relative;
+  top: 0;
+  height: 80px;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-right: 20px; 
+}
+
+.toggle-button:focus {
+  outline: none;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+
+.navbar-left,
+.navbar-right {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+  margin: 0;
+}
+
+.navbar-left li,
+.navbar-right li {
+  list-style: none;
+}
+
+.navbar-left a,
+.navbar-right a {
+  text-decoration: none;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.navbar-left a:hover,
+.navbar-right a:hover {
+  background-color: #0070f3;
+  color: white;
+}
+
+.FooterCont { 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #34495e;
+    color:white;
+    position: relative;
+    z-index:1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Footer Styles */
+
+.footer-content {
+  max-width: 1200px;
+  margin: auto 100px;
+  display: grid;
+  gap: 20px;
+}
+
+.footer-sections {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.footer-heading {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links li {
+  margin-bottom: 8px;
+}
+
+.footer-links a {
+  text-decoration: none;
+  color: var(--footer-text);
+  font-size: 1rem;
+  transition: color 0.3s ease;
+  margin: auto;
+}
+
+.footer-links a:hover,
+.footer-links a:focus {
+  color: var(--link-hover);
+}
+
+.footer-text {
+  font-size: 0.9rem;
+  text-align: center;
+  color: var(--footer-text);
+}
+
+/* Responsive Design for Footer */
+@media (max-width: 768px) {
+  .footer-sections {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .footer-section {
+    text-align: center;
+  }
+}
+
