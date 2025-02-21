@@ -5,7 +5,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-
+import com.example.demo.repository.RegisterRepo;
+import com.example.demo.model.RegisterUser;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
@@ -15,10 +16,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtils {
 
+    private final RegisterRepo registerRepo;
+
+    public JwtUtils(RegisterRepo registerRepo) {
+        this.registerRepo = registerRepo;
+    }
+
     private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     // Generate a JWT token for a given user
     public String generatingToken(LoginUser user) {
+        RegisterUser regUser = registerRepo.findByUsername(user.getUsername());
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date())

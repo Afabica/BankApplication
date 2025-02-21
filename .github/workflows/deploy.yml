@@ -1,0 +1,28 @@
+name: Deploy Next.js to Vercel 
+
+on: 
+workflow_run: 
+workflows: ["Build Next.js App"]
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps: 
+            - name: Checkout repository
+              uses: actions/checkout@v4 
+
+            - name: Build Next.js Docker image 
+              run: |
+                  docker build -t afabica234/myapp-frontend:latest ./frontend
+                  docker build -t afabica234/myapp-backend: ./backend 
+
+            - name: Push Images to DockerHub 
+              run: |
+                  echo "${{ secrets.DOCKER_PASSWORD}}" | docker login -u "${{secrets.DOCKER_USERNAME}}" --password-stdin
+              docker push afabica234/myapp-frontend:latest 
+              docker push afabica234/myapp-backend:latest 
+            
+            - name: Push Images to DockerHub 
+              run: |
+                  echo "${{ secrets }}"

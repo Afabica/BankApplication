@@ -2,11 +2,20 @@
 
 import Link from 'next/link';
 import React from 'react';
-import Header from '../hedfot/HeaderHome';
-import Footer from '../hedfot/FooterHome';
-import HomeSlider from '../animation/HomeSlider';
-import Image from 'next/image';
+import dynamic from "next/dynamic";
 
+const Header = dynamic(() => import("../hedfot/HeaderHome"), {
+  ssr: false,
+});
+const Footer = dynamic(() => import("../hedfot/FooterHome"), {
+  ssr: false,
+});
+const HomeSlider = dynamic(() => import("../animation/HomeSlider"), {
+  ssr: false,
+});
+const FAQSection = dynamic(() => import("../homepage/FAQ"), {
+  ssr: false,
+});
 
 const HomePage = () => {
 
@@ -26,7 +35,10 @@ const HomePage = () => {
         </div>
       </section>
 
-        <HomeSlider/>
+      <section className="wrapper_slider">
+      <HomeSlider/>
+      </section>
+
 
       {/* Features Section */}
       <section className="features-section">
@@ -51,6 +63,10 @@ const HomePage = () => {
             </p>
           </div>
         </div>
+      </section>
+
+      <section>
+        <FAQSection/>
       </section>
 
 

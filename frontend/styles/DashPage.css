@@ -1,6 +1,11 @@
 /* Global CSS or Dashboard.module.css */
 
 
+body {
+    padding: 0;
+    margin: 0;
+}
+
 .dashboard-container {
   top: 0;
   width: 100%;
@@ -79,10 +84,6 @@
 }
 }
 
-.transactions th, .transactions td {
-  width: 100%;
-  border-bottom: 1px solid #ddd;
-}
 
 
 /* Offers */
@@ -100,20 +101,71 @@
   flex: 1;
   max-width: calc(50% - 10px);
 }
-
+/* Transactions Section Styling */
 .transactions {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    border-radius: 8px;
-    width: 100%;
-    color: #8B3D67;
-    height: 400px;
-    overflow-y: auto;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
 }
+
+.transactions .title {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.transactions h1 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.transactions table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.transactions table thead {
+  background-color: #A3C600;
+  color: white;
+}
+
+.transactions table th, 
+.transactions table td {
+  padding: 12px 20px; /* Increased horizontal padding for more space */
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.transactions table th {
+  font-size: 16px;
+}
+
+.transactions table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.transactions table td:first-child {
+  text-align: left; /* Aligning cart to the left */
+  padding-left: 10px; /* Adding some padding near the border */
+}
+
+.transactions table td:last-child {
+  font-weight: bold;
+  color: #A3C600;
+}
+
+.transactions .no-transactions {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+  color: #777;
+}
+
 
 .pie-chart {
     background-color: white;

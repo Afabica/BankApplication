@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
+import ThemeSwitcher from '../tools/ThemeToggle';
 
 const Header = () => {
     return (

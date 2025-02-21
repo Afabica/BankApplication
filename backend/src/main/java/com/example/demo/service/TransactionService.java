@@ -56,6 +56,16 @@ public class TransactionService {
 //        // Save the transaction
 //        transactionRepo.save(transaction);
 //    }
+//
+    public void transfer(String sender_card_number, String getter_card_number, Long amount) {
+        BankCardsEnt card1 = cardRepository.findByCardNumber(sender_card_number);
+        BankCardsEnt card2 = cardRepository.findByCardNumber(getter_card_number);
+
+        if(card1 && card2) {
+            card1.setBalance(card1.getBalance() - amount);
+            card2.setBalance(card2.getBalance() + amount);
+        }
+    }
 
 
     public Customer findByUsername(String username) {
@@ -63,8 +73,9 @@ public class TransactionService {
         return findCust;
     }
 
-    public Transaction findOneTransaction(Long customerId) {
-        Transaction findtrans = transactionRepo.findOneByCustomerId(customerId);
+    public Transaction findOneTransaction(Long account_id) {
+
+        Transaction findtrans = transactionRepo.findOneByAccountId(account_id);
         return findtrans;
     }
 
@@ -80,9 +91,9 @@ public class TransactionService {
 //        }
 //        return customerTransactions;
 //    }
-public List<Transaction> fetchAllTransactions(Long customerId) {
+public List<Transaction> fetchAllTransactions(Long account_id) {
     try {
-        return transactionRepo.findAllByCustomerId(customerId);
+        return transactionRepo.findAllByAccountId(account_id);
     } catch (Exception e) {
         throw new IllegalStateException("Error fetching transactions", e);
     }

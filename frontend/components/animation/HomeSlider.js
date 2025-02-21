@@ -1,4 +1,3 @@
-// components/HomeSlider.js
 import React from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -37,15 +36,15 @@ const HomeSlider = () => {
 
   return (
     <div className={styles.sliderContainer}>
-      <Slider {...settings}>
+      <Slider  {...settings}>
         {slides.map((slide) => (
           <div key={slide.id} className={styles.slide}>
             <img
               src={slide.image}
               alt={slide.alt}
             />
-            <div className={styles.caption}>
-              <h2>{slide.alt}</h2>
+          <div className="caption">
+            <a href="/info">Click here</a>
             </div>
           </div>
         ))}

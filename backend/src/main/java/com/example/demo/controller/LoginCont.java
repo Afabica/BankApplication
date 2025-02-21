@@ -8,7 +8,6 @@ import com.example.demo.repository.RegisterRepo;
 import com.example.demo.repository.TransactionRepo;
 import com.example.demo.service.TransactionService;
 import com.example.demo.service.UserService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +26,7 @@ public class LoginCont {
     private final RegisterRepo registerRepo;
 
     @Autowired
-    public LoginCont(UserService userService, CustomerRepo customerRepo, 
+    public LoginCont(UserService userService, CustomerRepo customerRepo,
                      TransactionService transactionService, RegisterRepo registerRepo) {
         this.userService = userService;
         this.customerRepo = customerRepo;
@@ -36,7 +35,7 @@ public class LoginCont {
     }
 
     /**
-     * Fetch all users
+     * Fetch all users - Make sure this is protected.
      */
     @GetMapping("/all")
     public ResponseEntity<List<LoginUser>> getAllUsers() {
@@ -48,19 +47,21 @@ public class LoginCont {
      * Authenticate user and return JWT token (with encryption)
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginUser loginDto, HttpSession session) {
+    public ResponseEntity<?> login(@RequestBody LoginUser loginDto) {
         try {
+            // Authenticate the user and generate JWT token
             String token = userService.authenticate(loginDto);
-            session.setAttribute("user", loginDto.getUsername());
 
+            // Find the user by username from the register repository
             RegisterUser customer = registerRepo.findByUsername(loginDto.getUsername());
             if (customer == null) {
                 return ResponseEntity.status(404).body(Map.of("error", "Customer not found"));
             }
 
+            // Fetch transactions related to the customer
             List<Transaction> transactions = transactionService.fetchAllTransactions(customer.getId());
 
-
+            // Prepare response with token, customer info, and transactions
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("customer", customer);

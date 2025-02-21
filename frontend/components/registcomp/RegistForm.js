@@ -1,10 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios"; // Ensure axios is imported
-import Footer from "../hedfot/FooterHome";
-import Header from "../hedfot/HeaderHome";
+import axios from "axios"; 
 import { evaluatePassword } from "../../components/tools/Password.js"; 
+import dynamic from "next/dynamic";
+
+const Header = dynamic(() => import("../../components/hedfot/HeaderHome"), {
+  ssr: false,
+});
+const Footer = dynamic(() => import("../../components/hedfot/FooterHome"), {
+  ssr: false,
+});
+
 
 const API_URL = "http://localhost:8080/api";
 
@@ -23,27 +30,31 @@ const RegistrationPage = ({ onFlip }) => {
     verificationCode: "",
   });
   const [color, setColor] = useState('gray');
-const [feedback, setFeedback] = useState('');
+  const [feedback, setFeedback] = useState('');
   const [strength, setStrength] = useState('');
-  const [error, setError] = useState(""); // State to track errors
+  const [error, setError] = useState(""); 
 
   const handleChange = async (e) => {
-    const { name, value } = e.target; // Correctly destructure from event target
+    const { name, value } = e.target; // ✅ Correct destructuring
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value, // Update the specific field
+      [name]: value, // ✅ Correct field update
     }));
-    const { strength, feedback, color } = await evaluatePassword(formData.password);
-    setStrength(strength);
-    setFeedback(feedback);
-    setColor(color);
+
+    // ✅ Handle password strength check correctly
+    if (name === "password") {
+      const { strength, feedback, color } = await evaluatePassword(value);
+      setStrength(strength);
+      setFeedback(feedback);
+      setColor(color);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`${API_URL}/register`, formData); // Correct axios.post usage
+      const response = await axios.post(`${API_URL}/register`, formData); 
       console.log("Registration successful:", response.data);
     } catch (err) {
       console.error("Registration failed", err);
@@ -53,13 +64,10 @@ const [feedback, setFeedback] = useState('');
 
   return (
     <div className="RegistrationCont" style={{backgroundImage: 'url(/images/home1.jpg)'}}>
-      <header>
-        <Header />
-      </header>
       <section className="regist-section">
         <form onSubmit={handleSubmit} className="RegistForm">
           <h2 className="registheader">Registration</h2>
-          {error && <p style={{ color: "red" }}>{error}</p>} {/* Display error message */}
+          {error && <p style={{ color: "red" }}>{error}</p>} 
           <div className="forminput">
             <input
               type="text"
@@ -135,7 +143,7 @@ const [feedback, setFeedback] = useState('');
               required
             />
             <div>
-                <p style={{ color }}>Strength: <strong>{feedback}</strong></p>
+              <p style={{ color }}>Strength: <strong>{feedback}</strong></p>
             </div>
             <input
               type="text"
@@ -159,9 +167,6 @@ const [feedback, setFeedback] = useState('');
           </a>
         </form>
       </section>
-      <footer>
-        <Footer />
-      </footer>
     </div>
   );
 };

@@ -1,6 +1,4 @@
 import React from "react";
-import Header from "../hedfot/HeaderHome.js";
-import Footer from "../hedfot/FooterHome.js";
 
 const FinancialServices = () => {
   return (

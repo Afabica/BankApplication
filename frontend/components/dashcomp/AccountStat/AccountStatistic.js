@@ -4,6 +4,20 @@ import React, { useState, useEffect } from "react";
 import Dashboard from "../components/Dashboard"; // Import the dashboard layout
 import { Line, Bar } from "react-chartjs-2"; // Charts for visualization (optional)
 import axios from "axios"; // For API calls
+import dynamic from "next/dynamic";
+
+const SidePanel = dynamic(() => import("../../dashcomp/MainPage/SidePanel"), {
+  ssr: false,
+});
+
+const PanelElements = dynamic(() => import("../../hedfot/Panelelements"), {
+  ssr: false,
+});
+
+const Header = dynamic(() => import("../../hedfot/DashHeader"), {
+  ssr: false,
+});
+
 
 
 const AccountStatistics = () => {
@@ -14,7 +28,7 @@ const AccountStatistics = () => {
     // Simulated API call to fetch account statistics
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/account-statistics");
+        const response = await axios.get("http://localhost:8080/api/account-statistics");
         setAccountData(response.data);
       } catch (error) {
         console.error("Error fetching account statistics:", error);
@@ -22,6 +36,8 @@ const AccountStatistics = () => {
         setLoading(false);
       }
     };
+
+
 
     fetchData();
   }, []);
@@ -40,7 +56,9 @@ const AccountStatistics = () => {
         {/* Header Section */}
         <div className="bg-white shadow rounded p-4 mb-6">
           <h2 className="text-lg font-semibold">Account Overview</h2>
-          <p className="text-gray-600">Current Balance: ${balance.toLocaleString()}</p>
+          <p className="text-gray-600">
+            Current Balance: ${balance.toLocaleString()}
+          </p>
           <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded">
             Export Report
           </button>
@@ -58,7 +76,9 @@ const AccountStatistics = () => {
           </div>
           <div className="p-4 bg-white shadow rounded">
             <h3 className="font-semibold">Highest Expense Category</h3>
-            <p className="text-gray-700">{accountData.highestExpenseCategory}</p>
+            <p className="text-gray-700">
+              {accountData.highestExpenseCategory}
+            </p>
           </div>
         </div>
 
@@ -154,4 +174,3 @@ const AccountStatistics = () => {
 };
 
 export default AccountStatistics;
-

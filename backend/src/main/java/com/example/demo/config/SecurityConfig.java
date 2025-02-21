@@ -16,11 +16,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import com.example.demo.config.JwtAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.apache.catalina.connector.Connector;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+
+import com.example.demo.jwtsecurity.JwtUtils;
+import com.example.demo.config.JwtAuthenticationFilter;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -29,36 +30,29 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Autowired
+    private JwtUtils jwtUtils;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
+//    @Autowired
+//    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Use a secure password encoder
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless REST APIs
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS for frontend connection
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless API
             .authorizeHttpRequests(request -> request
-                .requestMatchers(HttpMethod.POST, "/api/login", "/api/register", "/api/otp/send").permitAll() // Public endpoints
-                .requestMatchers("/dashboard/**").permitAll()
-                .requestMatchers("/profcards/**").permitAll()
-                .requestMatchers("/blob/**").permitAll()
-                .requestMatchers("/operations/**").permitAll()
-                .requestMatchers("/api/home", "/api/users").permitAll() // Allow home and user endpoints
-                .anyRequest().authenticated() // All other endpoints require authentication
+                .requestMatchers(HttpMethod.POST, "/api/login", "/api/register", "/api/otp/send").permitAll() // Public APIs
+                .requestMatchers("/api/home", "/api/users").permitAll() // Allow public access
+                .anyRequest().authenticated() // Require authentication for other endpoints
             )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless sessions
-            )
+            .addFilterBefore(new JwtAuthenticationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class) // Add JWT filter
             .logout(logout -> logout
                 .logoutUrl("/api/logout")
                 .deleteCookies("JSESSIONID")
@@ -72,22 +66,23 @@ public class SecurityConfig {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder()); // Use BCryptPasswordEncoder
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000"); // Allow requests from Next.js frontend
-        configuration.addAllowedMethod("*"); // Allow all HTTP methods
-        configuration.addAllowedHeader("*"); // Allow all headers
-        configuration.setAllowCredentials(true); // Enable credentials for cookies
+        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Allow frontend origin only
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Restrict allowed methods
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Allow only necessary headers
+        configuration.setAllowCredentials(true); // Enable cookies for authentication
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+}
 
 //    @Bean
 //    public ServletWebServerFactory servletContainer() {
@@ -113,5 +108,4 @@ public class SecurityConfig {
 //        connector.setRedirectPort(8443); // Redirect HTTP to HTTPS
 //        return connector;
 //    }
-}
 

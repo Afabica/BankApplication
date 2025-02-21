@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { parseCookies } from 'nookies'
 
-import PaymentForn from './PaymentForm.js';
+import PaymentForm from './PaymentForm.js';
 import TransferList from './TransferList.js';
 import ConfirmationModal from '../components/ConfirmationModal';
 import PanelElements from '../../hedfot/PanelElements.js';

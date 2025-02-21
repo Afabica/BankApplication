@@ -1,8 +1,35 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
+
+import dynamic from "next/dynamic";
+
+const Header = dynamic(() => import("../hedfot/DashFooter"), {
+  ssr: false,
+});
+const Footer = dynamic(() => import("../hedfot/DashFooter"), {
+  ssr: false,
+});
+const SidePanel = dynamic(() => import("../dashcomp/MainPage/SidePanel"), {
+  ssr: false,
+});
+const PanelElements = dynamic(() => import("../hedfot/PanelElements"), {
+  ssr: false,
+});
 
 const AccountsAndPaymentsPage = () => {
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  const togglePanel = () => {
+    setIsPanelOpen((prev) => !prev);
+  };
+
   return (
     <div className="accounts-payments-page">
+      <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
+        <PanelElements />
+      </SidePanel>
+      <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
       <header className="page-header">
         <h1 className="page-title">Accounts & Payments</h1>
         <p className="page-subtitle">
@@ -15,7 +42,9 @@ const AccountsAndPaymentsPage = () => {
         <section className="service-section">
           <h2>Accounts</h2>
           <p>
-            Manage your money effortlessly with our range of bank accounts. Whether you need a checking account for daily expenses or a savings account for future goals, we have the right solution for you.
+            Manage your money effortlessly with our range of bank accounts.
+            Whether you need a checking account for daily expenses or a savings
+            account for future goals, we have the right solution for you.
           </p>
           <ul>
             <li>Free online banking</li>
@@ -30,7 +59,8 @@ const AccountsAndPaymentsPage = () => {
         <section className="service-section">
           <h2>Payments</h2>
           <p>
-            Make secure and seamless payments anywhere, anytime. Our advanced payment solutions are fast, reliable, and easy to use.
+            Make secure and seamless payments anywhere, anytime. Our advanced
+            payment solutions are fast, reliable, and easy to use.
           </p>
           <ul>
             <li>Instant money transfers</li>
@@ -41,10 +71,6 @@ const AccountsAndPaymentsPage = () => {
           <button className="learn-more-button">Learn More</button>
         </section>
       </main>
-
-      <footer className="page-footer">
-        <p>&copy; {new Date().getFullYear()} Your Bank. All rights reserved.</p>
-      </footer>
 
       <style jsx>{`
         .accounts-payments-page {
@@ -81,7 +107,9 @@ const AccountsAndPaymentsPage = () => {
           border: 1px solid #ddd;
           border-radius: 8px;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          transition: transform 0.2s, box-shadow 0.2s;
+          transition:
+            transform 0.2s,
+            box-shadow 0.2s;
         }
 
         .service-section:hover {
@@ -135,4 +163,3 @@ const AccountsAndPaymentsPage = () => {
 };
 
 export default AccountsAndPaymentsPage;
-

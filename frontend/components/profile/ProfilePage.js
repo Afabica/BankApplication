@@ -73,7 +73,7 @@ const ProfilePage = () => {
         const {email, value } = e.target;
         setFormData({
             ...formData,
-            [name]: value,
+            [email]: value,
         });
     };
 

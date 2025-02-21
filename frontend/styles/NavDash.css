@@ -23,7 +23,7 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  margin-right: 20px; 
+  margin-right: 20px;
 }
 
 .toggle-button:focus {
@@ -35,7 +35,6 @@
   justify-content: space-between;
   width: 100%;
 }
-
 
 .navbar-left,
 .navbar-right {
@@ -50,7 +49,7 @@
   list-style: none;
 }
 
-.navbar-left a,
+/*.navbar-left a,
 .navbar-right a {
   text-decoration: none;
   color: white;
@@ -59,25 +58,24 @@
   padding: 8px 16px;
   border-radius: 5px;
   transition: background-color 0.3s ease;
-}
+}*/
 
-.navbar-left a:hover,
+/*.navbar-left a:hover,
 .navbar-right a:hover {
   background-color: #0070f3;
   color: white;
-}
+}*/
 
-.FooterCont { 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #34495e;
-    color:white;
-    position: relative;
-    z-index:1000;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.FooterCont {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #34495e;
+  color: white;
+  position: relative;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 
 /* Footer Styles */
 

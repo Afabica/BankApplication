@@ -10,11 +10,10 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import "../../../styles/BarChart.css"; // Import the CSS file
 
-// Register required Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-// Mock transactions data
 const transactions = [
   { id: 1, category: "Food", amount: 120 },
   { id: 2, category: "Transport", amount: 50 },
@@ -24,34 +23,25 @@ const transactions = [
   { id: 6, category: "Transport", amount: 30 },
 ];
 
-// Group transactions by category
 const groupExpensesByCategory = (transactions) => {
   const categoryTotals = {};
-
-  transactions.forEach((transaction) => {
-    const { category, amount } = transaction;
-    if (!categoryTotals[category]) {
-      categoryTotals[category] = 0;
-    }
-    categoryTotals[category] += amount;
+  transactions.forEach(({ category, amount }) => {
+    categoryTotals[category] = (categoryTotals[category] || 0) + amount;
   });
-
   return categoryTotals;
 };
 
-// BarChart Component
 const BarChart = () => {
   const categoryTotals = groupExpensesByCategory(transactions);
 
-  // Prepare chart data
   const data = {
-    labels: Object.keys(categoryTotals), // Category names
+    labels: Object.keys(categoryTotals),
     datasets: [
       {
         label: "Expenses",
-        data: Object.values(categoryTotals), // Expense totals
+        data: Object.values(categoryTotals),
         backgroundColor: [
-          "rgba(255, 99, 132, 0.6)", // Colors for each category
+          "rgba(255, 99, 132, 0.6)",
           "rgba(54, 162, 235, 0.6)",
           "rgba(255, 206, 86, 0.6)",
           "rgba(75, 192, 192, 0.6)",
@@ -74,29 +64,16 @@ const BarChart = () => {
   const options = {
     responsive: true,
     plugins: {
-      legend: {
-        position: "top",
-      },
+      legend: { position: "top" },
     },
     scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Categories",
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Amount",
-        },
-        beginAtZero: true,
-      },
+      x: { title: { display: true, text: "Categories" } },
+      y: { title: { display: true, text: "Amount" }, beginAtZero: true },
     },
   };
 
   return (
-    <div style={{ width: "70%", margin: "0 auto" }}>
+    <div className="chart-container">
       <h2>Expenses by Category</h2>
       <Bar data={data} options={options} />
     </div>

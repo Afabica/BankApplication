@@ -1,14 +1,20 @@
 "use client";
 
-import React from 'react';
-import '../../../styles/NavDash.css';
-import '../../../styles/Navigation.css';
-import BankOffers from '../../../components/dashcomp/BankOffers/BankOffers.js';
+import React from "react";
+import "../../../styles/NavDash.css";
+//import "../../../styles/Navigation.css";
+import Transactions from "../../../components/dashcomp/MainPage/AllTrans";
+import "../../../styles/global.css";
+import "../../../styles/AllTrans.css";
+import "../../../styles/DashPage.css";
 
-export default function Transfers() {
-    return (
-        <div>
-            <BankOffers/>
-        </div>
-    )
-}
+//import "../../../styles/Navigation.css";
+const PaymentsPage = () => {
+  return (
+    <div>
+      <Transactions />
+    </div>
+  );
+};
+
+export default PaymentsPage;

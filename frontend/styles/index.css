@@ -1,6 +1,15 @@
 /* General Styles */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Ensures padding and border are included in element's total width/height */
+}
+
 .SignInCont {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   background-color: #121212; /* Dark background */
   min-height: 100vh;
   display: flex;
@@ -109,31 +118,35 @@ label {
 }
 
 input {
-  width: 100%;  /* Ensure input takes up full width */
-  padding: 12px;  /* Consistent padding */
-  font-size: 16px;  /* Adjust font size to a normal level */
+  width: 100%; /* Ensure input takes up full width */
+  padding: 12px; /* Consistent padding */
+  font-size: 16px; /* Adjust font size to a normal level */
   border: 2px solid #ccc;
   border-radius: 8px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
   box-sizing: border-box; /* Ensure padding does not affect width */
 }
 
 input:focus {
-  border-color: #007BFF;
+  border-color: #007bff;
   box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
   outline: none;
 }
 
 button.buttonsign {
-  width: 100%;  /* Ensure button takes up full width */
-  padding: 12px;  /* Same padding as input */
+  width: 100%; /* Ensure button takes up full width */
+  padding: 12px; /* Same padding as input */
   font-size: 16px; /* Normal font size */
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
   box-sizing: border-box; /* Ensure padding does not affect width */
 }
 
@@ -192,9 +205,6 @@ button.buttonsign:active {
   background-color: #444;
 }
 
-/* Footer */
-
-/* Responsive Styles */
 @media (max-width: 768px) {
   .SignInForm {
     width: 100%;
@@ -202,11 +212,11 @@ button.buttonsign:active {
   }
 
   .navbar-icon {
-    flex-direction: column; /* Stack navigation items */
-    gap: 10px; /* Add space between items */
+    flex-direction: column;
+    gap: 10px;
   }
 
   .signin-section {
-    padding: 10px; /* Reduce padding on smaller screens */
+    padding: 10px;
   }
 }

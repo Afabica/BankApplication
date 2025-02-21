@@ -4,7 +4,7 @@ import React from "react";
 import FinancialServices from "../../components/homepage/FinancialServices.js";
 import Header from "../../components/hedfot/HeaderHome.js";
 import Footer from "../../components/hedfot/FooterHome.js";
-import '../../styles/NavDash.css';
+import '../../styles/Navigation.css';
 import '../../styles/FinancialService.css';
 
 export default function Financial(){

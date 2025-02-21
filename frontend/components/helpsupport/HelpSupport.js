@@ -1,14 +1,39 @@
-import React from 'react';
-import '../../styles/HelpSupport.css';
-import Header from '../hedfot/DashHeader.js';
+"use client";
+
+import React, { useState, useEffect } from "react";
+import "../../styles/HelpSupport.css";
+import dynamic from "next/dynamic";
+
+const SidePanel = dynamic(() => import("../dashcomp/MainPage/SidePanel"), {
+  ssr: false,
+});
+
+const Header = dynamic(() => import("../hedfot/DashHeader"), {
+  ssr: false,
+});
+
+const PanelElements = dynamic(() => import("../hedfot/PanelElements"), {
+  ssr: false,
+});
 
 const HelpSupport = () => {
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  const togglePanel = () => {
+    setIsPanelOpen((prev) => !prev);
+  };
+
   return (
     <div className="help-support-page">
-      <Header/>
+      <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
+      <SidePanel isOpen={isPanelOpen} onColse={() => setIsPanelOpen(false)}>
+        <PanelElements />
+      </SidePanel>
       <header className="header">
         <h1>Help & Support</h1>
-        <p>We’re here to assist you with any questions or issues you may have.</p>
+        <p>
+          We’re here to assist you with any questions or issues you may have.
+        </p>
       </header>
 
       <section className="faqs">
@@ -16,38 +41,47 @@ const HelpSupport = () => {
         <div className="faq-item">
           <h3>How do I reset my password?</h3>
           <p>
-            To reset your password, go to the login page and click on "Forgot Password." Follow the instructions to set a new password.
+            To reset your password, go to the login page and click on "Forgot
+            Password." Follow the instructions to set a new password.
           </p>
         </div>
         <div className="faq-item">
           <h3>How can I contact customer support?</h3>
           <p>
-            You can reach our customer support team by clicking on the "Contact Us" section below or by calling our hotline at <strong>1-800-555-1234</strong>.
+            You can reach our customer support team by clicking on the "Contact
+            Us" section below or by calling our hotline at{" "}
+            <strong>1-800-555-1234</strong>.
           </p>
         </div>
         <div className="faq-item">
           <h3>How do I check my account balance?</h3>
           <p>
-            Log in to your account, and you’ll see your balance displayed on the dashboard. You can also check it via our mobile app.
+            Log in to your account, and you’ll see your balance displayed on the
+            dashboard. You can also check it via our mobile app.
           </p>
         </div>
       </section>
 
       <section className="contact-us">
         <h2>Contact Us</h2>
-        <p>If you need further assistance, feel free to get in touch with us:</p>
+        <p>
+          If you need further assistance, feel free to get in touch with us:
+        </p>
         <ul>
-          <li>Email: <a href="mailto:support@yourbank.com">support@yourbank.com</a></li>
-          <li>Phone: <strong>1-800-555-1234</strong></li>
+          <li>
+            Email:{" "}
+            <a href="mailto:support@yourbank.com">support@yourbank.com</a>
+          </li>
+          <li>
+            Phone: <strong>1-800-555-1234</strong>
+          </li>
           <li>Live Chat: Available 24/7 in our mobile app.</li>
         </ul>
       </section>
 
       <section className="troubleshooting">
         <h2>Troubleshooting</h2>
-        <p>
-          If you encounter issues, try the following steps:
-        </p>
+        <p>If you encounter issues, try the following steps:</p>
         <ol>
           <li>Ensure you have a stable internet connection.</li>
           <li>Clear your browser cache and cookies.</li>
@@ -58,11 +92,13 @@ const HelpSupport = () => {
       <section className="feedback">
         <h2>Feedback</h2>
         <p>
-          Your feedback is important to us. Please let us know how we can improve by filling out our feedback form.
+          Your feedback is important to us. Please let us know how we can
+          improve by filling out our feedback form.
         </p>
-        <a href="/feedback" className="feedback-button">Submit Feedback</a>
+        <a href="/feedback" className="feedback-button">
+          Submit Feedback
+        </a>
       </section>
-
 
       <style jsx>{`
         .help-support-page {
@@ -73,7 +109,10 @@ const HelpSupport = () => {
           text-align: center;
           margin-bottom: 40px;
         }
-        .faqs, .contact-us, .troubleshooting, .feedback {
+        .faqs,
+        .contact-us,
+        .troubleshooting,
+        .feedback {
           margin-bottom: 40px;
         }
         h2 {
@@ -114,4 +153,3 @@ const HelpSupport = () => {
 };
 
 export default HelpSupport;
-

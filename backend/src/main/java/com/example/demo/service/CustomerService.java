@@ -12,6 +12,9 @@ import com.example.demo.jwtsecurity.JwtUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import jakarta.validation.Valid;
+import com.example.demo.model.RegisterUser;
+import com.example.demo.model.UserStatistic;
+//import com.example.demo.repository.StatisticRepo;
 
 @Service
 public class CustomerService {
@@ -20,6 +23,7 @@ public class CustomerService {
     private final LoginRepo loginRepo;
     private final CustomerRepo customerRepo;
     private final RegisterRepo registerRepo;
+   // private final StatisticRepo statisticRepo;
     private final JwtUtils jwtUtils;  // Added the missing jwtUtils
 
     @Autowired
@@ -28,6 +32,7 @@ public class CustomerService {
         this.loginRepo = loginRepo;
         this.passwordEncoder = passwordEncoder;
         this.registerRepo = registerRepo;
+       // this.statisticRepo = statisticRepo;
         this.jwtUtils = jwtUtils;
         this.customerRepo = customerRepo;// Fixed the missing assignment
     }   
@@ -91,5 +96,14 @@ public class CustomerService {
             throw new RuntimeException("User not found with username: " + customer.getUsername());  // Fixed error message
         }
     }
+
+    public UserSetings getUserSettings( )
+
+//    public UserStatistic fetchUserStatistic(RegisterUser registerUser) {
+//        RegisterUser registerUser = registerRepo.findByUsername(registerUser.getUsername());
+//        UserStatistic stat = statisticRepo.findByUserId(registerUser.getId());      
+//        return stat;
+//
+//    }
 }
 

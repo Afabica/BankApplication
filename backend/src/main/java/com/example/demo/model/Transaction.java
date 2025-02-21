@@ -10,13 +10,13 @@ public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private BigInteger id;
 
     @Column(name = "transaction_date", nullable = false)
     private LocalDateTime transactionDate;
 
     @Column(name = "amount", nullable = false, precision = 10, scale = 2)
-    private BigInteger amount;
+    private Long amount;
 
     @Column(name = "transaction_type", nullable = false, length = 50)
     private String transactionType;
@@ -24,11 +24,15 @@ public class Transaction {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "account_id")
+    private BigInteger accountId;
+
     @Column(nullable = false, length = 20)
     private String status = "PENDING";
 
-    @Column(name = "customer_id", nullable = false) // Keep customerId as numerical value
-    private Long customerId;  // Changed to Long to represent customerId as a number
+   // @Column(name = "iban", nullable = false)
+   // private String iban;
+
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -48,11 +52,11 @@ public class Transaction {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public BigInteger getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 
@@ -64,11 +68,11 @@ public class Transaction {
         this.transactionDate = transactionDate;
     }
 
-    public BigInteger getAmount() {
+    public Long getAmount() {
         return amount;
     }
 
-    public void setAmount(BigInteger amount) {
+    public void setAmount(Long amount) {
         this.amount = amount;
     }
 
@@ -96,12 +100,12 @@ public class Transaction {
         this.status = status;
     }
 
-    public Long getCustomerId() {
-        return customerId;
+    public void setAccountId(BigInteger accountId) {
+        this.accountId = accountId;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public BigInteger getAccountId() {
+        return accountId;
     }
 
     public LocalDateTime getCreatedAt() {

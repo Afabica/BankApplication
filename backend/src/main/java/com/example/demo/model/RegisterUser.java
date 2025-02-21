@@ -23,8 +23,11 @@ public class RegisterUser {
     private String employer;
     private String verificationCode;
 
+    public RegisterUser {
 
+    }
     // Getters and Setters
+    //
 
     public Long getId() {
         return id;

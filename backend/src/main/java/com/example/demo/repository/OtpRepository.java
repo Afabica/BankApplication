@@ -14,9 +14,12 @@ public interface OtpRepository extends JpaRepository<OTPUser, Long> {
     OTPUser findByPhoneNumber(String phoneNumber);
     OTPUser findByOtpCode(String otpCode);
 
-    @Transactional
-    @Modifying
-    @Query("DELETE FROM OTPUser o WHERE o.expiresAt < :now")
-    void deleteExpiredOtps(LocalDateTime now);
+//    @Transactional
+//    @Modifying
+//    @Query("DELETE FROM OTPUser o WHERE o.expiresAt < :now")
+//    void deleteExpiredOtps(LocalDateTime now);
+      @Transactional 
+      void deleteByExpiresAtBefore(LocalDataTime now);
 }
+
 

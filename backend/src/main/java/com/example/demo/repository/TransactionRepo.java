@@ -11,16 +11,15 @@ import java.util.Optional;
 public interface TransactionRepo extends JpaRepository<Transaction, Long> {
 
     // Use customerId field directly (since it's a simple Long type)
-    List<Transaction> findByCustomerId(Long customerId);
-    Transaction findOneByCustomerId(Long customerId); 
+    List<Transaction> findByAccountId(Long account_id);
+    Transaction findOneByAccountId(Long account_id); 
     // Find transactions by status
-    List<Transaction> findByStatus(String status);
+    List<Transaction> findByStatus(String account_id);
 
     // Find transactions by transaction type
     List<Transaction> findByTransactionType(String transactionType);
 
-    List<Transaction> findAllByCustomerId(Long customerId);
+    List<Transaction> findAllByAccountId(Long account_id);
 
-    Optional<Transaction> findTopByCustomerIdOrderByTransactionDateDesc(Long customerId);
 }
 

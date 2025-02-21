@@ -1,95 +1,118 @@
-//"use client";
-//
-//import React, { useState, useEffect} from "react";
-//import SidePanel from '../../../components/dashcomp/MainPage/SidePanel.js';
-//import Header from '../../../components/hedfot/DashHeader.js';
-//import Footer from '../../../components/hedfot/DashFooter.js';
-//import PanelElements from '../../../components/hedfot/PanelElements.js';
-//import '../../../styles/NavDash.css';
-//import ThemeChanger from '../../tools/ThemeChanger.js';
-//
-//const SecuritySettings = () => {
-//  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
-//  const [biometricEnabled, setBiometricEnabled] = useState(true);
-//  const [currentTheme, setCurrentTheme] = useState(false);
-//  const [password, setPassword] = useState("");
-//  const [notifications, setNotifications] = useState(false);
-//  const [passwordStrength, setPasswordStrength] = useState(0);
-//  const [isPanelOpen, setIsPanelOpen] = useState(false);
-//
-//    
-//  const toggleNotifications = () => {
-//    setNotifications((prev) => !prev);
-//  }
-//
-//  const togglePanel = () => {
-//        setIsPanelOpen((prev) => !prev);
-//    }
-//
-//
-//
-//
-//  // Handle form submission
-//  const handleChangePassword = (e) => {
-//    e.preventDefault();
-//    // Logic for changing password here
-//    console.log("Password changed!");
-//  };
-//  
-//  return (
-//    <div className="container">
-//      <Header/>
-//      <SidePanel isOpen={isPanelOpen} onClose={() => setIsPnaleOpen(false)}> 
-//        <PanelElements/>
-//        </SidePanel>
-//      <div className="SettingsCont">
-//      <h1>Security Settings</h1>
-//      <div className="security-settings-container">
-//      <p>Theme changin.<p> 
-//      <ThemeChanger/>
-//
-//      <button onClick={toggleTheme} style={{padding: '10px', cursor: 'pointer'}}>
-//      Switch to {theme === 'light' ? 'Dark' : 'Light'} Mode
-//      </button>
-//
-//      <div className='ThirdPartySettings'>
-//        <div>
-//        <label>Notifications</label> 
-//        <button onClick={toggleNotifications} style={{padding: '10px', cursor: 'pointer'}}/>
-//        <label>Language</label> 
-//        <select value={language} onChange={(e)=> setLanguage(e.target.value)}> 
-//        <option value="en">English</option>
-//        <option value="es">Spanish</option>
-//        <option value="fr">French</option> 
-//        </select> 
-//        </div> 
-//        <div> 
-//        <label>Balance Threshold for Notifications</label>
-//        <input type="number" 
-//        value={balanceThreshold}
-//        onChange={(e) => setBalanceThreshold(e.target.value)}
-//        />
-//        </div> 
-//      </div>
-//
-//        {/* Two Factor Authentication */}
-//
-//        {/* Biometric Authentication */}
-//
-//        {/* Change Password Form */}
-//        <div className="change-password">
-//          <h3>Change Password</h3>
-//          <form onSubmit={handleChangePassword}>
-//            <button type="submit">Change Password</button>
-//          </form>
-//        </div>
-//
-//        {/* Active Sessions */}
-//      </div>
-//        </div>
-//    </div>
-//  );
-//};
-//
-//export default SecuritySettings;
-//
+"use client";
+
+import React, { useState, useEffect } from "react";
+import ThemeChanger from "../../tools/ThemeChanger.js";
+import "../../../styles/NavDash.css";
+import dynamic from "next/dynamic";
+
+const SidePanel = dynamic(() => import("../../dashcomp/MainPage/SidePanel"), {
+  ssr: false,
+});
+const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), {
+  ssr: false,
+});
+const Header = dynamic(() => import("../../hedfot/DashHeader"), {
+  ssr: false,
+});
+const Footer = dynamic(() => import("../../hedfot/DashFooter"), {
+  ssr: false,
+});
+
+const SecuritySettings = () => {
+  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
+  const [biometricEnabled, setBiometricEnabled] = useState(true);
+  const [currentTheme, setCurrentTheme] = useState("light");
+  const [password, setPassword] = useState("");
+  const [notifications, setNotifications] = useState(false);
+  const [language, setLanguage] = useState("en");
+  const [balanceThreshold, setBalanceThreshold] = useState("");
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchUserSettings = async () => {
+      const response = await axios.get(`http://localhost:8080/`)
+    }
+  })
+  const toggleNotifications = () => {
+    setNotifications((prev) => !prev);
+  };
+
+  const toggleTheme = () => {
+    setCurrentTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
+
+  const togglePanel = () => {
+    setIsPanelOpen((prev) => !prev);
+  };
+
+  const handleChangePassword = (e) => {
+    e.preventDefault();
+    console.log("Password changed!");
+  };
+
+  
+
+  return (
+    <div className="security-container">
+      <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
+      <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
+        <PanelElements />
+      </SidePanel>
+      <div className="settings-content">
+        <h1>Security Settings</h1>
+        <div className="security-settings-section">
+          <div className="option-group">
+            <p className="option-header">Theme Selection</p>
+            <button className="theme-toggle-button" onClick={toggleTheme}>
+              Switch to {currentTheme === "light" ? "Dark" : "Light"} Mode
+            </button>
+          </div>
+          <div className="option-group">
+            <p className="option-header">Notifications</p>
+            <button className="toggle-button" onClick={toggleNotifications}>
+              {notifications ? "Disable" : "Enable"} Notifications
+            </button>
+          </div>
+          <div className="option-group">
+            <p className="option-header">Language Selection</p>
+            <select
+              className="language-select"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+            >
+              <option value="en">English</option>
+              <option value="es">Spanish</option>
+              <option value="fr">French</option>
+            </select>
+          </div>
+          <div className="option-group">
+            <p className="option-header">Balance Threshold for Notifications</p>
+            <input
+              className="balance-input"
+              type="number"
+              value={balanceThreshold}
+              onChange={(e) => setBalanceThreshold(e.target.value)}
+            />
+          </div>
+          <div className="option-group change-password-section">
+            <p className="option-header">Change Password</p>
+            <form onSubmit={handleChangePassword}>
+              <input
+                className="password-input"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter new password"
+              />
+              <button className="submit-button" type="submit">
+                Change Password
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SecuritySettings;

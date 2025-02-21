@@ -83,4 +83,3 @@ export function getStrengthColor(strength) {
       return 'gray';
   }
 }
-

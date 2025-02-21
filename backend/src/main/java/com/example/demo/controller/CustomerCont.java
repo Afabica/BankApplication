@@ -91,15 +91,15 @@ public class CustomerCont {
         }
     }
 
-    @GetMapping("/usercards")
-    public ResponseEntity<?> fetchUserCards(@RequestParam String username) {
-        Customer customer = customerRepo.findByUsername(username);
-        if (customer != null) {
-            List<Transaction> transactions = transactionRepo.findByCustomerId(customer.getCustomerId());
-            return ResponseEntity.ok(transactions != null ? transactions : Collections.emptyList());
-        } else {
-            return ResponseEntity.status(404).body("User not found.");
-        }
-    }
+//    @GetMapping("/usercards")
+//    public ResponseEntity<?> fetchUserCards(@RequestParam String username) {
+//        Customer customer = customerRepo.findByUsername(username);
+//        if (customer != null) {
+//            List<Transaction> transactions = transactionRepo.findByCustomerId(customer.getId());
+//            return ResponseEntity.ok(transactions != null ? transactions : Collections.emptyList());
+//        } else {
+//            return ResponseEntity.status(404).body("User not found.");
+//        }
+//    }
 }
 

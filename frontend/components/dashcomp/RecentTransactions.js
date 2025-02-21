@@ -18,7 +18,7 @@ import '../../styles/Navigation.css';
 const RecentTransaction = () => {
 
     const [transaction, setTransaction] = useState(['']);
-    const [isPanelOpen, setPanelIsOpen] = useState('');
+    const [isPanelOpen, setIsPanelOpen] = useState('');
     const [error, setError] = useState('');
 
 

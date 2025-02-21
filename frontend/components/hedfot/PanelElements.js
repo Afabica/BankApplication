@@ -9,10 +9,10 @@ const PanelElements = () => {
         <nav className="sidebar-nav">
             <a href="/dashboard">Account Statics</a>
             <a href="/dashboard/payments">Transactions</a>
-            <a href="/dashboard/accounts">Accounts</a>
-            <a href="/dashboard/statreps">Statistics and Reports</a>
-            <a href="/dashboard/budget">Budget</a>
-            <a href="/dashboard/investments">Investments</a>
+            <a href="/dashboard/accmanag">Accounts</a>
+            <a href="/dashboard/statistic">Statistics and Reports</a>
+            <a href="/dashboard/funds">Budget</a>
+            <a href="/dashboard/creditdebit">Investments</a>
             <a href="/dashboard/loans">Loans</a>
             <a href="/dashboard/rewards">Rewards</a>
             <a href="/dashboard/settings">Security Settings</a>
