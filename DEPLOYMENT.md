@@ -42,6 +42,10 @@ Then:
 `kubectl delete deployment dontend-deployment --ignore-not-found=true`
 `kubectl delete service frontnd-service --ignore-not-found-true`
 
+# Delete from namespace or entire 
+`kubectl delete svc <service-name> -n my-app`
+`kubectt delete `
+
 # Check if it was successfully
 
     kubectl get deployments --namespac=default
@@ -182,3 +186,12 @@ kubectl port-forward service/prometheus-grafana 3000:80 -n monitoring
 Is possible to use Pre-built dashboards in Dashboards > Import
 
 Example of deploying everyhing with use of docker compose
+
+## Minikube 
+
+### minikube tunnel does
+- Assings an External Ip to LoadBalancer services.
+- Routes traffic to services via your machine's network 
+- Runs a local process that keeps the tunnel open.
+- If using Minikube, `EXTERNAL-IP` will always be None because Minikube doesn't provision cloud LoadBalancers.
+

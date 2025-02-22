@@ -53,5 +53,58 @@ public class UserSettings {
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void getNotificationsEnabled() {
+        return notificationsEnabled;
+    }
+
+    public boolean setNotificationEnabled(Boolean notificationsEnabled) {
+        this.notificationsEnabled = notificationsEnabled;
+    }
+
+    public void getDarkModeEnabled() {
+        return  darkModeEnabled;
+    }
+
+    public boolean setDarkModeEnabled() {
+        this.darkModeEnabled = darkModeEnabled;
+    }
+
+    public void getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public void getTransactionAlerts() {
+        return transactionAlerts;
+    }
+
+    public boolean setTransactionAlerts() {
+        this.transactionAlerts = transactionAlerts;
+    }
+
+    public void getMarketingEmails() {
+        retuen marketingEmails;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
 }
 

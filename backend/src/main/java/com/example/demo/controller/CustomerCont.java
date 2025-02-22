@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.*;
 
 @RestController
@@ -60,6 +61,9 @@ public class CustomerCont {
                 : ResponseEntity.status(404).body("User not found.");
     }
 
+    @GetMapping("/statistic")
+    public ResponseEntity<?> getStatisticUser(@RequestParam Long user_id) 
+
     @PostMapping("/transaction")
     public ResponseEntity<?> executeTransaction(@RequestBody Transaction transaction) {
         try {
@@ -86,6 +90,27 @@ public class CustomerCont {
 
             customerRepo.save(existingCustomer);
             return ResponseEntity.ok("Profile updated successfully.");
+        } else {
+            return ResponseEntity.status(404).body("User not found.");
+        }
+    }
+
+    @GetMapping("/usersettings")
+    public ResponseEntity<?> getUserSettings(@RequestParam Long user_id) {
+        UserSettings set = customerService.getUserSettings(user_id);
+        if((set.getLanguage()) != null) {
+            return ResponseEntity.ok("Settings fetched: " + set);
+        } else {
+            return ResponseEntity.status(404).body("User not found.");
+        }
+    }
+
+
+    @GetMapping("/userstatistic")
+    public ResponseEntity<?> getUserStatistic(@RequestParam Long user_id) {
+        UserStatistic stat = customerService.getUserStatistic(user_id);
+        if((stat.getCreditScore()) != null) {
+            return ResponseEntity.ok("User statistic fetched. " + stat);
         } else {
             return ResponseEntity.status(404).body("User not found.");
         }

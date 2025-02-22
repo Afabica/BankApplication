@@ -49,6 +49,9 @@ dependencies {
     // Spring Boot Starter for Caching
     implementation 'org.springframework.boot:spring-boot-starter-cache'
 
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
     //reactor-core
     implementation 'io.projectreactor:reactor-core:3.4.20'
     implementation 'io.projectreactor.netty:reactor-netty:1.1.22'
