@@ -1,4 +1,4 @@
-import com.example.demo.model;
+package com.example.demo.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -54,23 +54,23 @@ public class UserSettings {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void getNotificationsEnabled() {
+    public boolean getNotificationsEnabled() {
         return notificationsEnabled;
     }
 
-    public boolean setNotificationEnabled(Boolean notificationsEnabled) {
+    public void setNotificationEnabled(Boolean notificationsEnabled) {
         this.notificationsEnabled = notificationsEnabled;
     }
 
-    public void getDarkModeEnabled() {
+    public boolean getDarkModeEnabled() {
         return  darkModeEnabled;
     }
 
-    public boolean setDarkModeEnabled() {
+    public void setDarkModeEnabled() {
         this.darkModeEnabled = darkModeEnabled;
     }
 
-    public void getLanguage() {
+    public String getLanguage() {
         return language;
     }
 
@@ -78,16 +78,16 @@ public class UserSettings {
         this.language = language;
     }
 
-    public void getTransactionAlerts() {
+    public boolean getTransactionAlerts() {
         return transactionAlerts;
     }
 
-    public boolean setTransactionAlerts() {
+    public void setTransactionAlerts() {
         this.transactionAlerts = transactionAlerts;
     }
 
-    public void getMarketingEmails() {
-        retuen marketingEmails;
+    public boolean getMarketingEmails() {
+        return marketingEmails;
     }
 
     public LocalDateTime getCreatedAt() {

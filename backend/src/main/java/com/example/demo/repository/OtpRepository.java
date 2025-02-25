@@ -19,7 +19,8 @@ public interface OtpRepository extends JpaRepository<OTPUser, Long> {
 //    @Query("DELETE FROM OTPUser o WHERE o.expiresAt < :now")
 //    void deleteExpiredOtps(LocalDateTime now);
       @Transactional 
-      void deleteByExpiresAtBefore(LocalDataTime now);
+      void deleteByExpiresAtBefore(LocalDateTime now);
+
 }
 
 

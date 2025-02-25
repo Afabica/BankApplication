@@ -59,15 +59,15 @@ public class TransactionService {
 //
     
 
-    public void transfer(String sender_card_number, String getter_card_number, Long amount) {
-        BankCardsEnt card1 = cardRepository.findByCardNumber(sender_card_number);
-        BankCardsEnt card2 = cardRepository.findByCardNumber(getter_card_number);
-
-        if(card1 && card2) {
-            card1.setBalance(card1.getBalance() - amount);
-            card2.setBalance(card2.getBalance() + amount);
-        }
-    }
+//    public void transfer(String sender_card_number, String getter_card_number, Long amount) {
+//        BankCardsEnt card1 = cardRepository.findByCardNumber(sender_card_number);
+//        BankCardsEnt card2 = cardRepository.findByCardNumber(getter_card_number);
+//
+//        if(card1 && card2) {
+//            card1.setBalance(card1.getBalance() - amount);
+//            card2.setBalance(card2.getBalance() + amount);
+//        }
+//    }
 
 
     public Customer findByUsername(String username) {

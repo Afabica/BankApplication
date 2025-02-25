@@ -61,60 +61,60 @@ public class CustomerCont {
                 : ResponseEntity.status(404).body("User not found.");
     }
 
-    @GetMapping("/statistic")
-    public ResponseEntity<?> getStatisticUser(@RequestParam Long user_id) 
+//    @GetMapping("/statistic")
+//    public ResponseEntity<?> getStatisticUser(@RequestParam Long user_id) 
 
-    @PostMapping("/transaction")
-    public ResponseEntity<?> executeTransaction(@RequestBody Transaction transaction) {
-        try {
-            Objects.requireNonNull(transaction, "Transaction cannot be null");
-            Objects.requireNonNull(transaction.getTransactionType(), "Transaction type cannot be null");
+//    @PostMapping("/transaction")
+//    public ResponseEntity<?> executeTransaction(@RequestBody Transaction transaction) {
+//        try {
+//            Objects.requireNonNull(transaction, "Transaction cannot be null");
+//            Objects.requireNonNull(transaction.getTransactionType(), "Transaction type cannot be null");
+//
+//            transactionRepo.save(transaction);
+//            return ResponseEntity.ok("Transaction executed successfully.");
+//        } catch (NullPointerException e) {
+//            return ResponseEntity.badRequest().body("Missing required transaction details: " + e.getMessage());
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body("Error processing transaction: " + e.getMessage());
+//        }
+//    }
 
-            transactionRepo.save(transaction);
-            return ResponseEntity.ok("Transaction executed successfully.");
-        } catch (NullPointerException e) {
-            return ResponseEntity.badRequest().body("Missing required transaction details: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error processing transaction: " + e.getMessage());
-        }
-    }
+//    @PostMapping("/editprofile")
+//    public ResponseEntity<?> editProfilePage(@RequestBody Customer customer) {
+//        Customer existingCustomer = customerRepo.findByUsername(customer.getUsername());
+//        if (existingCustomer != null) {
+//            if (customer.getUsername() != null) existingCustomer.setUsername(customer.getUsername());
+//            if (customer.getEmail() != null) existingCustomer.setEmail(customer.getEmail());
+//            if (customer.getPhoneNumber() != null) existingCustomer.setPhoneNumber(customer.getPhoneNumber());
+//            if (customer.getAddress() != null) existingCustomer.setAddress(customer.getAddress());
+//
+//            customerRepo.save(existingCustomer);
+//            return ResponseEntity.ok("Profile updated successfully.");
+//        } else {
+//            return ResponseEntity.status(404).body("User not found.");
+//        }
+//    }
 
-    @PostMapping("/editprofile")
-    public ResponseEntity<?> editProfilePage(@RequestBody Customer customer) {
-        Customer existingCustomer = customerRepo.findByUsername(customer.getUsername());
-        if (existingCustomer != null) {
-            if (customer.getUsername() != null) existingCustomer.setUsername(customer.getUsername());
-            if (customer.getEmail() != null) existingCustomer.setEmail(customer.getEmail());
-            if (customer.getPhoneNumber() != null) existingCustomer.setPhoneNumber(customer.getPhoneNumber());
-            if (customer.getAddress() != null) existingCustomer.setAddress(customer.getAddress());
-
-            customerRepo.save(existingCustomer);
-            return ResponseEntity.ok("Profile updated successfully.");
-        } else {
-            return ResponseEntity.status(404).body("User not found.");
-        }
-    }
-
-    @GetMapping("/usersettings")
-    public ResponseEntity<?> getUserSettings(@RequestParam Long user_id) {
-        UserSettings set = customerService.getUserSettings(user_id);
-        if((set.getLanguage()) != null) {
-            return ResponseEntity.ok("Settings fetched: " + set);
-        } else {
-            return ResponseEntity.status(404).body("User not found.");
-        }
-    }
+//    @GetMapping("/usersettings")
+//    public ResponseEntity<?> getUserSettings(@RequestParam Long user_id) {
+//        UserSettings set = customerService.getUserSettings(user_id);
+//        if((set.getLanguage()) != null) {
+//            return ResponseEntity.ok("Settings fetched: " + set);
+//        } else {
+//            return ResponseEntity.status(404).body("User not found.");
+//        }
+//    }
 
 
-    @GetMapping("/userstatistic")
-    public ResponseEntity<?> getUserStatistic(@RequestParam Long user_id) {
-        UserStatistic stat = customerService.getUserStatistic(user_id);
-        if((stat.getCreditScore()) != null) {
-            return ResponseEntity.ok("User statistic fetched. " + stat);
-        } else {
-            return ResponseEntity.status(404).body("User not found.");
-        }
-    }
+//    @GetMapping("/userstatistic")
+//    public ResponseEntity<?> getUserStatistic(@RequestParam Long user_id) {
+//        UserStatistic stat = customerService.getUserStatistic(user_id);
+//        if((stat.getCreditScore()) != null) {
+//            return ResponseEntity.ok("User statistic fetched. " + stat);
+//        } else {
+//            return ResponseEntity.status(404).body("User not found.");
+//        }
+//    }
 
 //    @GetMapping("/usercards")
 //    public ResponseEntity<?> fetchUserCards(@RequestParam String username) {

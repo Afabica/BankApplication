@@ -179,7 +179,7 @@ public class SmsService {
     }
 
     public void cleanupExpiredOtps() {
-        otpRepository.deleteExpiredOtps(LocalDateTime.now());
+        otpRepository.deleteByExpiresAtBefore(LocalDateTime.now());
     }
 }
 

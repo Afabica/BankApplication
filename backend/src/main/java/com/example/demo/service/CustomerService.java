@@ -97,7 +97,9 @@ public class CustomerService {
         }
     }
 
-    public UserSetings getUserSettings( )
+//    public UserSetings getUserSettings( ) {
+//
+//    }
 
 //    public UserStatistic fetchUserStatistic(RegisterUser registerUser) {
 //        RegisterUser registerUser = registerRepo.findByUsername(registerUser.getUsername());

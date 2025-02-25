@@ -23,7 +23,7 @@ public class RegisterUser {
     private String employer;
     private String verificationCode;
 
-    public RegisterUser {
+    public RegisterUser() {
 
     }
     // Getters and Setters
