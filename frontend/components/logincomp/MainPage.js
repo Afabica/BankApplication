@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,8 +8,8 @@ import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import PieChart from "./PieChart.js";
 import Promotions from "./Promotions";
 import dynamic from "next/dynamic";
-import withAuth from "../../tools/withAuth";
-import ProfileCards from "../Cards/ProfileCards";
+import withAuth from "../../tools/withAuth"; 
+import ProfileCards from "../Cards/ProfileCards"; 
 
 const Footer = dynamic(() => import("../../hedfot/DashFooter"), { ssr: false });
 const Header = dynamic(() => import("../../hedfot/DashHeader"), { ssr: false });
@@ -33,17 +33,15 @@ function Home() {
   };
 
   // Fetch Profile Data from LocalStorage
-  useEffect(() => {
+  const fetchProfile = () => {
     const storedCustomer = localStorage.getItem("customer");
     if (storedCustomer) {
       setFormData(JSON.parse(storedCustomer));
     }
-  }, []); // Run once on mount
+  };
 
   // Fetch Transactions & Performance Tracking with Prometheus
-  const fetchData = useCallback(async () => {
-    if (!formData.id) return; // Prevent unnecessary API calls
-
+  const fetchData = async () => {
     const start = performance.now(); // ⏱ Start performance timer
 
     try {
@@ -81,18 +79,22 @@ function Home() {
       setError("Data fetching failed.");
     } finally {
       const duration = performance.now() - start; // ⏱ End performance timer
-      axios.post("/api/metrics", {
+      await axios.post("/api/metrics", {
         method: "GET",
         route: "/operations/translist",
         duration,
         status_code: 200,
-      }).catch((err) => console.error("Metrics logging failed:", err)); // Log errors silently
+      }); // Send timing data to Prometheus API
     }
-  }, [formData.id, router]);
+  };
 
+  // Effect Hook to Fetch Data
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchProfile();
+    if (formData.id) {
+      fetchData();
+    }
+  }, [formData.id]); 
 
   return (
     <div className="dashboard-container">
@@ -178,4 +180,3 @@ function Home() {
 }
 
 export default withAuth(Home);
-
