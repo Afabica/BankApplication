@@ -526,3 +526,16 @@ Ensure you have Azure CLI and kubectl installed:
 `kubectl get services `
 
 
+# Overview work of Grafana 
+
+## In Grafana, add Prometheus as a daa source(e.g, http://<host>:9090)
+
+Create dashboards that display metrics like 
+Total Login Attempts: Query
+`login_attempt_total`
+Login Request Duration: Query
+`login_duration_seconds`
+- For checking metrics shoud be visited `http://localhost:3000/api/metrics` to see the raw metrics output. 
+- In prometheus verifymetrics (like privious names )
+A dedicated-endpoint: /api/metrics
+

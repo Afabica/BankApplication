@@ -1,182 +1,160 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
-import PieChart from "./PieChart.js";
-import Promotions from "./Promotions";
+import Link from "next/link";
+import { useRouter } from "next/navigation"; // Correct import for Next.js 13 (App Router)
+import { setCookie } from "nookies";
+import ThemeSwitcher from "../../scripts/theme";
 import dynamic from "next/dynamic";
-import withAuth from "../../tools/withAuth"; 
-import ProfileCards from "../Cards/ProfileCards"; 
+import client from "prom-client";
 
-const Footer = dynamic(() => import("../../hedfot/DashFooter"), { ssr: false });
-const Header = dynamic(() => import("../../hedfot/DashHeader"), { ssr: false });
-const SidePanel = dynamic(() => import("./SidePanel"), { ssr: false });
-const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), { ssr: false });
+const withAuth = dynamic(() => import("../tools/withAuth"), {
+  ssr: false,
+});
 
-function Home() {
-  const router = useRouter();
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const [transactions, setTransactions] = useState([]);
-  const [statistics, setStatistics] = useState({});
-  const [formData, setFormData] = useState({});
-  const [userData, setUserData] = useState({});
-  const [offers, setOffers] = useState([]);
-  const [error, setError] = useState(null);
-  const [promotionsData, setPromotionsData] = useState([]);
+const SidePanel = dynamic(() => import("../dashcomp/MainPage/SidePanel"), {
+  ssr: false,
+});
 
-  // Toggle Side Panel
-  const togglePanel = () => {
-    setIsPanelOpen((prev) => !prev);
+const PanelElements = dynamic(() => import("../hedfot/PanelElements"), {
+  ssr: false,
+});
+
+const Header = dynamic(() => import("../../hedfot/DashHeader"), {
+  ssr: false,
+});
+
+const loginCounter = new client.Counter({
+  name: "login_attempt_total",
+  help: "Total number of login attempts",
+  labelNames: ["status"],
+});
+
+const loginDuration = new client.Histogram({
+  name: "login_duration_seconds",
+  help: "Duration of login  requests in seconds",
+  buckets: [0.1, 0.5, 1, 2, 5],
+});
+
+const SignInPage = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // Error message state
+  const router = useRouter(); // Initialize useRouter
+  const [showPassword, setShowPassword] = useState(false); // Password visibility toggle
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
   };
 
-  // Fetch Profile Data from LocalStorage
-  const fetchProfile = () => {
-    const storedCustomer = localStorage.getItem("customer");
-    if (storedCustomer) {
-      setFormData(JSON.parse(storedCustomer));
-    }
-  };
-
-  // Fetch Transactions & Performance Tracking with Prometheus
-  const fetchData = async () => {
-    const start = performance.now(); // ⏱ Start performance timer
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission to avoid page reload
 
     try {
-      const token = localStorage.getItem("token")?.replace(/"/g, "");
-      if (!token) {
-        setError("JWT Token is missing");
-        router.push("/login");
-        return;
-      }
-
-      const response = await axios.get(
-        `http://localhost:8080/operations/translist?userId=${encodeURIComponent(formData.id)}`,
+      // Send login request to the backend
+      const start = Date.now();
+      const response = await axios.post(
+        "http://backend-service.my-app.svc.cluster.local:8080/api/login",
+        {
+          username,
+          password,
+        },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
-        }
+        },
       );
 
+      const durationSeconds = Date.now() - start;
+
+      loginCounter.lables(response.status).inc();
+      loginDuration.observer(durationSeconds);
+
+      // Directly use the data from the response
+      const { token, customer, transactions } = response.data;
+
+      // Check for successful login
       if (response.status === 200) {
-        setTransactions(response.data);
+        // Store the token in cookies
+        setCookie(null, "jwt", token, {
+          path: "/",
+          maxAge: 86400, // 1 day expiration
+          httpOnly: false, // This is fine for front-end access to the cookie
+        });
+
+        // Store user information and transactions in localStorage
+        localStorage.setItem("customer", JSON.stringify(customer));
+        localStorage.setItem("transactions", JSON.stringify(transactions));
+
+        // Redirect to dashboard
+        router.push("/dashboard");
       } else {
-        setError("Fetching data failed");
+        // Handle unsuccessful login
+        setError(response.data.message || "Login failed. Please try again.");
+        console.error("Login failed");
       }
-
-      setStatistics({
-        savings: "$15,000",
-        creditScore: "750",
-        monthlyIncome: "$3,000",
-        monthlyExpenses: "$2,200",
-      });
-
     } catch (err) {
-      console.error("Error fetching data:", err);
-      setError("Data fetching failed.");
-    } finally {
-      const duration = performance.now() - start; // ⏱ End performance timer
-      await axios.post("/api/metrics", {
-        method: "GET",
-        route: "/operations/translist",
-        duration,
-        status_code: 200,
-      }); // Send timing data to Prometheus API
+      console.error("Login failed", err); // Log any errors to the console
+      setError("Login failed. Please check your credentials and try again.");
     }
   };
 
-  // Effect Hook to Fetch Data
-  useEffect(() => {
-    fetchProfile();
-    if (formData.id) {
-      fetchData();
-    }
-  }, [formData.id]); 
-
   return (
-    <div className="dashboard-container">
-      <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
-        <PanelElements />
-      </SidePanel>
-      <div className="main-layout">
-        <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
-        <main className="main-content">
-          <div>
-            <p>{userData.name || "No Name"}</p>
-            <p>{userData.amount || "No Amount"}</p>
-            <p>{userData.cardnumber || "No Card Number"}</p>
+    <div
+      className="SignInCont"
+      style={{ backgroundImage: "url(/images/home1.jpg)" }}
+    >
+      <ThemeSwitcher />
+      <section className="signin-section">
+        <form className="SignInForm" onSubmit={handleSubmit}>
+          <h2 className="signheader">Sign In</h2>
+          {error && <p className="error-message">{error}</p>}{" "}
+          {/* Display error if exists */}
+          <div className="forminput">
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              name="username"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
           </div>
-          <section className="account-statistics">
-            <div className="stat-card">
-              <h2>Total Savings</h2>
-              <p>{statistics.savings}</p>
-            </div>
-            <div className="stat-card">
-              <h2>Credit Score</h2>
-              <p>{statistics.creditScore}</p>
-            </div>
-            <div className="stat-card">
-              <h2>Monthly Income</h2>
-              <p>{statistics.monthlyIncome}</p>
-            </div>
-            <div className="stat-card">
-              <h2>Monthly Expenses</h2>
-              <p>{statistics.monthlyExpenses}</p>
-            </div>
-          </section>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          <section className="transactions">
-            <h1>Recent Transactions</h1>
-            <table>
-              <thead>
-                <tr>
-                  <th>*</th>
-                  <th>Date</th>
-                  <th>Description</th>
-                  <th>Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactions.length === 0 ? (
-                  <tr>
-                    <td colSpan="4">No transactions available</td>
-                  </tr>
-                ) : (
-                  transactions.map((transaction) => (
-                    <tr key={transaction.id}>
-                      <td>
-                        <FontAwesomeIcon icon={faShoppingCart} size="20px" color="#A3C600" />
-                      </td>
-                      <td>{transaction.transactionDate}</td>
-                      <td>{transaction.description}</td>
-                      <td>{transaction.amount}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </section>
-          <section><ProfileCards /></section>
-          <section className="pie_chart"><PieChart /></section>
-          <section>
-            <h2>Bank Offers</h2>
-            <div className="offers">
-              {offers.map((offer) => (
-                <div key={offer.id} className="offer-card">
-                  <h3>{offer.title}</h3>
-                  <p>{offer.description}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-          <section><Promotions promotions={promotionsData} /></section>
-        </main>
-      </div>
+          <div className="forminput">
+            <label htmlFor="password">Password</label>
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              className="toggle-password"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+          <button type="submit" className="buttonsign">
+            Sign In
+          </button>
+          <div className="Links">
+            <ul className="ContainerLinks">
+              <li>
+                <Link href="/signin/passrestore">Forgot password?</Link>
+              </li>
+            </ul>
+          </div>
+        </form>
+      </section>
     </div>
   );
-}
+};
 
-export default withAuth(Home);
+export default SignInPage;

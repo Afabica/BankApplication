@@ -73,7 +73,7 @@ spec:
         app: backend
     spec:
       imagePullSecrets:
-        - name: myapp-backend-secret
+        - name: myapp-fontend-secret
       containers:
         - name: backend
           image: index.docker.io/afabica234/myapp-backend:latest
