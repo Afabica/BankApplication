@@ -21,7 +21,7 @@ const PanelElements = dynamic(() => import("../hedfot/PanelElements"), {
   ssr: false,
 });
 
-const Header = dynamic(() => import("../../hedfot/DashHeader"), {
+const Header = dynamic(() => import("../hedfot/DashHeader"), {
   ssr: false,
 });
 
