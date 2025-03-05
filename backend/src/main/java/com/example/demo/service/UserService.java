@@ -45,6 +45,17 @@ SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 	public List<LoginUser> findAllUser() {
 		return loginRepo.findAll();
 	}
+    
+    public String deleteUserById(Long id) {
+        Optional<RegisterUser> user = registerRepo.findById(id);
+        if (user.isPresent()) {
+            registerRepo.deleteById(id);
+            loginRepo.deleteById(id);
+            return "User deleted successfully";
+        } else {
+            return "User no found";
+        }
+    }
 
     public RegisterUser registerUser(RegisterUser userDto) {
         if (registerRepo.existsByUsername(userDto.getUsername())) {

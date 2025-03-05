@@ -3,6 +3,8 @@ package com.example.demo.repository;
 import com.example.demo.model.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,5 +23,9 @@ public interface TransactionRepo extends JpaRepository<Transaction, Long> {
 
     List<Transaction> findAllByAccountId(Long account_id);
 
+//    @Modifying 
+//    @Query("delete from transactions b where b.id = ?1")
+//    Optional<Transaction> deleteTransactionById(Long id);
 }
+
 

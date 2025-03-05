@@ -539,3 +539,6 @@ Login Request Duration: Query
 - In prometheus verifymetrics (like privious names )
 A dedicated-endpoint: /api/metrics
 
+
+
+## Issue with building application 

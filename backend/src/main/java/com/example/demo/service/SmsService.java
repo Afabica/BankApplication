@@ -2,6 +2,10 @@ package com.example.demo.service;
 
 import com.example.demo.model.OTPUser;
 import com.example.demo.repository.OtpRepository;
+import com.example.demo.repository.RegisterRepo;
+import com.example.demo.model.RegisterUser;
+import com.example.demo.model.LoginUser;
+import com.example.demo.repository.LoginRepo;
 import com.example.demo.config.TwilioConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +26,7 @@ import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Optional;
 
 @Service
 public class SmsService {
@@ -29,6 +34,8 @@ public class SmsService {
     private final OtpRepository otpRepository;
     private final TwilioConfig twilioConfig;
     private final PasswordEncoder passwordEncoder;
+    private final RegisterRepo registerRepo; 
+    private final LoginRepo loginRepo;
     //private final NotifiRepo notifiRepo; 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmsService.class);
@@ -50,19 +57,25 @@ public class SmsService {
     private static final Pattern phonePattern = Pattern.compile(PHONE_PATTERN);
 
     @Autowired
-    public SmsService(OtpRepository otpRepository, TwilioConfig twilioConfig, PasswordEncoder passwordEncoder) {
+    public SmsService(OtpRepository otpRepository, TwilioConfig twilioConfig, PasswordEncoder passwordEncoder, LoginRepo loginRepo, RegisterRepo registerRepo) {
         this.otpRepository = otpRepository;
         this.twilioConfig = twilioConfig;
         this.passwordEncoder = passwordEncoder;
+        this.loginRepo = loginRepo;
+        this.registerRepo = registerRepo;
 //        this.notifiRepo = notifiRepo;
     }
-
+ 
     public OTPUser sendOtp(OTPUser user) {
         // Initialize Twilio with account credentials
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+        
+        Optional<RegisterUser> registeredUser = registerRepo.findByPhoneNumber(user.getPhoneNumber());
+        OTPUser otpUser = new OTPUser();
 
         // Create OTP user record
-        OTPUser otpUser = new OTPUser();
+        if(registeredUser.isPresent()) {
+        
         otpUser.setPhoneNumber(user.getPhoneNumber());
         otpUser.setCreatedAt(LocalDateTime.now());
         otpUser.setExpiresAt(LocalDateTime.now().plusMinutes(5)); // OTP expires in 5 minutes
@@ -72,6 +85,7 @@ public class SmsService {
         // Send the OTP via SMS
         sendSms(otpUser.getPhoneNumber(), otpUser.getOtpCode());
 
+        }
         // Save OTP details to the database
         return otpRepository.save(otpUser);
     }
@@ -157,6 +171,7 @@ public class SmsService {
 //    }
 
     public boolean verifyOtpCode(String phoneNumber, String otpCode) {
+
         OTPUser otpUser = otpRepository.findByOtpCode(otpCode);
         if (otpUser != null && otpUser.getPhoneNumber().equals(phoneNumber) &&
                 otpUser.getExpiresAt().isAfter(LocalDateTime.now())) {
@@ -178,8 +193,5 @@ public class SmsService {
         }
     }
 
-    public void cleanupExpiredOtps() {
-        otpRepository.deleteByExpiresAtBefore(LocalDateTime.now());
-    }
 }
 

@@ -92,6 +92,16 @@ public class TransactionCont {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTransaction(@PathVariable Long id) {
+        try {
+                transactionService.deleteTransaction(id);
+                return ResponseEntity.ok("Transaction deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/transcheck")
     public String gegtSecureData() {
         return "this is a secured endpoint.";

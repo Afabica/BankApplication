@@ -7,16 +7,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import PieChart from "./PieChart.js";
 import Promotions from "./Promotions";
-import promClient from 'prom-client';
 import dynamic from "next/dynamic";
-import withAuth from "../../tools/withAuth"; 
+import withAuth from "../../tools/withAuth";
 import ApiHeader from "../../tools/api";
-import ProfileCards from "../Cards/ProfileCards"; 
+import { parseCookies } from "nookies";
+import ProfileCards from "../Cards/ProfileCards";
 
 const Footer = dynamic(() => import("../../hedfot/DashFooter"), { ssr: false });
 const Header = dynamic(() => import("../../hedfot/DashHeader"), { ssr: false });
 const SidePanel = dynamic(() => import("./SidePanel"), { ssr: false });
-const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), { ssr: false });
+const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), {
+  ssr: false,
+});
 
 function Home() {
   const router = useRouter();
@@ -29,12 +31,12 @@ function Home() {
   const [error, setError] = useState(null);
   const [promotionsData, setPromotionsData] = useState([]);
 
-  const httpRequestDurationMicroseconds = new promClient.Histogram({
-    name: 'http_request_duration_ms',
-    help: 'Duration of HTTP request in ms',
-    labelNames: ['method', 'route', 'status_code'],
-    buckets: [50, 100, 200, 500 ,1000, 2000],
-  });
+  //  const httpRequestDurationMicroseconds = new promClient.Histogram({
+  //    name: "http_request_duration_ms",
+  //    help: "Duration of HTTP request in ms",
+  //    labelNames: ["method", "route", "status_code"],
+  //    buckets: [50, 100, 200, 500, 1000, 2000],
+  //  });
 
   const togglePanel = () => {
     setIsPanelOpen((prev) => !prev);
@@ -52,6 +54,7 @@ function Home() {
       try {
         // ✅ Get JWT token from localStorage
         const token = localStorage.getItem("token")?.replace(/"/g, ""); // Remove quotes if stored as string
+        console.log(token);
 
         if (!token) {
           setError("JWT Token is missing");
@@ -66,7 +69,7 @@ function Home() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         if (response.status === 200) {
@@ -86,6 +89,10 @@ function Home() {
         console.error("Error fetching data:", err);
         setError("Data fetching failed.");
       }
+    };
+
+    const fetchUserCards = async () => {
+      const response = await axios.get("http://localhost:8080/api");
     };
 
     fetchProfile();
@@ -163,8 +170,8 @@ function Home() {
               </tbody>
             </table>
           </section>
-          <section> 
-            <ProfileCards/>
+          <section>
+            <ProfileCards />
           </section>
           <section className="pie_chart">
             <PieChart />
@@ -191,4 +198,3 @@ function Home() {
 
 // ✅ Export the component wrapped with `withAuth`
 export default withAuth(Home);
-

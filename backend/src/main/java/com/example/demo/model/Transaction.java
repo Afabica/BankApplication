@@ -3,9 +3,15 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import lombok.*;
+
 
 @Entity
 @Table(name = "transactions")
+@Getter 
+@Setter
+@NoArgsConstructor 
+@AllArgsConstructor
 public class Transaction {
 
     @Id

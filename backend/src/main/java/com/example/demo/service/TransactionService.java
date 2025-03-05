@@ -100,6 +100,14 @@ public List<Transaction> fetchAllTransactions(Long account_id) {
         throw new IllegalStateException("Error fetching transactions", e);
     }
 }
+
+public void deleteTransaction(Long id) {
+    if(transactionRepo.existsById(id)) {
+        transactionRepo.deleteById(id);
+    } else {
+        throw new RuntimeException("Transaction with ID " + id + " not found");
+    }
+}
     // Additional methods could include:
 
     // Fetch a transaction by its ID

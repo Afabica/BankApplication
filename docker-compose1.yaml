@@ -102,27 +102,94 @@ spec:
       targetPort: 8080
   type: NodePort
 
+
+# Nginx Deployment 
+apiVersion: apps/v1
+kind: Deployment 
+metadata: 
+name: nginx-deployment 
+labels: 
+app: nginx
+spec: 
+    replicas: 1
+    selectoe: 
+    matchLabels: 
+    app: nginx
+    template: 
+    metadata: 
+    labels: 
+    app: nginx
+    spec: 
+    containers: 
+    - name: nginx 
+      image: nginx:lates 
+      ports: 
+    - containerPort: 80
+      volumeMounts: 
+    - name: nginx-config 
+      mountPath: /home/Afabica/Programming/BankApplication/nginx.conf
+      subPath: nginx.conf
+    volumes: 
+    - name: nginx-config 
+      configMap: 
+      name: nginx-configmap
+
+# Nginx Service 
+apiVersion: v1 
+kind: Service
+metadata: 
+name: nginx-service
+spec: slecetor
+app: nginx
+ports: 
+- protocol: TCP
+  port: 80
+  targetPort: 80
+  type: LoadBalancer # Expose externally (if needed) 
 ---
 # Nginx ConfigMap
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: nginx-config
-  namespace: my-app
+  name: nginx-configmap
 data:
   nginx.conf: |
-    events {}
+    server {
+        listen 80;
+        server_name your-domain.com;
 
-    http {
-        server {
-            listen 80;
+        location / {
+            proxy_pass http://nextjs-service:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
 
-            location / {
-                proxy_pass http://frontend-service;
-            }
+        location /api/ {
+            proxy_pass http://springboot-service:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
 
-            location /api/ {
-                proxy_pass http://backend-service/;
+        location /api/ {
+            add_header 'Access-Control-Allow-Origin' 'http://your-nextjs-domain.com';
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type';
+            add_header 'Access-Control-Allow-Credentials' 'true';
+        }
+
+        location /api/ {
+            if ($request_method = 'OPTIONS') {
+                add_header 'Access-Control-Allow-Origin' 'http://your-nextjs-domain.com';
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type';
+                add_header 'Access-Control-Allow-Credentials' 'true';
+                add_header 'Content-Length' 0;
+                return 204;
             }
         }
     }
@@ -212,7 +279,7 @@ data:
 #        static_configs:
 #          - targets: ['backend-service.my-app.svc.cluster.local:80']
 #
-
+#
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -276,7 +343,7 @@ spec:
     - protocol: TCP
       port: 9090
       targetPort: 9090
-  type: ClusterIP
+  type: NodePort
 
 
 # Grafana Deployment 

@@ -18,10 +18,12 @@ public interface CardRepository extends JpaRepository<BankCardsEnt, Long> {
     List<BankCardsEnt> findAllByCustomerId(Long customerId);
 
     // Find a card by its unique card number
-    Optional<BankCardsEnt> findByCardNumber(String cardNumber);
+    BankCardsEnt findByCardNumber(String cardNumber);
 
     // Find a card by its unique ID
     BankCardsEnt findByCustomerId(Long customerId);
+
+    BankCardsEnt findByCardId(Long cardId);
     
 
     // Soft delete a card (sets "deleted" field to true instead of actually deleting)

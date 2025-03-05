@@ -23,10 +23,10 @@ public class OtpController {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<String> sendOtp(@RequestBody OTPUser user){
+    public ResponseEntity<String> sendOtp(@RequestBody OTPUser user) {
         try {
             OTPUser otpuser = smsService.sendOtp(user);
-            return ResponseEntity.ok("OTP sent successfully to " + user.getPhoneNumber());
+            return ResponseEntity.ok("OTP send successfully to" + user.getPhoneNumber());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error sending OTP: " + e.getMessage());
         }

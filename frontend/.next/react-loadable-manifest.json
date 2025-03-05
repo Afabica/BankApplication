@@ -1,1 +1,52 @@
-{}
+{
+  "components/dashcomp/MainPage/ProfPage.js -> ../../hedfot/DashFooter": {
+    "id": "components/dashcomp/MainPage/ProfPage.js -> ../../hedfot/DashFooter",
+    "files": [
+      "static/chunks/_app-pages-browser_components_hedfot_DashFooter_js.js"
+    ]
+  },
+  "components/dashcomp/MainPage/ProfPage.js -> ../../hedfot/DashHeader": {
+    "id": "components/dashcomp/MainPage/ProfPage.js -> ../../hedfot/DashHeader",
+    "files": [
+      "static/chunks/_app-pages-browser_components_hedfot_DashHeader_js.js"
+    ]
+  },
+  "components/dashcomp/MainPage/ProfPage.js -> ../../hedfot/PanelElements": {
+    "id": "components/dashcomp/MainPage/ProfPage.js -> ../../hedfot/PanelElements",
+    "files": [
+      "static/chunks/_app-pages-browser_components_hedfot_PanelElements_js.js"
+    ]
+  },
+  "components/dashcomp/MainPage/ProfPage.js -> ./SidePanel": {
+    "id": "components/dashcomp/MainPage/ProfPage.js -> ./SidePanel",
+    "files": [
+      "static/css/_app-pages-browser_components_dashcomp_MainPage_SidePanel_js.css",
+      "static/chunks/_app-pages-browser_components_dashcomp_MainPage_SidePanel_js.js"
+    ]
+  },
+  "components/homepage/Home.js -> ../animation/HomeSlider": {
+    "id": "components/homepage/Home.js -> ../animation/HomeSlider",
+    "files": [
+      "static/css/_app-pages-browser_components_animation_HomeSlider_js.css",
+      "static/chunks/_app-pages-browser_components_animation_HomeSlider_js.js"
+    ]
+  },
+  "components/homepage/Home.js -> ../hedfot/FooterHome": {
+    "id": "components/homepage/Home.js -> ../hedfot/FooterHome",
+    "files": [
+      "static/chunks/_app-pages-browser_components_hedfot_FooterHome_js.js"
+    ]
+  },
+  "components/homepage/Home.js -> ../hedfot/HeaderHome": {
+    "id": "components/homepage/Home.js -> ../hedfot/HeaderHome",
+    "files": [
+      "static/chunks/_app-pages-browser_components_hedfot_HeaderHome_js.js"
+    ]
+  },
+  "components/homepage/Home.js -> ../homepage/FAQ": {
+    "id": "components/homepage/Home.js -> ../homepage/FAQ",
+    "files": [
+      "static/chunks/_app-pages-browser_components_homepage_FAQ_js.js"
+    ]
+  }
+}

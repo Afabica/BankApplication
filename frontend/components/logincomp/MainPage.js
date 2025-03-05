@@ -6,36 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation"; // Correct import for Next.js 13 (App Router)
 import { setCookie } from "nookies";
 import ThemeSwitcher from "../../scripts/theme";
-import dynamic from "next/dynamic";
-import client from "prom-client";
-
-const withAuth = dynamic(() => import("../tools/withAuth"), {
-  ssr: false,
-});
-
-const SidePanel = dynamic(() => import("../dashcomp/MainPage/SidePanel"), {
-  ssr: false,
-});
-
-const PanelElements = dynamic(() => import("../hedfot/PanelElements"), {
-  ssr: false,
-});
-
-const Header = dynamic(() => import("../hedfot/DashHeader"), {
-  ssr: false,
-});
-
-const loginCounter = new client.Counter({
-  name: "login_attempt_total",
-  help: "Total number of login attempts",
-  labelNames: ["status"],
-});
-
-const loginDuration = new client.Histogram({
-  name: "login_duration_seconds",
-  help: "Duration of login  requests in seconds",
-  buckets: [0.1, 0.5, 1, 2, 5],
-});
+import { checkPasswordStrength } from "../tools/PasswordStrength.js"; // Assuming you will use this function elsewhere
+import ScrollTriggerComponent from "../animation/ScrollTriggerComponent.js"; // Assuming this will be used in animation logic
 
 const SignInPage = () => {
   const [username, setUsername] = useState("");
@@ -53,9 +25,8 @@ const SignInPage = () => {
 
     try {
       // Send login request to the backend
-      const start = Date.now();
       const response = await axios.post(
-        "http://backend-service.my-app.svc.cluster.local:8080/api/login",
+        "http://localhost:8080/api/login",
         {
           username,
           password,
@@ -66,11 +37,6 @@ const SignInPage = () => {
           },
         },
       );
-
-      const durationSeconds = Date.now() - start;
-
-      loginCounter.lables(response.status).inc();
-      loginDuration.observer(durationSeconds);
 
       // Directly use the data from the response
       const { token, customer, transactions } = response.data;
@@ -83,8 +49,8 @@ const SignInPage = () => {
           maxAge: 86400, // 1 day expiration
           httpOnly: false, // This is fine for front-end access to the cookie
         });
-
         // Store user information and transactions in localStorage
+        localStorage.setItem("token", JSON.stringify(token));
         localStorage.setItem("customer", JSON.stringify(customer));
         localStorage.setItem("transactions", JSON.stringify(transactions));
 

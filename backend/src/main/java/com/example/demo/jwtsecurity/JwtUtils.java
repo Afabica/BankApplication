@@ -9,6 +9,8 @@ import com.example.demo.repository.RegisterRepo;
 import com.example.demo.model.RegisterUser;
 import javax.crypto.SecretKey;
 import java.util.Date;
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 import com.example.demo.model.LoginUser;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,7 @@ public class JwtUtils {
 
     private final RegisterRepo registerRepo;
 
+    @Autowired
     public JwtUtils(RegisterRepo registerRepo) {
         this.registerRepo = registerRepo;
     }

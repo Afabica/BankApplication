@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import com.example.demo.model.RegisterUser;
 
 @Entity
 @Table(name = "otps")
@@ -21,6 +22,9 @@ public class OTPUser {
     private LocalDateTime expiresAt;
 
     private boolean verified;
+
+    @Column(name = "user_id")
+    private Long user_id;
 
 //    @ManyToOne
 //    @JoinColumn(name = "customer_id", nullable = false)

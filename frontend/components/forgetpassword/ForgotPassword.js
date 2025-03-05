@@ -11,6 +11,7 @@ const ForgotPasswordPage = () => {
   const [userExist, setUserExists] = useState(false);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState(false);
   const [error, setError] = useState("");
 
   const Header = dynamic(() => import("../hedfot/HeaderHome"), {
@@ -25,13 +26,13 @@ const ForgotPasswordPage = () => {
       if (!phone) return;
       setLoading(true);
 
-      const response = await axios.get("http://localhost:8080/api/checkuser", {
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone }),
+      const response = await axios.get("http://localhost:8080/api/verify", {
+        email,
       });
 
       if (response.status === 200) {
         const data = await response.json();
+        localStorage.setItem("customer", JSON.stringify(email));
         setUserExists(data.exsits);
         setLoading(false);
       } else {
