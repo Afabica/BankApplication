@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import ThemeChanger from "../../tools/ThemeChanger.js";
 import "../../../styles/NavDash.css";
+import axios from "axios";
 import dynamic from "next/dynamic";
 
 const SidePanel = dynamic(() => import("../../dashcomp/MainPage/SidePanel"), {
@@ -30,9 +31,9 @@ const SecuritySettings = () => {
 
   useEffect(() => {
     const fetchUserSettings = async () => {
-      const response = await axios.get(`http://localhost:8080/`)
-    }
-  })
+      const response = await axios.get(`http://localhost:8080/`);
+    };
+  });
   const toggleNotifications = () => {
     setNotifications((prev) => !prev);
   };
@@ -49,8 +50,6 @@ const SecuritySettings = () => {
     e.preventDefault();
     console.log("Password changed!");
   };
-
-  
 
   return (
     <div className="security-container">

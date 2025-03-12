@@ -6,8 +6,12 @@ import dynamic from "next/dynamic";
 
 const Header = dynamic(() => import("../hedfot/DashHeader"), { ssr: false });
 const Footer = dynamic(() => import("../hedfot/DashFooter"), { ssr: false });
-const SidePanel = dynamic(() => import("../dashcomp/MainPage/SidePanel"), { ssr: false });
-const PanelElements = dynamic(() => import("../hedfot/PanelElements"), { ssr: false });
+const SidePanel = dynamic(() => import("../dashcomp/MainPage/SidePanel"), {
+  ssr: false,
+});
+const PanelElements = dynamic(() => import("../hedfot/PanelElements"), {
+  ssr: false,
+});
 
 const NotificationsPage = () => {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
@@ -46,7 +50,7 @@ const NotificationsPage = () => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         if (response.status === 200) {
@@ -60,6 +64,7 @@ const NotificationsPage = () => {
         setError("Data fetching failed.");
       }
     };
+    fetchNotifications();
 
     fetchUser();
   }, []);
@@ -74,8 +79,10 @@ const NotificationsPage = () => {
   const toggleReadStatus = (id) => {
     setNotifications((prevNotifications) =>
       prevNotifications.map((notification) =>
-        notification.id === id ? { ...notification, read: !notification.read } : notification
-      )
+        notification.id === id
+          ? { ...notification, read: !notification.read }
+          : notification,
+      ),
     );
   };
 
@@ -85,7 +92,7 @@ const NotificationsPage = () => {
       prevNotifications.map((notification) => ({
         ...notification,
         read: true,
-      }))
+      })),
     );
   };
 
@@ -144,4 +151,3 @@ const NotificationsPage = () => {
 };
 
 export default NotificationsPage;
-

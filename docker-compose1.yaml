@@ -1,19 +1,16 @@
----
-# Namespace
+### Namespace Configuration
 apiVersion: v1
 kind: Namespace
 metadata:
   name: my-app
 
 ---
-# Frontend Deployment
+### Frontend Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend-deployment
   namespace: my-app
-  labels:
-    app: frontend
 spec:
   replicas: 1
   selector:
@@ -24,45 +21,35 @@ spec:
       labels:
         app: frontend
     spec:
-      imagePullSecrets:
-        - name: myapp-frontend-secret
       containers:
         - name: frontend
           image: index.docker.io/afabica234/myapp-frontend:latest
-          resources:
-            requests:
-              cpu: "100m"
-          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
 
 ---
-# Frontend Service
+### Frontend Service
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
   namespace: my-app
-  labels:
-    app: frontend
 spec:
   selector:
     app: frontend
   ports:
     - protocol: TCP
-      port: 80
+      port: 3000
       targetPort: 3000
-  type: LoadBalancer
+  type: ClusterIP
 
 ---
-# Backend Deployment
+### Backend Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-deployment
   namespace: my-app
-  labels:
-    app: backend
 spec:
   replicas: 1
   selector:
@@ -73,45 +60,30 @@ spec:
       labels:
         app: backend
     spec:
-      imagePullSecrets:
-        - name: myapp-frontend-secret
       containers:
         - name: backend
           image: index.docker.io/afabica234/myapp-backend:latest
-          resources:
-            requests:
-              cpu: "100m" 
-          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
 
 ---
-# Backend Service
+### Backend Service
 apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
   namespace: my-app
-  labels:
-    app: backend
 spec:
   selector:
     app: backend
   ports:
     - protocol: TCP
-      port: 80
+      port: 8080
       targetPort: 8080
-  type: NodePort
+  type: ClusterIP
 
 ---
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: my-app
-
----
-# NGINX ConfigMap
+### NGINX ConfigMap
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -123,7 +95,6 @@ data:
     http {
         server {
             listen 80;
-            server_name your-domain.com;
 
             location / {
                 proxy_pass http://frontend-service:3000;
@@ -131,7 +102,6 @@ data:
                 proxy_set_header Upgrade $http_upgrade;
                 proxy_set_header Connection 'upgrade';
                 proxy_set_header Host $host;
-                proxy_cache_bypass $http_upgrade;
             }
 
             location /api/ {
@@ -145,14 +115,12 @@ data:
     }
 
 ---
-# NGINX Deployment
+### NGINX Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-deployment
   namespace: my-app
-  labels:
-    app: nginx
 spec:
   replicas: 1
   selector:
@@ -178,7 +146,7 @@ spec:
             name: nginx-configmap
 
 ---
-# NGINX Service
+### NGINX Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -194,115 +162,12 @@ spec:
   type: LoadBalancer
 
 ---
-
----
-# Prometheus Deployment
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: prometheus
-  namespace: my-app
-  labels:
-    app: prometheus
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: prometheus
-  template:
-    metadata:
-      labels:
-        app: prometheus
-    spec:
-      containers:
-        - name: prometheus
-          image: prom/prometheus:latest
-          ports:
-            - containerPort: 9090
-          volumeMounts:
-            - name: prometheus-config
-              mountPath: /etc/prometheus
-      volumes:
-        - name: prometheus-config
-          configMap:
-            name: prometheus-config
-
----
-# Prometheus ConfigMap
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: prometheus-config
-  namespace: my-app
-data:
-  prometheus.yml: |
-    global:
-      scrape_interval: 15s
-    scrape_configs:
-      - job_name: 'spring-boot'
-        metrics_path: '/actuator/prometheus'
-        static_configs:
-          - targets: ['backend-service.my-app.svc.cluster.local:8080']
-      - job_name: 'nextjs'
-        metrics_path: '/metrics'
-        static_configs:
-          - targets: ['frontend-service.my-app.svc.cluster.local:3000']
-
----
-# Prometheus Service
-apiVersion: v1
-kind: Service
-metadata:
-  name: prometheus-service
-  namespace: my-app
-spec:
-  selector:
-    app: prometheus
-  ports:
-    - protocol: TCP
-      port: 9090
-      targetPort: 9090
-  type: NodePort
-
----
-# Grafana Deployment
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: grafana
-  namespace: my-app
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: grafana
-  template:
-    metadata:
-      labels:
-        app: grafana
-    spec:
-      containers:
-        - name: grafana
-          image: grafana/grafana:latest
-          ports:
-            - containerPort: 3000
-          env:
-            - name: GF_SECURITY_ADMIN_PASSWORD
-              value: "admin"
-
----
-# Grafana Service
-apiVersion: v1
-kind: Service
-metadata:
-  name: grafana-service
-  namespace: my-app
-spec:
-  selector:
-    app: grafana
-  ports:
-    - protocol: TCP
-      port: 3000
-      targetPort: 3000
-  type: LoadBalancer
+### Explanation of Workflow:
+# 1. The frontend and backend are deployed as separate services within the 'my-app' namespace.
+# 2. The NGINX deployment is configured to act as a reverse proxy, routing:
+#    - '/' to the frontend-service on port 3000.
+#    - '/api/' to the backend-service on port 8080.
+# 3. NGINX uses a ConfigMap for configuration, ensuring easy updates without rebuilding the Docker image.
+# 4. The services are exposed internally via ClusterIP, while NGINX is exposed externally using a LoadBalancer.
+# 5. This ensures seamless integration and communication between the frontend, backend, and external users.
 

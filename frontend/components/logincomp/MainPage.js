@@ -25,8 +25,20 @@ const SignInPage = () => {
 
     try {
       // Send login request to the backend
+      //      const response = await axios.post(
+      //        "http://localhost:8080/api/login",
+      //        {
+      //          username,
+      //          password,
+      //        },
+      //        {
+      //          headers: {
+      //            "Content-Type": "application/json",
+      //          },
+      //        },
+      //      );
       const response = await axios.post(
-        "http://localhost:8080/api/login",
+        "/api/login",
         {
           username,
           password,
