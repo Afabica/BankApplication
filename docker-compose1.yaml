@@ -1,4 +1,5 @@
-
+---
+# Namespace
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -73,13 +74,13 @@ spec:
         app: backend
     spec:
       imagePullSecrets:
-        - name: myapp-fontend-secret
+        - name: myapp-frontend-secret
       containers:
         - name: backend
           image: index.docker.io/afabica234/myapp-backend:latest
           resources:
             requests:
-              cpu: "100m"
+              cpu: "100m" 
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -95,191 +96,107 @@ metadata:
     app: backend
 spec:
   selector:
-    app: backend  # Fixed incorrect selector (previously had app: nginx)
+    app: backend
   ports:
     - protocol: TCP
       port: 80
       targetPort: 8080
   type: NodePort
 
-
-# Nginx Deployment 
-apiVersion: apps/v1
-kind: Deployment 
-metadata: 
-name: nginx-deployment 
-labels: 
-app: nginx
-spec: 
-    replicas: 1
-    selectoe: 
-    matchLabels: 
-    app: nginx
-    template: 
-    metadata: 
-    labels: 
-    app: nginx
-    spec: 
-    containers: 
-    - name: nginx 
-      image: nginx:lates 
-      ports: 
-    - containerPort: 80
-      volumeMounts: 
-    - name: nginx-config 
-      mountPath: /home/Afabica/Programming/BankApplication/nginx.conf
-      subPath: nginx.conf
-    volumes: 
-    - name: nginx-config 
-      configMap: 
-      name: nginx-configmap
-
-# Nginx Service 
-apiVersion: v1 
-kind: Service
-metadata: 
-name: nginx-service
-spec: slecetor
-app: nginx
-ports: 
-- protocol: TCP
-  port: 80
-  targetPort: 80
-  type: LoadBalancer # Expose externally (if needed) 
 ---
-# Nginx ConfigMap
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: my-app
+
+---
+# NGINX ConfigMap
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-configmap
+  namespace: my-app
 data:
   nginx.conf: |
-    server {
-        listen 80;
-        server_name your-domain.com;
+    events {}
+    http {
+        server {
+            listen 80;
+            server_name your-domain.com;
 
-        location / {
-            proxy_pass http://nextjs-service:3000;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection 'upgrade';
-            proxy_set_header Host $host;
-            proxy_cache_bypass $http_upgrade;
-        }
+            location / {
+                proxy_pass http://frontend-service:3000;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+            }
 
-        location /api/ {
-            proxy_pass http://springboot-service:8080;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-
-        location /api/ {
-            add_header 'Access-Control-Allow-Origin' 'http://your-nextjs-domain.com';
-            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
-            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type';
-            add_header 'Access-Control-Allow-Credentials' 'true';
-        }
-
-        location /api/ {
-            if ($request_method = 'OPTIONS') {
-                add_header 'Access-Control-Allow-Origin' 'http://your-nextjs-domain.com';
-                add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type';
-                add_header 'Access-Control-Allow-Credentials' 'true';
-                add_header 'Content-Length' 0;
-                return 204;
+            location /api/ {
+                proxy_pass http://backend-service:8080;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
             }
         }
     }
 
 ---
-## Prometheus Deployment (Ensuring It Deploys in my-app Namespace)
-#apiVersion: monitoring.coreos.com/v1
-#kind: ServiceMonitor
-#metadata:
-#  name: prometheus-monitor
-#  namespace: my-app  # Ensures Prometheus is deployed in my-app namespace
-#  labels:
-#    release: prometheus
-#spec:
-#  selector:
-#    matchLabels:
-#      app: backend
-#  namespaceSelector:
-#    matchNames: ["my-app"]  # Ensures Prometheus monitors services in my-app
-#  endpoints:
-#    - port: http
-#      path: /metrics
-#      interval: 30s
-#
-#---
-## Prometheus Service
-#apiVersion: v1
-#kind: Service
-#metadata:
-#  name: prometheus-service
-#  namespace: my-app
-#spec:
-#  selector:
-#    app: prometheus
-#  ports:
-#    - protocol: TCP
-#      port: 9090
-#      targetPort: 9090
-#  type: ClusterIP
-#
-#---
-## Prometheus Deployment
-#apiVersion: apps/v1
-#kind: Deployment
-#metadata:
-#  name: prometheus
-#  namespace: my-app
-#  labels:
-#    app: prometheus
-#spec:
-#  replicas: 1
-#  selector:
-#    matchLabels:
-#      app: prometheus
-#  template:
-#    metadata:
-#      labels:
-#        app: prometheus
-#    spec:
-#      containers:
-#        - name: prometheus
-#          image: prom/prometheus:latest
-#          ports:
-#            - containerPort: 9090
-#          volumeMounts:
-#            - name: prometheus-config-volume
-#              mountPath: /etc/prometheus
-#      volumes:
-#        - name: prometheus-config-volume
-#          configMap:
-#            name: prometheus-config
-#
-#---
-## Prometheus ConfigMap
-#apiVersion: v1
-#kind: ConfigMap
-#metadata:
-#  name: prometheus-config
-#  namespace: my-app
-#data:
-#  prometheus.yml: |
-#    global:
-#      scrape_interval: 15s
-#
-#    scrape_configs:
-#      - job_name: 'backend'
-#        static_configs:
-#          - targets: ['backend-service.my-app.svc.cluster.local:80']
-#
-#
+# NGINX Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: my-app
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-configmap
+
+---
+# NGINX Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: my-app
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+
+---
+
+---
+# Prometheus Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -309,7 +226,9 @@ spec:
         - name: prometheus-config
           configMap:
             name: prometheus-config
+
 ---
+# Prometheus ConfigMap
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -319,18 +238,18 @@ data:
   prometheus.yml: |
     global:
       scrape_interval: 15s
-
     scrape_configs:
       - job_name: 'spring-boot'
         metrics_path: '/actuator/prometheus'
         static_configs:
           - targets: ['backend-service.my-app.svc.cluster.local:8080']
-
       - job_name: 'nextjs'
         metrics_path: '/metrics'
         static_configs:
           - targets: ['frontend-service.my-app.svc.cluster.local:3000']
+
 ---
+# Prometheus Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -345,9 +264,8 @@ spec:
       targetPort: 9090
   type: NodePort
 
-
-# Grafana Deployment 
-
+---
+# Grafana Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -371,7 +289,9 @@ spec:
           env:
             - name: GF_SECURITY_ADMIN_PASSWORD
               value: "admin"
+
 ---
+# Grafana Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -385,5 +305,4 @@ spec:
       port: 3000
       targetPort: 3000
   type: LoadBalancer
-
 

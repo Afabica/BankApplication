@@ -30,12 +30,48 @@ const TransactionsPage = () => {
   // Fetch transactions (Mock Data)
   const fetchTransactions = () => {
     const data = [
-      { id: 1, date: "2025-01-01", category: "Food", amount: 120, description: "Grocery shopping" },
-      { id: 2, date: "2025-01-02", category: "Transport", amount: 50, description: "Taxi fare" },
-      { id: 3, date: "2025-01-03", category: "Food", amount: 80, description: "Restaurant" },
-      { id: 4, date: "2025-01-04", category: "Rent", amount: 800, description: "January rent" },
-      { id: 5, date: "2025-01-05", category: "Utilities", amount: 200, description: "Electricity bill" },
-      { id: 6, date: "2025-01-06", category: "Transport", amount: 30, description: "Bus ticket" },
+      {
+        id: 1,
+        date: "2025-01-01",
+        category: "Food",
+        amount: 120,
+        description: "Grocery shopping",
+      },
+      {
+        id: 2,
+        date: "2025-01-02",
+        category: "Transport",
+        amount: 50,
+        description: "Taxi fare",
+      },
+      {
+        id: 3,
+        date: "2025-01-03",
+        category: "Food",
+        amount: 80,
+        description: "Restaurant",
+      },
+      {
+        id: 4,
+        date: "2025-01-04",
+        category: "Rent",
+        amount: 800,
+        description: "January rent",
+      },
+      {
+        id: 5,
+        date: "2025-01-05",
+        category: "Utilities",
+        amount: 200,
+        description: "Electricity bill",
+      },
+      {
+        id: 6,
+        date: "2025-01-06",
+        category: "Transport",
+        amount: 30,
+        description: "Bus ticket",
+      },
     ];
     setTransactions(data);
     setFilteredTransactions(data);
@@ -94,12 +130,16 @@ const TransactionsPage = () => {
 
     if (searchTerm) {
       filtered = filtered.filter((transaction) =>
-        transaction.description.toLowerCase().includes(searchTerm.toLowerCase())
+        transaction.description
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()),
       );
     }
 
     if (category !== "All") {
-      filtered = filtered.filter((transaction) => transaction.category === category);
+      filtered = filtered.filter(
+        (transaction) => transaction.category === category,
+      );
     }
 
     setFilteredTransactions(filtered);
@@ -126,7 +166,11 @@ const TransactionsPage = () => {
           onChange={handleSearchChange}
           className="search-input"
         />
-        <select value={filterCategory} onChange={handleCategoryChange} className="category-select">
+        <select
+          value={filterCategory}
+          onChange={handleCategoryChange}
+          className="category-select"
+        >
           <option value="All">All Categories</option>
           <option value="Food">Food</option>
           <option value="Transport">Transport</option>
@@ -169,4 +213,3 @@ const TransactionsPage = () => {
 };
 
 export default TransactionsPage;
-

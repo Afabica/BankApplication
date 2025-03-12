@@ -90,8 +90,9 @@ dependencies {
 
     // Test dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot starter for tests
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0' // Update to JUnit 5.9.0
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.0' // Update to JUnit 5.9.0
+//    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0' // Update to JUnit 5.9.0
+//    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.0' // Update to JUnit 5.9.0
+    testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation 'org.springframework.security:spring-security-test' // For Spring Security testing
     implementation 'com.h2database:h2'
 }

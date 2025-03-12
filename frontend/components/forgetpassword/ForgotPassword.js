@@ -11,86 +11,84 @@ const ForgotPasswordPage = () => {
   const [userExist, setUserExists] = useState(false);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState(false);
   const [error, setError] = useState("");
 
-  const Header = dynamic(() => import("../hedfot/HeaderHome"), {
-    ssr: false,
-  });
-  const Footer = dynamic(() => import("../hedfot/FooterHome"), {
-    ssr: false,
-  });
+  const Header = dynamic(() => import("../hedfot/HeaderHome"), { ssr: false });
+  const Footer = dynamic(() => import("../hedfot/FooterHome"), { ssr: false });
 
   useEffect(() => {
     const checkUser = async () => {
       if (!phone) return;
       setLoading(true);
+      try {
+        const response = await axios.get("http://localhost:8080/api/verify", {
+          params: { phone },
+        });
 
-      const response = await axios.get("http://localhost:8080/api/verify", {
-        email,
-      });
-
-      if (response.status === 200) {
-        const data = await response.json();
-        localStorage.setItem("customer", JSON.stringify(email));
-        setUserExists(data.exsits);
+        if (response.status === 200) {
+          setUserExists(response.data.exists);
+        } else {
+          setError(response.data.message || "User doesn't exist");
+        }
+      } catch (err) {
+        setError("User verification failed.");
+      } finally {
         setLoading(false);
-      } else {
-        setError(response.data.message || "Use doesn't exist");
-        console.error("User not found");
       }
     };
 
     checkUser();
-  }, []);
+  }, [phone]);
 
-  const handleSendOTP = async () => {
-    if (!userExist) return;
+  const handleSendOTP = async (e) => {
+    e.preventDefault();
+    if (!userExist) {
+      setError("User does not exist.");
+      return;
+    }
 
+    setLoading(true);
     try {
-      const response = await axios.get("http://localhost:8080/api/send/otp", {
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone }),
+      const response = await axios.post("http://localhost:8080/api/send/otp", {
+        phone,
       });
 
       if (response.status === 200) {
-        const data = await response.json();
-        alert(data.message);
+        alert(response.data.message);
         router.push("/signin/passrestore/otpconf");
       } else {
-        setError(response.data.message);
-        console.error("Login failed.");
+        setError(response.data.message || "Failed to send OTP.");
       }
-
-      const data = await response.json();
-      alert(data.message);
     } catch (err) {
-      console.error("Login failed", err);
-      setError("Login failed", err);
+      setError("Failed to send OTP.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-10 mb-10 bg-white shadow-md rounded">
-      <h2 className="text-xl font-bold mb-4">Forgot Password</h2>
-      <form onSubmit={handleSendOTP}>
-        <input
-          type="text"
-          placeholder="Enter phone number or email address"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full p-2 border rounded mb-3"
-        />
-        <button
-          className="w-full bg-blue-500 text-white p-2 rounded"
-          type="submit"
-          onClick="handleSendOTP"
-          disabled={!userExist || loading}
-        >
-          Send OTP
-        </button>
-      </form>
-      {message && <p className="mt-3 text-red-500">{message}</p>}
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
+        <h2 className="text-2xl font-bold text-center text-gray-800">Forgot Password</h2>
+        <form onSubmit={handleSendOTP} className="space-y-4">
+          <input
+            type="text"
+            placeholder="Enter phone number or email address"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            className={`w-full px-4 py-2 text-white rounded-md ${loading || !userExist ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}`}
+            type="submit"
+            disabled={!userExist || loading}
+          >
+            {loading ? "Sending..." : "Send OTP"}
+          </button>
+        </form>
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+        {message && <p className="text-green-500 text-sm text-center">{message}</p>}
+      </div>
     </div>
   );
 };

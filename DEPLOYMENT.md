@@ -6,15 +6,17 @@
 `docker tag myapp-backend my-docker-username/myapp-backend:v1` - tag the image with your Docker Hub username.
 `docker push my-dockerhub-username/myapp-backend:v1` - pushing the correctly tagged image.
 
-## Process of containerizing and pushing 
+## Process of containerizing and pushing
+
 `docker build -t afabica234/myapp-backend:latest`
 `docker tag afabica234/myapp-backend afabica234/myapp-backend:latest`
- Or 
+Or
 `docker tag afabica234/myapp-backend:latest afabica234/myapp:latest`
-`docker push afabica234/myapp-backend:latest` - push to docker registry 
+`docker push afabica234/myapp-backend:latest` - push to docker registry
 `docker pull afabica234/myapp-backend:latest`
 
-Also possible automate process with use of: 
+Also possible automate process with use of:
+
 - GitHub ACtions or CI/CD tools to automate the build and push process.
 - Docker Hub Automated Builds that trigger builds on git push.
 
@@ -44,6 +46,10 @@ Then:
 
 `kubectl apply -f deployment.yaml`
 `kubectl apply -f service.yaml`
+
+# Creating namespace
+
+`kubectl create namespace my-app`
 
 # Finding out of deployment name
 
@@ -473,72 +479,73 @@ For Next.js: process_cpu_user_seconds_total
   `minikube service frontend-service -n my-app` - this will open it in you browser
   `kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/main/config/manifests/metakkb-native.yaml`
 
-
-### If running on minikube and external IPs doesn't appear 
+### If running on minikube and external IPs doesn't appear
 
 `minikube tunnel` - This will assign an external IP your LOadBalancer services
 
+# Automate Process with Git Hub Actions
 
-
-# Automate Process with Git Hub Actions 
 - Build and tag the Docker image.
 - Push it to Docker Hub.
 - Deploy it to Azure Kubernetes Service (AKS)
 
 By default, AKS cannot pull private images from Docker Hub unless you configure an ImagePullSecret.
 
-So it also necessary to create Docker Hub Secret in Kubernetes by running command: 
+So it also necessary to create Docker Hub Secret in Kubernetes by running command:
 `kubectl create screte docker-registry docker-hub-secret \
     --docker-server=https://index.docker.io/v1/ \
     --docker-username=your-docker-username \
     --docker-password=your-docker-password \
     --docker-email=your-email@example.com`
 
-In configuration file like .yaml should be then added like like that: 
+In configuration file like .yaml should be then added like like that:
 `imagePullSecrets: 
     - name: docker-hub-secret`
 
-And after that operations create git hub action workflow 
+And after that operations create git hub action workflow
 
 1. Go to GitHub Repository -> Settings -> Secrets and Variables -> Actions -> New repository Secret.
-2. Add these secrets: 
-    - DOCKER_USERNAME -> Your Docker Hub username.
-    - DOCKER_PASSWORD -> Your Docker Hub password or access token.
-    - AZURE_CREDENTIALS -> JSON output from az  sp create-for-rbac (explained below).
-    - AZURE_CONTAINER_REGISTRY ->
+2. Add these secrets:
+   - DOCKER_USERNAME -> Your Docker Hub username.
+   - DOCKER_PASSWORD -> Your Docker Hub password or access token.
+   - AZURE_CREDENTIALS -> JSON output from az sp create-for-rbac (explained below).
+   - AZURE_CONTAINER_REGISTRY ->
 
 ## Configure Azure Kubernetes Service
 
 ### Install Azure CLI & Kubernetes CLI
+
 Ensure you have Azure CLI and kubectl installed:
 `az login`
 `az aks install-cli`
-#### Create an AKS Cluster 
+
+#### Create an AKS Cluster
+
 `az group create --name myResourceGroup --location eastus`
 `az aks create --resource-group myResourceGroup --name myAKSCluster --node-count 2 --enable-addons monitoring --generate-ssh-keys`
 
-#### Connect to AKS 
+#### Connect to AKS
+
 `az aks get-credentials --resource-group myResourceGroup --name myAKSCluster`
 `kubectl get nodes`
 
-### EXpose the Application in AKS 
+### EXpose the Application in AKS
+
 `kubectl expose deployment myapp-deployment --type=LoadBalancer --port=80 --target-port-8080`
 `kubectl get services `
 
-
-# Overview work of Grafana 
+# Overview work of Grafana
 
 ## In Grafana, add Prometheus as a daa source(e.g, http://<host>:9090)
 
-Create dashboards that display metrics like 
+Create dashboards that display metrics like
 Total Login Attempts: Query
 `login_attempt_total`
 Login Request Duration: Query
 `login_duration_seconds`
-- For checking metrics shoud be visited `http://localhost:3000/api/metrics` to see the raw metrics output. 
+
+- For checking metrics shoud be visited `http://localhost:3000/api/metrics` to see the raw metrics output.
 - In prometheus verifymetrics (like privious names )
-A dedicated-endpoint: /api/metrics
+  A dedicated-endpoint: /api/metrics
 
-
-
-## Issue with building application 
+## Issue with building application

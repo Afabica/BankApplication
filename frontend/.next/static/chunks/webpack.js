@@ -190,7 +190,7 @@
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("c440f4f1a8ea07c4")
+/******/ 		__webpack_require__.h = () => ("4083dada8ac10f63")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
@@ -797,7 +797,7 @@
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = (chunkId, promises) => {
-/******/ 			var cssChunks = {"_app-pages-browser_components_animation_HomeSlider_js":1,"_app-pages-browser_components_dashcomp_MainPage_SidePanel_js":1};
+/******/ 			var cssChunks = {"_app-pages-browser_components_animation_HomeSlider_js":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(() => {
