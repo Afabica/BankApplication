@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jmeter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jmeter
+  template:
+    metadata:
+      labels:
+        app: jmeter
+    spec:
+      containers:
+        - name: jmeter
+          image: justb4/jmeter:5.6.3
+          ports:
+            - containerPort: 9270 # For Prometheus metrics
+          volumeMounts:
+            - name: test-plan
+              mountPath: /test
+          command: ["/bin/bash"]
+          args:
+            - "-c"
+            - >
+              jmeter -n -t /test/load-test.jmx &&
+              java -jar /plugins/jmeter-prometheus-plugin-0.6.0.jar
+          env:
+            - name: JVM_ARGS
+              value: "-Xms512m -Xmx1024m"
+      volumes:
+        - name: test-plan
+          configMap:
+            name: jmeter-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jmeter-service
+spec:
+  selector:
+    app: jmeter
+  ports:
+    - protocol: TCP
+      port: 9270
+      targetPort: 9270
+
+apiVersion: v1 
+kind: ConfigMap 
+metadata: 
+name: jmeter-config
+data: 
+load-test.jmx: |

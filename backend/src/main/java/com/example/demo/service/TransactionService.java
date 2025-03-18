@@ -30,32 +30,32 @@ public class TransactionService {
     }
     
     // Process a transaction and update account balance
-//    public void processTransaction(Long accountId, BigInteger transactionAmount) {
-//        // Fetch the bank card account for the given accountId
-//        BankCardsEnt account = cardRepository.findByCustomerId(accountId);
-//        
-//        if (account == null) {
-//            throw new IllegalArgumentException("Account not found for customer ID: " + accountId);
-//        }
-//
-//        BigInteger oldBalance = account.getBalance();
-//        BigInteger newBalance = oldBalance.add(transactionAmount);
-//
-//        // Update the balance in the account
-//        account.setBalance(newBalance);
-//        cardRepository.save(account); // Persist the updated balance
-//
-//        // Create a new transaction record
-//        Transaction transaction = new Transaction();
-//        transaction.setCustomerId(account.getCustomerId());
-//        transaction.setAmount(transactionAmount);
-//        transaction.setTransactionType("Deposit");
-//        transaction.setBalanceChange(BalanceChange.fromAmount(transactionAmount));  // Assuming BalanceChange is an Enum or a method to define the type of transaction
-//        transaction.setDescription("Transaction processed for account: " + accountId);
-//
-//        // Save the transaction
-//        transactionRepo.save(transaction);
-//    }
+    public void processTransaction(Long accountId, BigInteger transactionAmount) {
+        // Fetch the bank card account for the given accountId
+        BankCardsEnt account = cardRepository.findByCustomerId(accountId);
+        
+        if (account == null) {
+            throw new IllegalArgumentException("Account not found for customer ID: " + accountId);
+        }
+
+        BigInteger oldBalance = account.getBalance();
+        BigInteger newBalance = oldBalance.add(transactionAmount);
+
+        // Update the balance in the account
+        account.setBalance(newBalance);
+        cardRepository.save(account); // Persist the updated balance
+
+        // Create a new transaction record
+        Transaction transaction = new Transaction();
+        transaction.setCustomerId(account.getCustomerId());
+        transaction.setAmount(transactionAmount);
+        transaction.setTransactionType("Deposit");
+        transaction.setBalanceChange(BalanceChange.fromAmount(transactionAmount));  // Assuming BalanceChange is an Enum or a method to define the type of transaction
+        transaction.setDescription("Transaction processed for account: " + accountId);
+
+        // Save the transaction
+        transactionRepo.save(transaction);
+    }
 //
     
 

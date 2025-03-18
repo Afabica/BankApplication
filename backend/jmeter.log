@@ -1,0 +1,20 @@
+2025-03-12 11:11:43,872 INFO o.a.j.u.JMeterUtils: Setting Locale to en_EN
+2025-03-12 11:11:43,888 INFO o.a.j.JMeter: Loading user properties from: /opt/jmeter/bin/user.properties
+2025-03-12 11:11:43,888 INFO o.a.j.JMeter: Loading system properties from: /opt/jmeter/bin/system.properties
+2025-03-12 11:11:43,892 INFO o.a.j.JMeter: Copyright (c) 1998-2024 The Apache Software Foundation
+2025-03-12 11:11:43,892 INFO o.a.j.JMeter: Version 5.6.3
+2025-03-12 11:11:43,892 INFO o.a.j.JMeter: java.version=21.0.6
+2025-03-12 11:11:43,892 INFO o.a.j.JMeter: java.vm.name=OpenJDK 64-Bit Server VM
+2025-03-12 11:11:43,892 INFO o.a.j.JMeter: os.name=Linux
+2025-03-12 11:11:43,892 INFO o.a.j.JMeter: os.arch=amd64
+2025-03-12 11:11:43,892 INFO o.a.j.JMeter: os.version=6.13.5-arch1-1
+2025-03-12 11:11:43,892 INFO o.a.j.JMeter: file.encoding=UTF-8
+2025-03-12 11:11:43,893 INFO o.a.j.JMeter: java.awt.headless=null
+2025-03-12 11:11:43,893 INFO o.a.j.JMeter: Max memory     =1073741824
+2025-03-12 11:11:43,893 INFO o.a.j.JMeter: Available Processors =16
+2025-03-12 11:11:43,901 INFO o.a.j.JMeter: Default Locale=English (EN)
+2025-03-12 11:11:43,901 INFO o.a.j.JMeter: JMeter  Locale=English (EN)
+2025-03-12 11:11:43,902 INFO o.a.j.JMeter: JMeterHome=/opt/jmeter
+2025-03-12 11:11:43,902 INFO o.a.j.JMeter: user.dir  =/home/Afabica/Programming/BankApplication/backend
+2025-03-12 11:11:43,902 INFO o.a.j.JMeter: PWD       =/home/Afabica/Programming/BankApplication/backend
+2025-03-12 11:11:43,902 INFO o.a.j.JMeter: IP: 172.17.0.1 Name: xiaomifan1278.intrak.tuke.sk FullName: xiaomifan1278.intrak.tuke.sk

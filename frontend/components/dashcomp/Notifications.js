@@ -69,12 +69,6 @@ const NotificationsPage = () => {
     fetchUser();
   }, []);
 
-  useEffect(() => {
-    if (formData.id) {
-      fetchNotifications();
-    }
-  }, [formData.id]); // Fetch notifications only after user data is set
-
   // Toggle read/unread status of a specific notification
   const toggleReadStatus = (id) => {
     setNotifications((prevNotifications) =>

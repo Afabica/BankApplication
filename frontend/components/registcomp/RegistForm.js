@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios"; 
-import { evaluatePassword } from "../../components/tools/Password.js"; 
+import axios from "axios";
+import { evaluatePassword } from "../../components/tools/Password.js";
 import dynamic from "next/dynamic";
 
 const Header = dynamic(() => import("../../components/hedfot/HeaderHome"), {
@@ -11,7 +11,6 @@ const Header = dynamic(() => import("../../components/hedfot/HeaderHome"), {
 const Footer = dynamic(() => import("../../components/hedfot/FooterHome"), {
   ssr: false,
 });
-
 
 const API_URL = "http://localhost:8080/api";
 
@@ -29,10 +28,10 @@ const RegistrationPage = ({ onFlip }) => {
     employer: "",
     verificationCode: "",
   });
-  const [color, setColor] = useState('gray');
-  const [feedback, setFeedback] = useState('');
-  const [strength, setStrength] = useState('');
-  const [error, setError] = useState(""); 
+  const [color, setColor] = useState("gray");
+  const [feedback, setFeedback] = useState("");
+  const [strength, setStrength] = useState("");
+  const [error, setError] = useState("");
 
   const handleChange = async (e) => {
     const { name, value } = e.target; // ✅ Correct destructuring
@@ -54,7 +53,7 @@ const RegistrationPage = ({ onFlip }) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`${API_URL}/register`, formData); 
+      const response = await axios.post(`${API_URL}/register`, formData);
       console.log("Registration successful:", response.data);
     } catch (err) {
       console.error("Registration failed", err);
@@ -63,11 +62,14 @@ const RegistrationPage = ({ onFlip }) => {
   };
 
   return (
-    <div className="RegistrationCont" style={{backgroundImage: 'url(/images/home1.jpg)'}}>
+    <div
+      className="RegistrationCont"
+      style={{ backgroundImage: "url(/images/home1.jpg)" }}
+    >
       <section className="regist-section">
         <form onSubmit={handleSubmit} className="RegistForm">
           <h2 className="registheader">Registration</h2>
-          {error && <p style={{ color: "red" }}>{error}</p>} 
+          {error && <p style={{ color: "red" }}>{error}</p>}
           <div className="forminput">
             <input
               type="text"
@@ -143,7 +145,9 @@ const RegistrationPage = ({ onFlip }) => {
               required
             />
             <div>
-              <p style={{ color }}>Strength: <strong>{feedback}</strong></p>
+              <p style={{ color }}>
+                Strength: <strong>{feedback}</strong>
+              </p>
             </div>
             <input
               type="text"
@@ -160,7 +164,9 @@ const RegistrationPage = ({ onFlip }) => {
               placeholder="Verification Code"
               required
             />
-            <button type="submit" className="registButton">Register</button>
+            <button type="submit" className="registButton">
+              Register
+            </button>
           </div>
           <a href="/signin" className="flip-link" onClick={onFlip}>
             Already have an account? Login.
@@ -172,4 +178,3 @@ const RegistrationPage = ({ onFlip }) => {
 };
 
 export default RegistrationPage;
-

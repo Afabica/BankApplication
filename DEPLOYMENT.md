@@ -473,6 +473,10 @@ For Next.js: process_cpu_user_seconds_total
 `scrape_samples_scrapped`
 `scrape_series_added`
 
+### Update the docker container in Kubernetes cluster.
+`kubectl set image deployment/ =:`
+
+
 ### Frontend doesn't have an external ip address
 
 - If you're using Minikube, run:
@@ -549,3 +553,14 @@ Login Request Duration: Query
   A dedicated-endpoint: /api/metrics
 
 ## Issue with building application
+
+<mark> 
+strategy: 
+    type: RollingUpdate 
+    rollingUpdate: 
+        maxUnavailable: 1
+        maxSurge: 1
+</mark>
+
+- This ensures that Kubernetes checks if a pod is ready to serve traffic before sending requests to it. 
+- Automate image updates: Consider automating image updates using CI/CD pipelines to build and deploy new images to Kubernetes.
