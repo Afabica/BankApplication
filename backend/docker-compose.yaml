@@ -1,9 +1,372 @@
-services:
-    spring-boot-app:
-        image: bankapp
-        environment:
-            - SPRING_DATASOURCE_URL=jdbc:postgresql://spring.postgres.database.azure.com:5432/bankapp?user=jonny&password=Leopard1000&sslmode=require
-            - SPRING_DATASOURCE_USERNAME=jonny
-            - SPRING_DATASOURCE_PASSWORD=Leopard1000
-        ports:
-            - "8080:8080"
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: my-app
+
+---
+### Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  namespace: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: index.docker.io/afabica234/myapp-frontend:latest
+          ports:
+            - containerPort: 3000
+
+---
+### Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: my-app
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP
+
+---
+### Backend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: index.docker.io/afabica234/myapp-backend:latest
+          ports:
+            - containerPort: 8080
+
+---
+### Backend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: my-app
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+
+---
+### NGINX ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configmap
+  namespace: my-app
+data:
+  nginx.conf: |
+    events {}
+    http {
+        server {
+            listen 80;
+
+            location / {
+                proxy_pass http://frontend-service:3000;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+            }
+
+            location /api/ {
+                proxy_pass http://backend-service:8080;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+        }
+    }
+
+---
+### NGINX Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-configmap
+
+---
+### NGINX Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: my-app
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+
+# Grafana Deployment 
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: "admin"
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  namespace: my-app
+spec:
+  selector:
+    app: grafana
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: LoadBalancer
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: my-app
+  labels:
+    app: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:latest
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus
+      volumes:
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: my-app
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+
+    scrape_configs:
+      - job_name: 'spring-boot'
+        metrics_path: '/actuator/prometheus'
+        static_configs:
+          - targets: ['backend-service.my-app.svc.cluster.local:8080']
+
+      - job_name: 'nextjs'
+        metrics_path: '/metrics'
+        static_configs:
+          - targets: ['frontend-service.my-app.svc.cluster.local:3000']
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: my-app
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+  type: NodePort
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jmeter
+  namespace: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jmeter
+  template:
+    metadata:
+      labels:
+        app: jmeter
+    spec:
+      containers:
+        - name: jmeter
+          image: justb4/jmeter:5.6.3
+          ports:
+            - containerPort: 9270 # For Prometheus metrics
+          volumeMounts:
+            - name: test-plan
+              mountPath: /test
+          command: ["/bin/bash"]
+          args:
+            - "-c"
+            - >
+              jmeter -n -t /test/load-test.jmx &&
+              java -jar /plugins/jmeter-prometheus-plugin-0.6.0.jar
+          env:
+            - name: JVM_ARGS
+              value: "-Xms512m -Xmx1024m"
+      volumes:
+        - name: test-plan
+          configMap:
+            name: jmeter-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jmeter-service
+  namespace: my-app 
+spec:
+  selector:
+    app: jmeter
+  ports:
+    - protocol: TCP
+      port: 9270
+      targetPort: 9270
+
+apiVersion: v1 
+kind: ConfigMap 
+metadata: 
+name: jmeter-config
+namespace: my-app
+data: 
+load-test.jmx: |
+    <?xml version="1.0" encoding="UTF-8"?>
+        <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
+         <hashTree>
+            <TestPlan quiclass="TestPlanGui" testclass="TestPlan" testname="User load Simulation">
+            <stringProp name="ThreadGroup.num_threads">50</stringProp> 
+            <stringProp name="ThreadGroup.ramp_time">10</stringProp>
+            <stringProp name="ThreadGroup.duration">60</stringProp>
+            <hashTree>
+                <HTTPSamplerProxy guiclass="HttpResrSampleGui" testclass="HTTPSamplerProxy" testname="Login API Request">
+                <stringProp name="HTTPSampler.domain">backend-service</stringProp>
+                <stringProp name="HTTPSampler.port">80</stringProp>
+                <stringProp name="HTTPSampler.protocol">http</stringProp>
+                <stringProp name="HTTPSampler.path">/api/login</stringProp> 
+                <stringProp name="HTTPSampler.method">POST</stringProp> 
+                <elementProp name="HTTPSampler.Arguments" elementType="Arguments">
+                    <collectionProp name="Arguments.arguments"> 
+                    <elementProp name="maria123" elemetType="HTTPArgument">
+                    <stringProp name="Argument.value">testuser</stringProp> 
+                    </elementProp>
+                    <elementProp name="password" elementType="HTTPArgument">
+                    <stringProp name="Argument.value">leopard1000</stringProp>
+                    </elementProp>
+                </collectionProp> 
+                </elementProp>
+                </HTTPSamplerProxy>
+                <hashTree>
+                    <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Validate Success Response">
+                        <collectionProp name"Assertion.test_strings"> 
+                            <stringProp name="0">success</stringProp> 
+                        </collectionProp> 
+                    </ResponseAssertion>
+            </hashTree>
+        </TestPlan<
+    </hashTree> 
+    </jmeterTestPlan>
+
+
+
+
+
+### Explanation of Workflow:
+# 1. The frontend and backend are deployed as separate services within the 'my-app' namespace.
+# 2. The NGINX deployment is configured to act as a reverse proxy, routing:
+#    - '/' to the frontend-service on port 3000.
+#    - '/api/' to the backend-service on port 8080.
+# 3. NGINX uses a ConfigMap for configuration, ensuring easy updates without rebuilding the Docker image.
+# 4. The services are exposed internally via ClusterIP, while NGINX is exposed externally using a LoadBalancer.
+# 5. This ensures seamless integration and communication between the frontend, backend, and external users.

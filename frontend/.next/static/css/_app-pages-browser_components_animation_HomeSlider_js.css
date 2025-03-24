@@ -320,74 +320,88 @@
     color: black;
 }
 
-/*!*******************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./styles/HomeSlider.css ***!
-  \*******************************************************************************************************************************************************************************************************************************************************************/
-/* Main container for the slider */
-/* Main container for the slider */
-@media(max-width: 768px) {
-.sliderContainer {
-  position: relative;
-  width: 80%;  /* Adjust to your desired width (e.g., 60%, 70%) */
-  max-width: 500px;  /* Ensures it doesn't become too wide on large screens */
-  height: 200px;  /* Adjust height as needed */
-  margin: 0;  /* Centers the slider horizontally */
-  overflow: hidden;
-}
-}
-
-/* Slick slider wrapper */
-.slick-slider {
+/*!************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./styles/HomeSlider.module.css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************/
+.HomeSlider_sliderContainer__fJwzW {
   width: 100%;
-  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  padding: 20px 0;
 }
 
-/* Each slide in the slider */
-.slick-slide {
-  display: flex;              /* Center images inside the slide */
-  justify-content: center;
-  align-items: center;
-  width: 100%;                /* Full width for each slide */
-  height: 100%;               /* Full height for each slide */
-  overflow: hidden;           /* Hide any overflowing image content */
-  background-color: #f4f4f4;  /* Optional: Add a background color for empty space */
+.HomeSlider_slide__8MAm3 {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
 }
 
-/* Styling for images inside the slides */
-.slick-slide img {
-  max-width: 100%;            /* Scale the image to the full width of its container */
-  max-height: 100%;           /* Scale the image to the full height of its container */
-  width: 100%;                /* Force the image to stretch horizontally */
-  height: 100%;               /* Force the image to stretch vertically */
-  object-fit: cover;          /* Maintain aspect ratio and crop excess */
-  object-position: center;    /* Center the image inside the slide */
-  border-radius: 8px;         /* Optional: Add rounded corners */
-  aspect-ratio: 16 / 9;
+.HomeSlider_slideImage__UHUMR {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.3s ease-in-out;
 }
 
-/* Slide container */
-.slide {
-  position: relative;         /* Ensures text can be positioned on top */
+.HomeSlider_slide__8MAm3:hover .HomeSlider_slideImage__UHUMR {
+  transform: scale(1.05);
 }
 
-/* Caption (text) on top of the image */
-@media(max-width: 768px) {
-.caption {
-  position: absolute;         /* Position the text absolutely within the container */
-  top: 50%;                    /* Vertical center */
-  left: 50%;                   /* Horizontal center */
-  transform: translate(-50%, -50%); /* Adjust the position to truly center */   
-  /* Text color */
-  font-size: 2rem;             /* Adjust the text size */
-  font-weight: bold;           /* Make the text bold */
-  background-color:  #448DAE; /* Optional: Dark background behind the text */
-  flex-direction: column;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  opacity: 0.5;
-  padding: 10px 20px;          /* Padding around the text */
-  border-radius: 5px;          /* Optional: Rounded corners */
-  text-align: center;          /* Center the text */
-}
+.HomeSlider_textOverlay__1RQFV {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  max-width: 90%;
 }
 
+.HomeSlider_slick-prev__5nfrE,
+.HomeSlider_slick-next__zqyw9 {
+  width: 40px;
+  height: 40px;
+  z-index: 10;
+}
+
+.HomeSlider_slick-prev__5nfrE:before,
+.HomeSlider_slick-next__zqyw9:before {
+  font-size: 30px;
+  color: #fff;
+}
+
+.HomeSlider_slick-dots__GhEhB {
+  bottom: 10px;
+}
+
+.HomeSlider_slick-dots__GhEhB li button:before {
+  font-size: 12px;
+  color: white;
+}
+
+.HomeSlider_slick-dots__GhEhB li.HomeSlider_slick-active__pP35r button:before {
+  color: #f5a623;
+}
+
+.HomeSlider_ctaButton__OEb_P {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #f5a623;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: 0.3s ease-in-out;
+}
+
+.HomeSlider_ctaButton__OEb_P:hover {
+  background-color: #e69520;
+}
 

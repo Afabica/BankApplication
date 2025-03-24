@@ -2,14 +2,17 @@ import Link from "next/link";
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
-import LogoutButton from '../logincomp/Logout.js';
+import LogoutButton from "../logincomp/Logout.js";
 
 const Header = ({ togglePanel, isPanelOpen }) => {
   return (
     <div>
       <div className="NavCont">
         {/* Toggle Button */}
-        <div className={`toggle-button ${isPanelOpen ? "open" : ""}`} onClick={togglePanel}>
+        <div
+          className={`toggle-button ${isPanelOpen ? "open" : ""}`}
+          onClick={togglePanel}
+        >
           <FontAwesomeIcon icon={isPanelOpen ? faTimes : faBars} />
         </div>
 
@@ -25,7 +28,7 @@ const Header = ({ togglePanel, isPanelOpen }) => {
           </ul>
           <ul className="navbar-right">
             <li>
-              <LogoutButton/>
+              <LogoutButton />
             </li>
             <li>
               <Link href="/dashboard/notifications">Notifications</Link>
@@ -38,4 +41,3 @@ const Header = ({ togglePanel, isPanelOpen }) => {
 };
 
 export default Header;
-

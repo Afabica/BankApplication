@@ -181,7 +181,7 @@ spec:
         - name: grafana
           image: grafana/grafana:latest
           ports:
-            - containerPort: 3000
+              - containerPort: 3000
           env:
             - name: GF_SECURITY_ADMIN_PASSWORD
               value: "admin"
@@ -195,7 +195,7 @@ spec:
     app: grafana
   ports:
     - protocol: TCP
-      port: 3000
+      port: 80
       targetPort: 3000
   type: LoadBalancer
 
@@ -282,7 +282,7 @@ spec:
     spec:
       containers:
         - name: jmeter
-          image: justb4/jmeter:5.6.3
+          image: justb4/jmeter:latest
           ports:
             - containerPort: 9270 # For Prometheus metrics
           volumeMounts:
@@ -314,14 +314,50 @@ spec:
     - protocol: TCP
       port: 9270
       targetPort: 9270
-
-#apiVersion: v1 
-#kind: ConfigMap 
-#metadata: 
-#name: jmeter-config
-#namespace: my-app
-#data: 
-#load-test.jmx: |
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jmeter-config
+  namespace: my-app
+data:
+  load-test.jmx: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.2">
+      <hashTree>
+        <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="User load Simulation">
+          <stringProp name="ThreadGroup.num_threads">50</stringProp> 
+          <stringProp name="ThreadGroup.ramp_time">10</stringProp>
+          <stringProp name="ThreadGroup.duration">60</stringProp>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login API Request">
+              <stringProp name="HTTPSampler.domain">backend-service</stringProp>
+              <stringProp name="HTTPSampler.port">80</stringProp>
+              <stringProp name="HTTPSampler.protocol">http</stringProp>
+              <stringProp name="HTTPSampler.path">/api/login</stringProp> 
+              <stringProp name="HTTPSampler.method">POST</stringProp> 
+              <elementProp name="HTTPSampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments"> 
+                  <elementProp name="maria123" elementType="HTTPArgument">
+                    <stringProp name="Argument.value">testuser</stringProp> 
+                  </elementProp>
+                  <elementProp name="password" elementType="HTTPArgument">
+                    <stringProp name="Argument.value">leopard1000</stringProp>
+                  </elementProp>
+                </collectionProp> 
+              </elementProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Validate Success Response">
+                <collectionProp name="Assertion.test_strings"> 
+                  <stringProp name="0">success</stringProp> 
+                </collectionProp> 
+              </ResponseAssertion>
+            </hashTree>
+          </hashTree>
+        </TestPlan>
+      </hashTree> 
+    </jmeterTestPlan>
 
 ---
 ### Explanation of Workflow:
