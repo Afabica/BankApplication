@@ -562,10 +562,80 @@ data:
       - job_name: 'nextjs'
         metrics_path: '/metrics'
         static_configs:
-          - targets: ['frontend-service.my-app.svc.cluster.local:3000']
+          - targets: ['frontend-service.my-app.svc.cluster.local:3000']-
 
-
----
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: jmeter-pv
+#  namespace: my-app
+#spec:
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 1Gi
+#  hostPath:
+#    path: /mnt/data/jmeter
+#
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: jmeter-pvc
+#  namespace: my-app
+#spec:
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 1Gi
+#
+#
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  name: jmeter-config
+#  namespace: my-app
+#data:
+#  load-test.jmx: |
+#    <?xml version="1.0" encoding="UTF-8"?>
+#    <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
+#      <hashTree>
+#        <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="User Load Simulation">
+#          <boolProp name="TestPlan.functional_mode">false</boolProp>
+#          <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+#          <hashTree>
+#            <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Users Load">
+#              <stringProp name="ThreadGroup.num_threads">50</stringProp>
+#              <stringProp name="ThreadGroup.ramp_time">10</stringProp>
+#              <stringProp name="ThreadGroup.duration">60</stringProp>
+#              <boolProp name="ThreadGroup.scheduler">true</boolProp>
+#              <hashTree>
+#                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login API Request">
+#                  <stringProp name="HTTPSampler.domain">backend-service</stringProp>
+#                  <stringProp name="HTTPSampler.port">8080</stringProp>
+#                  <stringProp name="HTTPSampler.protocol">http</stringProp>
+#                  <stringProp name="HTTPSampler.path">/api/login</stringProp>
+#                  <stringProp name="HTTPSampler.method">POST</stringProp>
+#                  <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+#                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+#                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+#                </HTTPSamplerProxy>
+#                <hashTree>
+#                  <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Validate Success Response">
+#                    <collectionProp name="Assertion.test_strings">
+#                      <stringProp name="0">success</stringProp>
+#                    </collectionProp>
+#                  </ResponseAssertion>
+#                </hashTree>
+#              </hashTree>
+#            </ThreadGroup>
+#          </hashTree>
+#        </TestPlan>
+#      </hashTree>
+#    </jmeterTestPlan>
+#
+#
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -589,10 +659,12 @@ spec:
           volumeMounts:
             - name: test-plan
               mountPath: /test
+            - name: results
+              mountPath: /test/results
           command: ["/bin/bash", "-c"]
           args:
             - >
-              jmeter -n -t /test/load-test.jmx -l /test/results.jtl &&
+              jmeter -n -t /test/load-test.jmx -l /test/results/results.jtl &&
               java -jar /plugins/jmeter-prometheus-plugin-0.6.0.jar
           env:
             - name: JVM_ARGS
@@ -601,12 +673,15 @@ spec:
         - name: test-plan
           configMap:
             name: jmeter-config
----
+        - name: results
+          persistentVolumeClaim:
+            claimName: jmeter-pvc
+#
 apiVersion: v1
 kind: Service
 metadata:
   name: jmeter-service
-  namespace: my-app 
+  namespace: my-app
 spec:
   selector:
     app: jmeter
@@ -614,7 +689,7 @@ spec:
     - protocol: TCP
       port: 9270
       targetPort: 9270
----
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -623,89 +698,39 @@ metadata:
 data:
   load-test.jmx: |
     <?xml version="1.0" encoding="UTF-8"?>
-    <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.2">
+    <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
       <hashTree>
-        <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="User Load Simulation">
-          <boolProp name="TestPlan.functional_mode">false</boolProp>
-          <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
-          <hashTree>
-            <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Users Load">
-              <stringProp name="ThreadGroup.num_threads">50</stringProp> 
-              <stringProp name="ThreadGroup.ramp_time">10</stringProp>
-              <stringProp name="ThreadGroup.duration">60</stringProp>
-              <boolProp name="ThreadGroup.scheduler">true</boolProp>
-              <hashTree>
-                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login API Request">
-                  <stringProp name="HTTPSampler.domain">backend-service</stringProp>
-                  <stringProp name="HTTPSampler.port">8080</stringProp>
-                  <stringProp name="HTTPSampler.protocol">http</stringProp>
-                  <stringProp name="HTTPSampler.path">/api/login</stringProp> 
-                  <stringProp name="HTTPSampler.method">POST</stringProp> 
-                  <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                  <elementProp name="HTTPSampler.Arguments" elementType="Arguments">
-                    <collectionProp name="Arguments.arguments"> 
-                      <elementProp name="username" elementType="HTTPArgument">
-                        <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                        <stringProp name="Argument.name">username</stringProp>
-                        <stringProp name="Argument.value">testuser</stringProp> 
-                      </elementProp>
-                      <elementProp name="password" elementType="HTTPArgument">
-                        <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                        <stringProp name="Argument.name">password</stringProp>
-                        <stringProp name="Argument.value">leopard1000</stringProp>
-                      </elementProp>
-                    </collectionProp> 
-                  </elementProp>
-                </HTTPSamplerProxy>
-                <hashTree>
-                  <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Validate Success Response">
-                    <collectionProp name="Assertion.test_strings"> 
-                      <stringProp name="0">success</stringProp> 
-                    </collectionProp> 
-                    <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
-                    <boolProp name="Assertion.assume_success">false</boolProp>
-                  </ResponseAssertion>
-                </hashTree>
-              </hashTree>
-            </ThreadGroup>
-            <hashTree>
-              <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report">
-                <boolProp name="ResultCollector.error_logging">false</boolProp>
-                <objProp>
-                  <name>saveConfig</name>
-                  <value class="SampleSaveConfiguration">
-                    <time>true</time>
-                    <latency>true</latency>
-                    <timestamp>true</timestamp>
-                    <success>true</success>
-                    <label>true</label>
-                    <code>true</code>
-                    <message>true</message>
-                    <threadName>true</threadName>
-                    <dataType>true</dataType>
-                    <encoding>false</encoding>
-                    <assertions>true</assertions>
-                    <subresults>true</subresults>
-                    <responseData>false</responseData>
-                    <samplerData>false</samplerData>
-                    <xml>true</xml>
-                    <fieldNames>true</fieldNames>
-                    <responseHeaders>false</responseHeaders>
-                    <requestHeaders>false</requestHeaders>
-                    <responseDataOnError>false</responseDataOnError>
-                    <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-                    <assertionsResultsToSave>0</assertionsResultsToSave>
-                  </value>
-                </objProp>
-                <stringProp name="filename">/test/results.jtl</stringProp>
-              </ResultCollector>
-            </hashTree>
-          </hashTree>
-        </TestPlan>
-      </hashTree> 
+      </hashTree>
     </jmeterTestPlan>
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jmeter-pv
+  namespace: my-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /mnt/data/jmeter  # Local path where you want to store the data
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jmeter-pvc
+  namespace: my-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+
+
 
 
 
