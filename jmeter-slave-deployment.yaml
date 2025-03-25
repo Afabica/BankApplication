@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jmeter-slave
+  namespace: my-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jmeter-slave
+  template:
+    metadata:
+      labels:
+        app: jmeter-slave
+    spec:
+      containers:
+      - name: jmeter-slave
+        image: justb4/jmeter:latest
+        ports:
+        - containerPort: 1099
+

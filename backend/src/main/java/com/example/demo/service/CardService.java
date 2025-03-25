@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.jasypt.util.text.AES256TextEncryptor;
 
 import java.util.List;
 import java.util.Optional;

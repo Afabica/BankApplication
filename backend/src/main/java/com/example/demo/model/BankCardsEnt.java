@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.jasypt.util.text.AES256TextEncryptor;
+//import org.jasypt.util.text.AES256TextEncryptor;
 
 @Entity
 @Table(name = "bank_cards")
@@ -20,7 +20,7 @@ public class BankCardsEnt {
     private Long customerId;
 
     @Column(name = "card_number", nullable = false, unique = true, length = 19)
-    @Convert(converter = CardNumberEncryptionConverter.class)
+//    @Convert(converter = CardNumberEncryptionConverter.class)
     private String cardNumber;
 
     @Column(name = "card_type", nullable = false, length = 10)
@@ -170,39 +170,39 @@ public class BankCardsEnt {
     }
 
     // Encryption Converter
-    @Converter
-    public static class CardNumberEncryptionConverter implements AttributeConverter<String, String> {
-        private static final String SECRET_KEY = "leopard1000";
-
-        private final AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
-
-        public CardNumberEncryptionConverter() {
-            textEncryptor.setPassword(SECRET_KEY);
-        }
-
-        @Override
-        public String convertToDatabaseColumn(String attribute) {
-            try {
-                if (attribute == null) {
-                    return null;
-                }
-                return textEncryptor.encrypt(attribute);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Error encrypting card number", e);
-            }
-        }
-
-        @Override
-        public String convertToEntityAttribute(String dbData) {
-            try {
-                if (dbData == null) {
-                    return null;
-                }
-                return textEncryptor.decrypt(dbData);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Error decrypting card number", e);
-            }
-        }
-    }
+//    @Converter
+//    public static class CardNumberEncryptionConverter implements AttributeConverter<String, String> {
+//        private static final String SECRET_KEY = "leopard1000";
+//
+//        private final AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
+//
+//        public CardNumberEncryptionConverter() {
+//            textEncryptor.setPassword(SECRET_KEY);
+//        }
+//
+//        @Override
+//        public String convertToDatabaseColumn(String attribute) {
+//            try {
+//                if (attribute == null) {
+//                    return null;
+//                }
+//                return textEncryptor.encrypt(attribute);
+//            } catch (Exception e) {
+//                throw new IllegalArgumentException("Error encrypting card number", e);
+//            }
+//        }
+//
+//        @Override
+//        public String convertToEntityAttribute(String dbData) {
+//            try {
+//                if (dbData == null) {
+//                    return null;
+//                }
+//                return textEncryptor.decrypt(dbData);
+//            } catch (Exception e) {
+//                throw new IllegalArgumentException("Error decrypting card number", e);
+//            }
+//        }
+//    }
 }
 
