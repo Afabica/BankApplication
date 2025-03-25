@@ -70,7 +70,7 @@ public class SmsService {
         // Initialize Twilio with account credentials
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
         
-        Optional<RegisterUser> registeredUser = registerRepo.findByPhoneNumber(user.getPhoneNumber());
+        Optional<RegisterUser> registeredUser = registerRepo.findByMobile(user.getPhoneNumber());
         OTPUser otpUser = new OTPUser();
 
         // Create OTP user record

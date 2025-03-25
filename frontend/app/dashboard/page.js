@@ -1,6 +1,5 @@
 import React from "react";
 import Home from "../../components/dashcomp/MainPage/ProfPage";
-import "../../styles/Promotions.css";
 //import '../../styles/global.css'
 import "../../styles/NavDash.css";
 import "../../styles/DashPage.css";

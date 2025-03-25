@@ -9,7 +9,7 @@ public class RegisterUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long customer_id;
+    private Long accountId;
 
     private String fullName;
     private LocalDate dob;
@@ -30,11 +30,11 @@ public class RegisterUser {
     //
 
     public Long getId() {
-        return customer_id;
+        return accountId;
     }
 
-    public void setId(Long customer_id) {
-        this.customer_id = customer_id;
+    public void setId(Long accountId) {
+        this.accountId = accountId;
     }
 
     public String getFullName() {

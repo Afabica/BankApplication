@@ -6,11 +6,13 @@ import com.example.demo.model.RegisterUser;
 
 import java.util.Optional;
 
+@Repository
 public interface RegisterRepo extends JpaRepository<RegisterUser, Long> {
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
     RegisterUser findByUsername(String username);
-    RegisterUser findByCustomerId(Long account_id);
+    RegisterUser findByAccountId(Long account_id);
+
 //    Optional<RegisterUser> findByUserId(Long account_id);
-    Optional<RegisterUser> findByPhoneNumber(String phoneNumber);
+    Optional<RegisterUser> findByMobile(String mobile);
 }  

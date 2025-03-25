@@ -1,0 +1,28 @@
+2025-03-25 08:37:45,086 INFO o.a.j.u.JMeterUtils: Setting Locale to en_EN
+2025-03-25 08:37:45,103 INFO o.a.j.JMeter: Loading user properties from: /opt/jmeter/bin/user.properties
+2025-03-25 08:37:45,103 INFO o.a.j.JMeter: Loading system properties from: /opt/jmeter/bin/system.properties
+2025-03-25 08:37:45,107 INFO o.a.j.JMeter: Copyright (c) 1998-2024 The Apache Software Foundation
+2025-03-25 08:37:45,107 INFO o.a.j.JMeter: Version 5.6.3
+2025-03-25 08:37:45,107 INFO o.a.j.JMeter: java.version=21.0.6
+2025-03-25 08:37:45,107 INFO o.a.j.JMeter: java.vm.name=OpenJDK 64-Bit Server VM
+2025-03-25 08:37:45,107 INFO o.a.j.JMeter: os.name=Linux
+2025-03-25 08:37:45,107 INFO o.a.j.JMeter: os.arch=amd64
+2025-03-25 08:37:45,107 INFO o.a.j.JMeter: os.version=6.13.7-arch1-1
+2025-03-25 08:37:45,107 INFO o.a.j.JMeter: file.encoding=UTF-8
+2025-03-25 08:37:45,107 INFO o.a.j.JMeter: java.awt.headless=true
+2025-03-25 08:37:45,107 INFO o.a.j.JMeter: Max memory     =1073741824
+2025-03-25 08:37:45,107 INFO o.a.j.JMeter: Available Processors =16
+2025-03-25 08:37:45,115 INFO o.a.j.JMeter: Default Locale=English (EN)
+2025-03-25 08:37:45,115 INFO o.a.j.JMeter: JMeter  Locale=English (EN)
+2025-03-25 08:37:45,115 INFO o.a.j.JMeter: JMeterHome=/opt/jmeter
+2025-03-25 08:37:45,115 INFO o.a.j.JMeter: user.dir  =/home/Afabica/Programming/BankApplication
+2025-03-25 08:37:45,115 INFO o.a.j.JMeter: PWD       =/home/Afabica/Programming/BankApplication
+2025-03-25 08:37:45,116 INFO o.a.j.JMeter: IP: 147.232.182.93 Name: xiaomifan1278.intrak.tuke.sk FullName: xiaomifan1278.intrak.tuke.sk
+2025-03-25 08:37:45,127 ERROR o.a.j.JMeter: An error occurred: 
+org.apache.jmeter.report.config.ConfigurationException: The file /home/Afabica/Programming/BankApplication/load-test.jmx doesn't exist or can't be opened
+	at org.apache.jmeter.JMeter.runNonGui(JMeter.java:950) ~[ApacheJMeter_core.jar:5.6.3]
+	at org.apache.jmeter.JMeter.startNonGui(JMeter.java:940) ~[ApacheJMeter_core.jar:5.6.3]
+	at org.apache.jmeter.JMeter.start(JMeter.java:508) [ApacheJMeter_core.jar:5.6.3]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[?:?]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[?:?]
+	at org.apache.jmeter.NewDriver.main(NewDriver.java:259) [ApacheJMeter.jar:5.6.3]
