@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Home from "../../components/dashcomp/MainPage/ProfPage";
 import "../../styles/Promotions.css";
 //import '../../styles/global.css'
