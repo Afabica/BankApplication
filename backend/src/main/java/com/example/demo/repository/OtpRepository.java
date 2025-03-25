@@ -13,13 +13,13 @@ import java.time.LocalDateTime;
 public interface OtpRepository extends JpaRepository<OTPUser, Long> {
     OTPUser findByPhoneNumber(String phoneNumber);
     OTPUser findByOtpCode(String otpCode);
-    OTPUser findByCustomerId(Long customer_id);
+//    OTPUser findByCustomerId(Long customer_id);
 
 //    @Transactional
 //    @Modifying
 //    @Query("DELETE FROM OTPUser o WHERE o.expiresAt < :now")
 //    void deleteExpiredOtps(LocalDateTime now);
-      void deleteByCreatedAtBefore(long now);
+      void deleteByCreatedAtBefore(LocalDateTime createdAt);
 
 }
 
