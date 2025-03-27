@@ -1,12 +1,9 @@
-import React from "react";
-import HomePage from "../components/homepage/HomePage";
-import Header from "../components/hedfot/Header";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="max-h-screen max-w-screen">
-      <Header/>
-      <HomePage />
-    </div>
-  );
+import React from 'react';
+
+const Home = () => {
+
 }
+
+export default Home;
