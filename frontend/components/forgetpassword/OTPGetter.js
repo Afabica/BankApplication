@@ -47,7 +47,7 @@ const OtpGetter = () => {
           className="w-full p-2 border rounded mb-3"
         />
         <button
-          className="w-full p-2 border rounded mb-3"
+          className="w-full h-20 p-2 border rounded mb-3"
           type="submit"
           onCLick="handleSendOtp"
         />

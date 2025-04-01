@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import nookies, { parseCookies } from 'nookies';
-import {jwtDecode} from 'jwt-decode';  // For decoding the JWT token
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import nookies, { parseCookies } from "nookies";
+import { jwtDecode } from "jwt-decode"; // For decoding the JWT token
 
 const withAuth = (WrappedComponent) => {
   return (props) => {
@@ -31,10 +31,10 @@ const withAuth = (WrappedComponent) => {
         }
       } catch (error) {
         // If token decoding fails, redirect to login page
-        console.error('Error decoding token', error);
+        console.error("Error decoding token", error);
         router.push("/signin");
       }
-    }, [router]);  // Dependency array ensures this effect runs once on mount
+    }, [router]); // Dependency array ensures this effect runs once on mount
 
     // Return the protected component if the user is authenticated
     return <WrappedComponent {...props} />;
@@ -43,11 +43,11 @@ const withAuth = (WrappedComponent) => {
 
 export default withAuth;
 
-
 export async function parseJwt(token) {
-    if(!token) {return;}
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace('-', '+').replace('_', '/');
-    return JSON.parse(window.atob(base64));
+  if (!token) {
+    return;
+  }
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace("-", "+").replace("_", "/");
+  return JSON.parse(window.atob(base64));
 }
-

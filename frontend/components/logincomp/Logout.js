@@ -1,23 +1,23 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
-import nookies, {parseCookes} from 'nookies';
-
+import React from "react";
+import { useRouter } from "next/navigation";
+import nookies, { parseCookes } from "nookies";
 
 const LogoutButton = () => {
-const router = useRouter();
+  const router = useRouter();
 
-    const handleLogout = () => {
-    nookies.destroy(null, 'jwt');
+  const handleLogout = () => {
+    nookies.destroy(null, "jwt");
 
-    router.push('/signin');
-    };
+    router.push("/signin");
+  };
 
-    return (
-        <button onClick={handleLogout} className="logout-button">
-            Logout 
-        </button>
-    )
-}
+  return (
+    <button onClick={handleLogout} className="logout-button">
+      Logout
+    </button>
+  );
+};
 
 export default LogoutButton;

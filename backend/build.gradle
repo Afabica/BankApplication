@@ -180,6 +180,10 @@ dependencies {
     // Lombok (Compile-time annotation processing)
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.mockito:mockito-core:4.6.1'
+testImplementation 'org.mockito:mockito-junit-jupiter:4.6.1'
+
     // Test dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot starter for tests
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0' // Update to JUnit 5.9.0

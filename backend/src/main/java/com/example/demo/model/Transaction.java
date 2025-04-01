@@ -16,7 +16,7 @@ public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger id;
+    private Long id;
 
     @Column(name = "transaction_date", nullable = false)
     private LocalDateTime transactionDate;
@@ -31,7 +31,7 @@ public class Transaction {
     private String description;
 
     @Column(name = "account_id")
-    private BigInteger accountId;
+    private Long accountId;
 
     @Column(nullable = false, length = 20)
     private String status = "PENDING";
@@ -58,11 +58,11 @@ public class Transaction {
     }
 
     // Getters and Setters
-    public BigInteger getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(BigInteger id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -106,11 +106,11 @@ public class Transaction {
         this.status = status;
     }
 
-    public void setAccountId(BigInteger accountId) {
+    public void setAccountId(Long accountId) {
         this.accountId = accountId;
     }
 
-    public BigInteger getAccountId() {
+    public Long getAccountId() {
         return accountId;
     }
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ScrollTriggerComponent from '../../animation/ScrollTriggerComponent.js';
-import { gsap } from 'gsap';
+import ScrollTriggerComponent from "../../animation/ScrollTriggerComponent.js";
+import { gsap } from "gsap";
 
 const BankOffers = () => {
   const [offers, setOffers] = useState([]);
@@ -89,4 +89,3 @@ const styles = {
     color: "#888",
   },
 };
-

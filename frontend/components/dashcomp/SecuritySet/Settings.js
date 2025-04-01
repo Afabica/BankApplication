@@ -1,23 +1,14 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import ThemeChanger from "../../tools/ThemeChanger.js";
 import "../../../styles/NavDash.css";
 import axios from "axios";
 import dynamic from "next/dynamic";
 
-const SidePanel = dynamic(() => import("../../dashcomp/MainPage/SidePanel"), {
-  ssr: false,
-});
-const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), {
-  ssr: false,
-});
-const Header = dynamic(() => import("../../hedfot/DashHeader"), {
-  ssr: false,
-});
-const Footer = dynamic(() => import("../../hedfot/DashFooter"), {
-  ssr: false,
-});
+const SidePanel = dynamic(() => import("../../dashcomp/MainPage/SidePanel"), { ssr: false });
+const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), { ssr: false });
+const Header = dynamic(() => import("../../hedfot/DashHeader"), { ssr: false });
+const Footer = dynamic(() => import("../../hedfot/DashFooter"), { ssr: false });
 
 const SecuritySettings = () => {
   const [twoFAEnabled, setTwoFAEnabled] = useState(false);
@@ -31,9 +22,23 @@ const SecuritySettings = () => {
 
   useEffect(() => {
     const fetchUserSettings = async () => {
-      const response = await axios.get(`http://localhost:8080/`);
+      try {
+        const response = await axios.get("http://localhost:8080/");
+        console.log("User settings:", response.data);
+        // Example: Assume API returns settings object
+        setTwoFAEnabled(response.data.twoFAEnabled || false);
+        setBiometricEnabled(response.data.biometricEnabled || true);
+        setLanguage(response.data.language || "en");
+        setBalanceThreshold(response.data.balanceThreshold || "");
+        setNotifications(response.data.notifications || false);
+      } catch (error) {
+        console.error("Error fetching user settings:", error);
+      }
     };
-  });
+
+    fetchUserSettings();
+  }, []); // Runs only once when the component mounts
+
   const toggleNotifications = () => {
     setNotifications((prev) => !prev);
   };
@@ -57,21 +62,28 @@ const SecuritySettings = () => {
       <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
         <PanelElements />
       </SidePanel>
+
       <div className="settings-content">
         <h1>Security Settings</h1>
+
         <div className="security-settings-section">
+          {/* Theme Selection */}
           <div className="option-group">
             <p className="option-header">Theme Selection</p>
             <button className="theme-toggle-button" onClick={toggleTheme}>
               Switch to {currentTheme === "light" ? "Dark" : "Light"} Mode
             </button>
           </div>
+
+          {/* Notifications */}
           <div className="option-group">
             <p className="option-header">Notifications</p>
             <button className="toggle-button" onClick={toggleNotifications}>
               {notifications ? "Disable" : "Enable"} Notifications
             </button>
           </div>
+
+          {/* Language Selection */}
           <div className="option-group">
             <p className="option-header">Language Selection</p>
             <select
@@ -84,6 +96,8 @@ const SecuritySettings = () => {
               <option value="fr">French</option>
             </select>
           </div>
+
+          {/* Balance Threshold */}
           <div className="option-group">
             <p className="option-header">Balance Threshold for Notifications</p>
             <input
@@ -93,6 +107,8 @@ const SecuritySettings = () => {
               onChange={(e) => setBalanceThreshold(e.target.value)}
             />
           </div>
+
+          {/* Change Password */}
           <div className="option-group change-password-section">
             <p className="option-header">Change Password</p>
             <form onSubmit={handleChangePassword}>
@@ -115,3 +131,4 @@ const SecuritySettings = () => {
 };
 
 export default SecuritySettings;
+

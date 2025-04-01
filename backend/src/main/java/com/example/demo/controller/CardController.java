@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 import java.util.*;
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/profcards")
@@ -66,6 +68,20 @@ public class CardController {
         }
     }
 
+//    @PostMapping("/newcard")
+//    public  ResponseEntity<?> add_new_card(BankCardsEnt newBankCard) {
+//        BankCardsEnt card = cardRepository.findByCardId(newBankCard.getCardId());
+//        if((card.getStatus()) != null) {
+//            return ResponseEntity.badRequest().body("Card already exist in user profile.");
+//        } else {
+//                BankCardsEnt newcard = new BankCardsEnt(newBankCard.getCardId(), newBankCard.getCardType(), newBankCard.getExpirationDate(), newBankCard.getIssueDate(), newBankCard.getStatus(), newBankCard.getCustomer());
+//                cardRepository.save(newcard);
+//        }
+//        return ResponseEntity.ok("Card adding operation was successful.");
+//        
+//    }
+
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCard(BankCardsEnt bankcard) {
         BankCardsEnt card = cardRepository.findByCardId(bankcard.getCardId());

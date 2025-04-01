@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
-import axios from 'axios';
+import axios from "axios";
 import withAuth from "../../tools/withAuth";
 
 const Header = dynamic(() => import("../../../components/hedfot/DashHeader"), {
@@ -12,12 +12,11 @@ const Footer = dynamic(() => import("../../../components/hedfot/DashFooter"), {
   ssr: false,
 });
 
-
 const SidePanel = dynamic(
   () => import("../../../components/dashcomp/MainPage/SidePanel"),
   {
     ssr: false,
-  }
+  },
 );
 
 const InvestmentPage = () => {
@@ -37,12 +36,9 @@ const InvestmentPage = () => {
       duration: "3 Years",
       status: "Pending",
     },
-
   ]);
 
-  const fetchdata = () => {
-
-  }
+  const fetchdata = () => {};
 
   const handleInvest = () => {
     if (!investmentAmount || investmentAmount <= 0) return;
@@ -66,9 +62,7 @@ const InvestmentPage = () => {
 
       <div className="flex flex-1">
         {/* Sidebar */}
-        <SidePanel>
-          {/* Add Side Navigation if needed */}
-        </SidePanel>
+        <SidePanel>{/* Add Side Navigation if needed */}</SidePanel>
 
         {/* Main Content */}
         <div className="flex-1 p-6">
@@ -130,4 +124,3 @@ const InvestmentPage = () => {
 };
 
 export default withAuth(InvestmentPage);
-

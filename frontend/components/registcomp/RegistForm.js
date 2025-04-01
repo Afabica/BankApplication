@@ -67,7 +67,7 @@ const RegistrationPage = ({ onFlip }) => {
       style={{ backgroundImage: "url(/images/home1.jpg)" }}
     >
       <section className="regist-section">
-        <form onSubmit={handleSubmit} className="RegistForm">
+        <form onSubmit={handleSubmit} className="RegistForm" role="form">
           <h2 className="registheader">Registration</h2>
           {error && <p style={{ color: "red" }}>{error}</p>}
           <div className="forminput">

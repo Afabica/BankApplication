@@ -91,6 +91,39 @@ public class TransactionCont {
             return ResponseEntity.status(500).body(Map.of("error", "Internal Server Error"));
         }
     }
+//    @GetMapping("/translist")
+//public ResponseEntity<?> getTransactionList(
+//        @RequestParam("userId") Long userId, 
+//        Authentication authentication) {
+//    
+//    // Check if authentication is null
+//    if (authentication == null) {
+//        return ResponseEntity.status(401).body(Map.of("error", "Unauthorized: No authentication provided"));
+//    }
+//
+//    // Get the authenticated user
+//    String loggedInUser = authentication.getName();
+//
+//    // Optional: Verify user ID matches authenticated user (unless admin)
+//    if (!isAdmin(authentication) && !userId.equals(getUserIdFromUsername(loggedInUser))) {
+//        return ResponseEntity.status(403).body(Map.of("error", "Forbidden: Cannot access other users' transactions"));
+//    }
+//
+//    try {
+//        List<Transaction> listtrans = transactionService.fetchAllTransactions(userId);
+//
+//        if (listtrans.isEmpty()) {
+//            return ResponseEntity.status(404).body(Map.of("message", "No transactions found"));
+//        }
+//
+//        return ResponseEntity.ok(listtrans);
+//    } catch (IllegalArgumentException e) {
+//        return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
+//    } catch (Exception e) {
+//        return ResponseEntity.status(500).body(Map.of("error", "Internal Server Error"));
+//    }
+//}
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTransaction(@PathVariable Long id) {
@@ -108,114 +141,6 @@ public class TransactionCont {
     }
 
 }
-
-//package com.example.demo.controller;
-//
-//import org.springframework.http.ResponseEntity;
-//import jakarta.servlet.http.HttpServletRequest;
-//import jakarta.servlet.http.Cookie;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.web.bind.annotation.*;
-//import com.example.demo.service.TransactionService;
-//import com.example.demo.jwtsecurity.JwtUtils;
-//import com.example.demo.model.Transaction;
-//
-//
-//import java.util.List;
-//import java.util.Map;
-//
-//@RestController
-//@RequestMapping("/operations")
-//public class TransactionCont {
-//
-//    private final TransactionService transactionService;
-//    private final JwtUtils jwtUtils;
-//
-//    public TransactionCont(TransactionService transactionService, JwtUtils jwtUtils) {
-//        this.transactionService = transactionService;
-//        this.jwtUtils = jwtUtils;
-//    }
-//
-//    @GetMapping("/translist")
-//    public ResponseEntity<?> getTransactionList(
-//            @RequestParam("userId") Long userId, 
-//            HttpServletRequest request, // ✅ Add HttpServletRequest here
-//            Authentication authentication) {
-//
-//        // ✅ Extract token from cookies
-//        String token = null;
-//        Cookie[] cookies = request.getCookies();
-//        if (cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                if ("token".equals(cookie.getName())) {
-//                    token = cookie.getValue();
-//                    break;
-//                }
-//            }
-//        }
-//
-//        if (token == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("JWT missing");
-//        }
-//
-//        // ✅ Verify JWT
-//        if (!jwtUtils.verifyToken(token)) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid JWT");
-//        }
-//
-//        try {
-//            List<Transaction> listtrans = transactionService.fetchAllTransactions(userId);
-//
-//            if (listtrans.isEmpty()) {
-//                return ResponseEntity.status(404).body(Map.of("message", "No transactions found"));
-//            }
-//
-//            return ResponseEntity.ok(listtrans);
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body(Map.of("error", "Internal Server Error"));
-//        }
-//    }
-//
-////    @GetMapping("/translist")
-////public ResponseEntity<?> getTransactionList(
-////        @RequestParam("userId") Long userId, 
-////        HttpServletRequest request, 
-////        Authentication authentication) {
-////
-////    // ✅ Debug: Print cookies
-////    Cookie[] cookies = request.getCookies();
-////    if (cookies != null) {
-////        for (Cookie cookie : cookies) {
-////            System.out.println("Cookie Name: " + cookie.getName() + ", Value: " + cookie.getValue());
-////        }
-////    } else {
-////        System.out.println("No cookies received.");
-////    }
-////
-////    // ✅ Try to extract token
-////    String token = null;
-////    if (cookies != null) {
-////        for (Cookie cookie : cookies) {
-////            if ("token".equals(cookie.getName())) {
-////                token = cookie.getValue();
-////                break;
-////            }
-////        }
-////    }
-////
-////    if (token == null) {
-////        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("JWT missing");
-////    }
-////
-////    System.out.println("Extracted Token: " + token);
-////    
-////    return ResponseEntity.ok("Token received: " + token);
-////}
-//
-//}
 
 
 

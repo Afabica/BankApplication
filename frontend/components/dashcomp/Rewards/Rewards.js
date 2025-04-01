@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Gift, ShoppingBag } from "lucide-react";
 import dynamic from "next/dynamic";
-import axios from 'axios';
+import axios from "axios";
 
 // Dynamically import components to avoid circular dependency issues
 const SidePanel = dynamic(() => import("../../dashcomp/MainPage/SidePanel"), {
@@ -42,32 +42,34 @@ const RewardsPage = () => {
   const togglePanel = () => {
     setIsPanelOpen((prev) => !prev);
   };
-  
-  useEffect(() => {
 
+  useEffect(() => {
     const fetchCustomer = async () => {
       const customer = localStorage.getItem("customer");
-      if(customer) {
+      if (customer) {
         setFormData(JSON.parse(customer));
       }
-    }
+    };
 
     const fetchRewards = async () => {
       const token = localStorage.gegtItem("token")?.replace(/"/g, "");
-      if(!token) {
+      if (!token) {
         setError("JWT Token is missing");
         console.log("data fetched successfully.");
       } else {
         setError("Fetching data failed");
-      } 
+      }
 
-      const response = await axios.get(`http://localhost:8080/api/rewards?userId=${encodeURIComponent(formData.id)}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await axios.get(
+        `http://localhost:8080/api/rewards?userId=${encodeURIComponent(formData.id)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      })
-    }
-  }, [formData.id])
+      );
+    };
+  }, [formData.id]);
 
   return (
     <div className="container mx-auto p-6">

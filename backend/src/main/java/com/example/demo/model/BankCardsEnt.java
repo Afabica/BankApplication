@@ -51,6 +51,14 @@ public class BankCardsEnt {
     @JoinColumn(name = "customer_id", referencedColumnName = "customer_id", insertable = false, updatable = false)
     private Customer customer;
 
+    public BankCardsEnt(Long customerId, String cardType, LocalDate expirationDate, LocalDate issueDate, String status, Customer customer) {
+        this.customerId = customerId;
+        this.cardType = cardType; 
+        this.expirationDate = expirationDate;
+        this.issueDate = issueDate;
+        this.status = status;
+        this.customer = customer;
+    }
     // Default Constructor
     public BankCardsEnt() {
         this.issueDate = LocalDate.now();

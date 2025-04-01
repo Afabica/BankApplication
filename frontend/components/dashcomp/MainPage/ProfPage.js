@@ -12,6 +12,8 @@ import withAuth from "../../tools/withAuth";
 import ApiHeader from "../../tools/api";
 import { parseCookies } from "nookies";
 import ProfileCards from "../Cards/ProfileCards";
+import BankCardsCarousel from "../Cards/ProfileCards.js";
+import CurrencyTable from "../Currency/CurrencyTable.js";
 
 const Footer = dynamic(() => import("../../hedfot/DashFooter"), { ssr: false });
 const Header = dynamic(() => import("../../hedfot/DashHeader"), { ssr: false });
@@ -30,10 +32,12 @@ function Home() {
   const [offers, setOffers] = useState([]);
   const [error, setError] = useState(null);
   const [promotionsData, setPromotionsData] = useState([]);
+  const expirationDate = new Date("2025-07-28");
 
   //  const httpRequestDurationMicroseconds = new promClient.Histogram({
   //    name: "http_request_duration_ms",
   //    help: "Duration of HTTP request in ms",
+  //
   //    labelNames: ["method", "route", "status_code"],
   //    buckets: [50, 100, 200, 500, 1000, 2000],
   //  });
@@ -41,6 +45,99 @@ function Home() {
   const togglePanel = () => {
     setIsPanelOpen((prev) => !prev);
   };
+
+  const promotions = [
+    {
+      id: 1,
+      title: "0% Interest on Credit Card for 6 Months!",
+      description:
+        "Apply for our premium credit card today and enjoy 0% interest for the first 6 months.",
+      validUntil: "2025-06-30",
+      imageUrl: "/images/promotion-credit-card.jpg",
+      link: "/apply-credit-card",
+    },
+    {
+      id: 2,
+      title: "Get $200 Cash Bonus on New Checking Account",
+      description:
+        "Open a new checking account with a direct deposit and receive a $200 bonus!",
+      validUntil: "2025-07-15",
+      imageUrl: "/images/promotion-checking-account.jpg",
+      link: "/open-account",
+    },
+    {
+      id: 3,
+      title: "Exclusive Mortgage Rates – Limited Time Offer!",
+      description:
+        "Secure your dream home with our lowest-ever mortgage rates. Apply today!",
+      validUntil: "2025-08-01",
+      imageUrl: "/images/promotion-mortgage.jpg",
+      link: "/mortgage-offers",
+    },
+    {
+      id: 4,
+      title: "Refer a Friend & Earn $100",
+      description:
+        "Invite your friends to join our bank, and earn $100 for each successful referral.",
+      validUntil: "2025-12-31",
+      imageUrl: "/images/promotion-referral.jpg",
+      link: "/refer-friend",
+    },
+    {
+      id: 5,
+      title: "Travel Rewards Credit Card – Earn 3x Points",
+      description:
+        "Earn triple rewards on travel and dining when you use our Travel Rewards Credit Card.",
+      validUntil: "2025-09-30",
+      imageUrl: "/images/promotion-travel-rewards.jpg",
+      link: "/travel-card",
+    },
+    {
+      id: 6,
+      title: "Auto Loan Special – 1.9% APR",
+      description:
+        "Get behind the wheel with our low-rate auto loans starting at just 1.9% APR.",
+      validUntil: "2025-10-15",
+      imageUrl: "/images/promotion-auto-loan.jpg",
+      link: "/auto-loans",
+    },
+    {
+      id: 7,
+      title: "Double Cashback on Online Purchases!",
+      description:
+        "Use your bank debit or credit card for online shopping and earn double cashback.",
+      validUntil: "2025-07-31",
+      imageUrl: "/images/promotion-cashback.jpg",
+      link: "/cashback-offer",
+    },
+    {
+      id: 8,
+      title: "Small Business Loan – Fast Approval",
+      description:
+        "Expand your business with our quick-approval small business loans at competitive rates.",
+      validUntil: "2025-11-30",
+      imageUrl: "/images/promotion-business-loan.jpg",
+      link: "/business-loans",
+    },
+    {
+      id: 9,
+      title: "Student Savings Account – Get a $50 Bonus!",
+      description:
+        "Open a student savings account and receive a $50 bonus for free!",
+      validUntil: "2025-08-20",
+      imageUrl: "/images/promotion-student.jpg",
+      link: "/student-account",
+    },
+    {
+      id: 10,
+      title: "Personal Loan – No Processing Fees!",
+      description:
+        "Apply for a personal loan now with zero processing fees and instant approval.",
+      validUntil: "2025-09-10",
+      imageUrl: "/images/promotion-personal-loan.jpg",
+      link: "/personal-loan",
+    },
+  ];
 
   useEffect(() => {
     const fetchProfile = () => {
@@ -51,43 +148,49 @@ function Home() {
     };
 
     const fetchData = async () => {
+      const token = localStorage.getItem("token")?.replace(/"/g, ""); // Remove quotes if stored as string
+      console.log(token);
       try {
-        // ✅ Get JWT token from localStorage
-        const token = localStorage.getItem("token")?.replace(/"/g, ""); // Remove quotes if stored as string
-        console.log(token);
-
         if (!token) {
-          setError("JWT Token is missing");
-          router.push("/login");
+          console.error("JWT Token is missing");
           return;
         }
 
-        // ✅ Fetch transactions with token in Authorization header
+        if (!formData.id) {
+          console.error("User ID is missing");
+          return;
+        }
+
+        //        const response = await axios.get(
+        //          `http://localhost:8080/operations/translist?userId=7`,
+        //          {
+        //            headers: {
+        //              Authorization: `Bearer ${token}`,
+        //              "Content-Type": "application/json",
+        //            },
+        //          },
+        //        );
         const response = await axios.get(
           `http://localhost:8080/operations/translist?userId=${encodeURIComponent(formData.id)}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
           },
         );
 
         if (response.status === 200) {
+          console.log("Data fetched successfully:", response.data);
           setTransactions(response.data);
-          console.log("Data fetched successfully.");
         } else {
-          setError("Fetching data failed");
+          consoleerror("Fetching data failed", response);
         }
-
-        setStatistics({
-          savings: "$15,000",
-          creditScore: "750",
-          monthlyIncome: "$3,000",
-          monthlyExpenses: "$2,200",
-        });
       } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("Data fetching failed.");
+        console.error(
+          "Error fetching data:",
+          err.response?.data || err.message,
+        );
       }
     };
 
@@ -97,8 +200,10 @@ function Home() {
 
     fetchProfile();
     if (formData.id) {
+      console.log(formData.id);
       fetchData();
     }
+    setPromotionsData(promotions);
   }, [formData.id]); // ✅ Runs only when formData.id is available
 
   return (
@@ -171,7 +276,7 @@ function Home() {
             </table>
           </section>
           <section>
-            <ProfileCards />
+            <BankCardsCarousel />
           </section>
           <section className="pie_chart">
             <PieChart />
@@ -186,6 +291,9 @@ function Home() {
                 </div>
               ))}
             </div>
+          </section>
+          <section>
+            <CurrencyTable />
           </section>
           <section>
             <Promotions promotions={promotionsData} />

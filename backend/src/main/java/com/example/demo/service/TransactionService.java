@@ -59,17 +59,6 @@ public class TransactionService {
 //
     
 
-//    public void transfer(String sender_card_number, String getter_card_number, Long amount) {
-//        BankCardsEnt card1 = cardRepository.findByCardNumber(sender_card_number);
-//        BankCardsEnt card2 = cardRepository.findByCardNumber(getter_card_number);
-//
-//        if(card1 && card2) {
-//            card1.setBalance(card1.getBalance() - amount);
-//            card2.setBalance(card2.getBalance() + amount);
-//        }
-//    }
-
-
     public Customer findByUsername(String username) {
         Customer findCust = customerRepo.findByUsername(username);
         return findCust;
@@ -81,18 +70,6 @@ public class TransactionService {
         return findtrans;
     }
 
-    // Fetch all transactions for a given customer
-//    public List<Transaction> fetchAllTransactions(Long customerId) {
-//        List<Transaction> transactions = transactionRepo.findAll();
-//        List<Transaction> customerTransactions = new ArrayList<>();
-//
-//        for (Transaction transaction : transactions) {
-//            if (transaction.getCustomerId().equals(customerId)) {
-//                customerTransactions.add(transaction);
-//            }
-//        }
-//        return customerTransactions;
-//    }
 public List<Transaction> fetchAllTransactions(Long account_id) {
     try {
         return transactionRepo.findAllByAccountId(account_id);
@@ -108,28 +85,5 @@ public void deleteTransaction(Long id) {
         throw new RuntimeException("Transaction with ID " + id + " not found");
     }
 }
-    // Additional methods could include:
-
-    // Fetch a transaction by its ID
-//    public Transaction fetchTransactionById(Long transactionId) {
-//        return transactionRepo.findById(transactionId)
-//                .orElseThrow(() -> new IllegalArgumentException("Transaction not found for ID: " + transactionId));
-//    }
-//
-//    // Fetch balance for a specific account
-//    public Double fetchAccountBalance(Long accountId) {
-//        BankCardsEnt account = cardRepository.findByCustomerId(accountId);
-//        if (account == null) {
-//            throw new IllegalArgumentException("Account not found for customer ID: " + accountId);
-//        }
-//        return account.getBalance();
-//    }
-//
-//    // Method for generating balance reports, etc.
-//    // This could be more advanced depending on your use case.
-//    public List<BalanceChange> generateBalanceReport(Long accountId) {
-//        // You can extend this to return a detailed report
-//        return cardRepository.findBalanceChangesByAccountId(accountId);
-//    }
 }
 
