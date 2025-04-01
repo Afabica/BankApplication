@@ -47,9 +47,6 @@ public class Transaction {
     private LocalDateTime updatedAt;
 
 
-    @OneToOne 
-    @JoinColumn(name = "balance_change_id")
-    private BalanceChange balanceChange;
         
 
     @PrePersist
