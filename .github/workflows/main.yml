@@ -36,7 +36,9 @@ jobs:
       - name: Install and Build Next.js app
         run: |
           cd frontend
-          npm install --force
+          npm install --force 
+          npm install react-chartjs-2 --force
+          npm install jwt-decode
           npm run build
 
       # Step 5: Run Next.js tests

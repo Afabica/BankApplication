@@ -17,6 +17,7 @@ public class RegisterUser {
     private String mobile;
     private String email;
     private String identificationDetails;
+    private Long amount;
     private String accountType;
     private String username;
     private String password;
@@ -115,6 +116,14 @@ public class RegisterUser {
 
     public void setEmployer(String employer) {
         this.employer = employer;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
+    }
+
+    public Long getAmount() {
+        return amount;
     }
 
     public String getVerificationCode() {

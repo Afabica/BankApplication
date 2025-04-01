@@ -46,6 +46,12 @@ public class Transaction {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+
+    @OneToOne 
+    @JoinColumn(name = "balance_change_id")
+    private BalanceChange balanceChange;
+        
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
