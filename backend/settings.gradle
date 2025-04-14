@@ -1,7 +1,7 @@
 rootProject.name = 'demo'
 
-//buildCache {
-//	local {
-//		enabled = true 
-//	}
-//}
+buildCache {
+	local {
+		enabled = true
+	}
+}

@@ -1,17 +1,32 @@
-FROM node:18-alpine 
+FROM node:18-alpine
 
-WORKDIR /app  
+# Set working directory
+WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm install --force
-RUN npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons --force
-RUN npm install @react-three/drei --legacy-peer-deps 
-RUN npm install react-chartjs-2 chart.js --force
+# Copy package files
+COPY package.json package-lock.json* ./
 
+# Install all dependencies at once
+RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps react-chartjs-2 chart.js
+
+# Copy app source
 COPY . .
 
-RUN npm run build 
+# Copy certs if needed by server.js
+COPY ./certificates /app/certificates
+COPY ./server.crt /app/server.crt
+COPY ./server.key /app/server.key
 
-EXPOSE 3000 
+# Build the Next.js app
+RUN npm run build
 
-CMD ["npm", "run", "start"]
+# Expose the app port
+EXPOSE 3000
+
+# Environment
+ENV NODE_ENV=production
+
+# Start the server
+CMD ["node", "server.js"]
+

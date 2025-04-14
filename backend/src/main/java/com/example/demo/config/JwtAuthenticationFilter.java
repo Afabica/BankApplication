@@ -61,4 +61,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;  // No token found
     }
 }
-

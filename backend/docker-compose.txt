@@ -1,63 +1,28 @@
-version: '3.8'
 
 services:
-  frontend:
-    container_name: nextjs_app
-    build:
-      context: ./frontend  # Path to Next.js project
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
+  spring-boot-app:
+    image: bankapp
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:8080
-    networks:
-      - app_network
-
-  backend:
-    container_name: spring_boot_app
-    build:
-      context: ./backend  # Path to Spring Boot project
-      dockerfile: Dockerfile
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://spring.postgres.database.azure.com:5432/bankapp?user=jonny&password=Leopard1000&sslmode=require
+      - SPRING_DATASOURCE_USERNAME=jonny
+      - SPRING_DATASOURCE_PASSWORD=Leopard1000
     ports:
       - "8080:8080"
     depends_on:
-      - db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mydb
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
-      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=*
-      - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED=true
-    networks:
-      - app_network
+      - postgres
 
-  db:
-    container_name: postgres_db
+postgres:
     image: postgres:latest
+    environment:
+      POSTGRES_DB: bankapp
+      POSTGRES_USER: jonny
+      POSTGRES_PASSWORD: Leopard1000
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_DB=mydb
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
     networks:
-      - app_network
-
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    depends_on:
       - backend
-    networks:
-      - app_network
 
 networks:
-  app_network:
+  backend:
     driver: bridge
 

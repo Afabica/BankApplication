@@ -1,35 +1,53 @@
 package com.example.demo.model;
 
 import org.springframework.context.ApplicationEvent;
+import jakarta.persistence.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
-public class BalanceChange extends ApplicationEvent {
 
-    private final Long accountId;
-    private final Double oldBalance;
-    private final Double newBalance;
-    private final Double transactionAmount;
+@Entity 
+@Table(name = "bal_change")
+public class BalanceChange { 
+//public class BalanceChange extends ApplicationEvent {
 
-    public BalanceChange(Object source, Long accountId, Double oldBalance, Double newBalance, Double transactionAmount) {
-        super(source);
-        this.accountId = accountId;
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private final Long accountSource;
+    private final Long accountDestination;
+    private final Long oldBalance;
+    private final Long newBalance;
+    private final Long transactionAmount;
+    // Object source
+    public BalanceChange(Long accountSource, Long accountDestination, Long oldBalance, Long newBalance, Long transactionAmount) {
+//        super(source);
+        this.accountSource = accountSource;
+        this.accountDestination = accountDestination;
         this.oldBalance = oldBalance;
         this.newBalance = newBalance;
         this.transactionAmount = transactionAmount;
     }
 
-    public Long getAccountId() {
-        return accountId;
+    public Long getAccountSource() {
+        return accountSource;
     }
 
-    public Double getOldBalance() {
+    public Long getAccountDestination() {
+        return accountDestination;
+    } 
+
+    public Long getOldBalance() {
         return oldBalance;
     }
 
-    public Double getNewBalance() {
+    public Long getNewBalance() {
         return newBalance;
     }
 
-    public Double getTransactionAmount() {
+    public Long getTransactionAmount() {
         return transactionAmount;
     }
 }

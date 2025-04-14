@@ -1,8 +1,6 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 //import org.jasypt.util.text.AES256TextEncryptor;
@@ -36,10 +34,10 @@ public class BankCardsEnt {
     private String status;
 
     @Column(name = "cash") 
-    private BigInteger cash;
+    private Long cash;
 
     @Column(name = "daily_limit", precision = 10, scale = 2, nullable = false)
-    private BigDecimal dailyLimit;
+    private Long dailyLimit;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -48,22 +46,24 @@ public class BankCardsEnt {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "customer_id", insertable = false, updatable = false)
-    private Customer customer;
+    @JoinColumn(name = "customers", referencedColumnName = "customer_id", insertable = false, updatable = false)
+    private Customer customers;
 
-    public BankCardsEnt(Long customerId, String cardType, LocalDate expirationDate, LocalDate issueDate, String status, Customer customer) {
+    public BankCardsEnt(Long customerId, String cardType, LocalDate expirationDate, LocalDate issueDate, String status, Customer customers) {
         this.customerId = customerId;
         this.cardType = cardType; 
         this.expirationDate = expirationDate;
         this.issueDate = issueDate;
         this.status = status;
-        this.customer = customer;
+        this.customers = customers;
+
     }
     // Default Constructor
     public BankCardsEnt() {
+        Long value = 5000L; 
         this.issueDate = LocalDate.now();
         this.status = "Active";
-        this.dailyLimit = new BigDecimal("5000.00");
+        this.dailyLimit = value;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -137,11 +137,11 @@ public class BankCardsEnt {
         this.status = status;
     }
 
-    public BigDecimal getDailyLimit() {
+    public Long getDailyLimit() {
         return dailyLimit;
     }
 
-    public void setDailyLimit(BigDecimal dailyLimit) {
+    public void setDailyLimit(Long dailyLimit) {
         this.dailyLimit = dailyLimit;
     }
 
@@ -162,18 +162,19 @@ public class BankCardsEnt {
     }
 
     public Customer getCustomer() {
-        return customer;
+        return customers;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setCustomer(Customer customers) {
+        this.customers = customers;
+
     }
 
-    public BigInteger getBalance() {
+    public Long getBalance() {
         return cash;
     }
 
-    public void setBalance(BigInteger cash) {
+    public void setBalance(Long cash) {
         this.cash = cash;
     }
 

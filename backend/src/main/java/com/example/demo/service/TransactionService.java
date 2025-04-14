@@ -13,7 +13,8 @@ import com.example.demo.model.BankCardsEnt;
 import java.util.ArrayList;
 import java.util.List;
 import java.math.BigInteger;
-
+import java.math.BigDecimal;
+import com.example.demo.model.BalanceChange;
 
 @Service 
 public class TransactionService {
@@ -29,35 +30,48 @@ public class TransactionService {
         this.cardRepository =  cardRepository;
     }
     
-    // Process a transaction and update account balance
-    public void processTransaction(Long accountId, Long transactionAmount) {
-        // Fetch the bank card account for the given accountId
-        BankCardsEnt account = cardRepository.findByCustomerId(accountId);
-        
-        if (account == null) {
-            throw new IllegalArgumentException("Account not found for customer ID: " + accountId);
-        }
-
-        BigInteger oldBalance = account.getBalance();
-        BigInteger newBalance = oldBalance.add(transactionAmount);
-
-        // Update the balance in the account
-        account.setBalance(newBalance);
-        cardRepository.save(account); // Persist the updated balance
-
-        // Create a new transaction record
-        Transaction transaction = new Transaction();
-        transaction.setId(account.getCustomerId());
-        transaction.setAmount(transactionAmount);
-        transaction.setTransactionType("Deposit");
-        transaction.setBalanceChange(BalanceChange.fromAmount(transactionAmount));  // Assuming BalanceChange is an Enum or a method to define the type of transaction
-        transaction.setDescription("Transaction processed for account: " + accountId);
-
-        // Save the transaction
-        transactionRepo.save(transaction);
-    }
+//    public void processTransaction(BalanceChange transaction) {
+//    // Fetch the source and destination accounts
+//    BankCardsEnt sourceAccount = cardRepository.findByCustomerId(transaction.getAccountSource());
+//    BankCardsEnt destinationAccount = cardRepository.findByCustomerId(transaction.getAccountDestination());
 //
-    
+//    // Validate accounts exist
+//    if (sourceAccount == null || destinationAccount == null) {
+//        throw new IllegalArgumentException("One or both accounts not found for provided customer IDs.");
+//    }
+//
+//    // Ensure balance and transaction amount are not null
+//    Long sourceBalance = (sourceAccount.getBalance() != null) ? sourceAccount.getBalance() : 0L;
+//    Long destinationBalance = (destinationAccount.getBalance() != null) ? destinationAccount.getBalance() : 0L;
+//    Long transactionAmount = (transaction.getTransactionAmount() != null) ? transaction.getTransactionAmount() : 0L;
+//
+//    // Ensure sufficient funds
+//    if (sourceBalance < transactionAmount) {
+//        throw new IllegalArgumentException("Insufficient funds in source account.");
+//    }
+//
+//    // Perform transaction
+//    long newSourceBalance = sourceBalance - transactionAmount; // Deduct from source
+//    long newDestinationBalance = destinationBalance + transactionAmount; // Add to destination
+//
+//    // Update balances
+//    sourceAccount.setBalance(newSourceBalance);
+//    destinationAccount.setBalance(newDestinationBalance);
+//
+//    // Save updated accounts
+//    cardRepository.save(sourceAccount);
+//    cardRepository.save(destinationAccount);
+//
+//    // Record the transaction
+//    Transaction transactionRecord = new Transaction();
+//    transactionRecord.setId(sourceAccount.getCustomerId());
+//    transactionRecord.setAmount(transactionAmount);
+//    transactionRecord.setTransactionType("Transfer");
+//    transactionRecord.setDescription("Transferred to account: " + destinationAccount.getCustomerId());
+//
+//    transactionRepo.save(transactionRecord);
+//}
+ 
 
     public Customer findByUsername(String username) {
         Customer findCust = customerRepo.findByUsername(username);

@@ -171,7 +171,7 @@ function Home() {
         //          },
         //        );
         const response = await axios.get(
-          `http://localhost:8080/operations/translist?userId=${encodeURIComponent(formData.id)}`,
+          `https://backend-service:8443/operations/translist?userId=${encodeURIComponent(formData.id)}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -184,7 +184,7 @@ function Home() {
           console.log("Data fetched successfully:", response.data);
           setTransactions(response.data);
         } else {
-          consoleerror("Fetching data failed", response);
+          console.error("Fetching data failed", response);
         }
       } catch (err) {
         console.error(

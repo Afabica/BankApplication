@@ -1,6 +1,7 @@
-// next.config.js
+const fs = require("fs");
+
 module.exports = {
-  reactStrictMode: false, // Disable React Strict Mode (optional, depending on your needs)
+  reactStrictMode: true, // Disable React Strict Mode (optional, depending on your needs)
   webpack: (config) => {
     config.cache = false; // Disable Webpack caching
     return config;
@@ -8,7 +9,22 @@ module.exports = {
 };
 
 module.exports = {
-    testEnvironment: "jsdom",
+  testEnvironment: "jsdom",
+};
+
+module.exports = {
+  experimental: {
+    forceSwcTransform: true,
+  },
+};
+
+module.exports = {
+  devServer: {
+    https: {
+      key: fs.readFileSync("./server.key"),
+      cert: fs.readFileSync("./server.crt"),
+    },
+  },
 };
 //module.exports = {
 //    devIndicators: {

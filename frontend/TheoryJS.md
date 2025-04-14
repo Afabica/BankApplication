@@ -27,3 +27,7 @@ const closePanel = () => setIsPanelOpen(false);
         {isPanelOpen && <SidePanel isOpen={isPanelOpen} onClose{togglePanel}}/>}
     
 </mark>
+
+## Server for HTTPS
+
+"dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 node ./server/server.js"

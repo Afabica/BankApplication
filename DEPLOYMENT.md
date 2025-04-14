@@ -3,6 +3,7 @@
 `docker login` - authorization
 `docker apply -f myapp-backend .` - containerize backend application
 `docker apply -f myapp-frontend .` containerize frontend application
+`docker run -it --rm application sh` - entering docker container
 `docker tag myapp-backend my-docker-username/myapp-backend:v1` - tag the image with your Docker Hub username.
 `docker push my-dockerhub-username/myapp-backend:v1` - pushing the correctly tagged image.
 
@@ -70,6 +71,9 @@ Then:
     kubectl get deployments --namespac=default
     kubectl get pods --namespace=default
     kubectl get services --namespace=default
+    // Restarting entire namespace
+    kubectl rollout restart deployment name
+    kubectl rollout restart deployment -n <namespace>
 
 # Using Azure Container Registry (ACR)
 
@@ -474,8 +478,8 @@ For Next.js: process_cpu_user_seconds_total
 `scrape_series_added`
 
 ### Update the docker container in Kubernetes cluster.
-`kubectl set image deployment/ =:`
 
+`kubectl set image deployment/ =:`
 
 ### Frontend doesn't have an external ip address
 
@@ -562,5 +566,7 @@ strategy:
         maxSurge: 1
 </mark>
 
-- This ensures that Kubernetes checks if a pod is ready to serve traffic before sending requests to it. 
+- This ensures that Kubernetes checks if a pod is ready to serve traffic before sending requests to it.
 - Automate image updates: Consider automating image updates using CI/CD pipelines to build and deploy new images to Kubernetes.
+
+
