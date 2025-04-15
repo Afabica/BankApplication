@@ -305,4 +305,5 @@ function Home() {
 }
 
 // ✅ Export the component wrapped with `withAuth`
-export default withAuth(Home);
+//export default withAuth(Home);
+export default Home;

@@ -96,50 +96,53 @@ const NotificationsPage = () => {
   };
 
   return (
-    <div className="notifications-page">
+    <div className="flex min-h-screen bg-gray-100 text-gray-900">
       {/* Side Panel */}
       <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
         <PanelElements />
       </SidePanel>
 
       {/* Header */}
-      <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
 
       {/* Notifications Header */}
-      <div className="notifications-header">
-        <h1>Notifications</h1>
-        <div className="notifications-actions">
-          <button onClick={markAllAsRead}>Mark All as Read</button>
-          <button onClick={clearAllNotifications}>Clear All</button>
+      <div className="flex-1 flex flex-col">
+        <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
+        <div className="p-8 max-4-4xl mx-auto bg-white shadow-md rounded-xl mt-8">
+          <div className="notifications-header">
+            <h1>Notifications</h1>
+            <div className="notifications-actions">
+              <button onClick={markAllAsRead}>Mark All as Read</button>
+              <button onClick={clearAllNotifications}>Clear All</button>
+            </div>
+          </div>
+
+          {/* Error Display */}
+          {error && <p className="error-message">{error}</p>}
+
+          {/* Notifications List */}
+          <div className="p-8">
+            {notifications.length === 0 ? (
+              <div className="bg-red-500">No notifications available</div>
+            ) : (
+              notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`notification-item ${notification.read ? "read" : "unread"}`}
+                  onClick={() => toggleReadStatus(notification.id)}
+                >
+                  <div className="notification-header">
+                    <h4>{notification.title}</h4>
+                    <span className="timestamp">{notification.timestamp}</span>
+                  </div>
+                  <p className="notification-message">{notification.message}</p>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Error Display */}
-      {error && <p className="error-message">{error}</p>}
-
-      {/* Notifications List */}
-      <div className="notifications-list">
-        {notifications.length === 0 ? (
-          <div className="no-notifications">No notifications available</div>
-        ) : (
-          notifications.map((notification) => (
-            <div
-              key={notification.id}
-              className={`notification-item ${notification.read ? "read" : "unread"}`}
-              onClick={() => toggleReadStatus(notification.id)}
-            >
-              <div className="notification-header">
-                <h4>{notification.title}</h4>
-                <span className="timestamp">{notification.timestamp}</span>
-              </div>
-              <p className="notification-message">{notification.message}</p>
-            </div>
-          ))
-        )}
-      </div>
-
       {/* Footer */}
-      <Footer />
     </div>
   );
 };
