@@ -38,6 +38,7 @@ jobs:
         run: |
           cd frontend
           npm install --legacy-peer-deps
+          npm install react-chartjs-2 --legacy-peer-deps
           npm run build
 
       - name: Test Next.js app
