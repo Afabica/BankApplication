@@ -38,13 +38,14 @@ jobs:
         run: |
           cd frontend
           npm install --legacy-peer-deps
-          npm install react-chartjs-2 --legacy-peer-deps
+          npm install react-chartjs-2 --legacy-peer-deps --force
           npm run build
 
       - name: Test Next.js app
         run: |
           cd frontend
           npm run test
+
 
   build-springboot:
     runs-on: ubuntu-22.04
