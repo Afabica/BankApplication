@@ -1,0 +1,41 @@
+/* styles/AdBanner.module.css */
+.adBanner {
+  display: flex;
+  margin: 20px;
+  padding: 20px;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1s ease-out;
+}
+
+.adImage {
+  width: 150px;
+  height: 150px;
+  border-radius: 8px;
+  margin-right: 20px;
+}
+
+.adText h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.adText p {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

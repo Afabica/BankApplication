@@ -1,0 +1,137 @@
+.container {
+  font-family: Arial, sans-serif;
+  background-color: #f4f7fa;
+  color: #333;
+  padding: 0 20px;
+}
+
+.header {
+  text-align: center;
+  padding: 50px 0;
+  background-color: #0044cc;
+  color: white;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  font-size: 3rem;
+}
+
+.header .tagline {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.applyNowBtn {
+  background-color: #ff6600;
+  color: white;
+  padding: 15px 25px;
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.applyNowBtn:hover {
+  background-color: #cc5200;
+}
+
+.loanTypes {
+  margin-bottom: 40px;
+}
+
+.loanTypes h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.loanList {
+  display: flex;
+  justify-content: space-around;
+}
+
+.loanCard {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 30%;
+  text-align: center;
+}
+
+.loanCard h3 {
+  font-size: 1.5rem;
+}
+
+.learnMoreBtn {
+  background-color: #0044cc;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.learnMoreBtn:hover {
+  background-color: #0033aa;
+}
+
+.loanCalculator {
+  margin-bottom: 40px;
+}
+
+.loanCalculator h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.calculatorForm label {
+  display: block;
+  margin-bottom: 15px;
+}
+
+.calculatorForm input {
+  padding: 10px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.calculateBtn {
+  background-color: #0044cc;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.calculateBtn:hover {
+  background-color: #0033aa;
+}
+
+.result {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.result h3 {
+  font-size: 1.5rem;
+}
+
+.applySection {
+  background-color: #0044cc;
+  color: white;
+  padding: 40px 20px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.applySection h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+

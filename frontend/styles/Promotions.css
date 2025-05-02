@@ -1,0 +1,65 @@
+/* styles/globals.css */
+
+/* Promotions section styling */
+.promotions {
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.promotions h2 {
+  text-align: center;
+  font-size: 2rem;
+  color: #004aad;
+  margin-bottom: 20px;
+}
+
+.promotion-item {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease-in-out;
+}
+
+.promotion-item:hover {
+  transform: translateY(-5px);
+}
+
+.promo-image {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.promo-description {
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.promo-timer {
+  font-size: 1rem;
+  color: #f44336; /* Red color for urgency */
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.cta-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.cta-button:hover {
+  background-color: #0056b3;
+}
+

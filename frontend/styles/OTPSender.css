@@ -1,0 +1,21 @@
+.otpForm {
+    display: flex;
+    padding-top: 100px;
+    height: 600px;
+    width: 400px;
+    flex-direction: column;
+    border-radius: 10px;
+    justifyContent: center;
+    alignItems: center;
+}
+
+.otpMain {
+    background-color: #121212;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    
+}
