@@ -1,0 +1,44 @@
+name: Deploy to AKS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AZURE_CONTAINER_REGISTRY: myregistry.azurecr.io
+  CLUSTER_NAME: my-aks-cluster
+  RESOURCE_GROUP: my-resource-group
+  NAMESPACE: my-namespace
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set AKS Credentials
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: ${{ env.RESOURCE_GROUP }}
+          cluster-name: ${{ env.CLUSTER_NAME }}
+
+      - name: Create Namespace (if not exists)
+        run: |
+          kubectl create namespace $NAMESPACE || echo "Namespace exists"
+
+      - name: Deploy Kubernetes Manifests
+        run: |
+          kubectl apply -n $NAMESPACE -f ./k8s/
+
+      - name: Verify Deployment
+        run: |
+          kubectl get all -n $NAMESPACE
+
