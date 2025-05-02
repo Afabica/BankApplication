@@ -1,22 +1,18 @@
-//import type { Config } from "jest";
-//import nextJest from "next/jest";
-//
-//const createJestConfig = nextJest({
-//  dir: "./", // Specify the root of your Next.js app
-//});
-//
-//const config: Config = {
-//  coverageProvider: "v8",
-//  testEnvironment: "jsdom",
-//  transform: {
-//    "^.+\\.(js|jsx|ts|tsx)$": "babel-jest", // Use Babel to transform JS/TS files
-//  },
-//  moduleNameMapper: {
-//    "\\.css$": "identity-obj-proxy", // Handle CSS imports
-//  },
-//  transformIgnorePatterns: [
-//    "/node_modules/(?!lucide-react)/", // Ensure lucide-react is transformed correctly
-//  ],
-//};
-//
-//export default createJestConfig(config);
+import type { Config } from "jest";
+import nextJest from "next/jest.js";
+
+const createJestConfig = nextJest({
+  // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
+  dir: "./",
+});
+
+// Add any custom config to be passed to Jest
+const config: Config = {
+  coverageProvider: "v8",
+  testEnvironment: "jsdom",
+  // Add more setup options before each test is run
+  // setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+};
+
+// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
+export default createJestConfig(config);

@@ -1,20 +1,14 @@
 "use client";
 
 import React from "react";
-import "../../../styles/NavDash.css";
-//import "../../../styles/Navigation.css";
-import Transactions from "../../../components/dashcomp/MainPage/AllTrans";
-import "../../../styles/global.css";
-import "../../../styles/AllTrans.css";
-import "../../../styles/DashPage.css";
+import TransactionsPage from "../../../components/dashcomp/MainPage/AllTrans";
 
-//import "../../../styles/Navigation.css";
-const PaymentsPage = () => {
+const Transaction = () => {
   return (
     <div>
-      <Transactions />
+      <TransactionsPage />
     </div>
   );
 };
 
-export default PaymentsPage;
+export default Transaction;

@@ -1,7 +1,12 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 @Table(name = "user_authentication")
@@ -9,32 +14,50 @@ public class RegisterUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "account_id")
     private Long accountId;
 
+    @Column(name = "full_name")
     private String fullName;
+
     private LocalDate dob;
     private String address;
     private String mobile;
     private String email;
+
+    @Column(name = "identification_details")
     private String identificationDetails;
-    private Long amount;
+
+    @Column(name = "amount", precision = 19, scale = 2)
+    private BigDecimal amount;
+
+    @Column(name = "account_type")
     private String accountType;
+
     private String username;
     private String password;
     private String employer;
+
+    @Column(name = "verification_code")
     private String verificationCode;
 
-    public RegisterUser() {
+    @Column(name = "customer_id")
+    private Long customerId; 
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<RegisteredAccount> accounts = new ArrayList<>();
 
-    }
+    // Default constructor
+    public RegisterUser() {}
+
     // Getters and Setters
-    //
 
-    public Long getId() {
+    public Long getAccountId() {
         return accountId;
     }
 
-    public void setId(Long accountId) {
+    public void setAccountId(Long accountId) {
         this.accountId = accountId;
     }
 
@@ -86,6 +109,14 @@ public class RegisterUser {
         this.identificationDetails = identificationDetails;
     }
 
+    public BigDecimal getAmount() {
+        return amount != null ? amount : BigDecimal.ZERO;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
     public String getAccountType() {
         return accountType;
     }
@@ -118,20 +149,20 @@ public class RegisterUser {
         this.employer = employer;
     }
 
-    public void setAmount(Long amount) {
-        this.amount = amount;
-    }
-
-    public Long getAmount() {
-        return amount;
-    }
-
     public String getVerificationCode() {
         return verificationCode;
     }
 
     public void setVerificationCode(String verificationCode) {
         this.verificationCode = verificationCode;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 }
 

@@ -24,6 +24,21 @@ public class BlobStorage {
             .buildClient();
     }
 
+//    public void uploadFile(String containerName, String blobName, String filePath) {
+//        BlobSericeClient blobServiceClient = new BlobServiceClientBuilder()
+//            .connectionString()
+//            .buildClient();
+//
+//        BlobContainerClient containerClient = blobSericeClient.getBLobContainerClient(containerName);
+//
+//        if(!containerCliet.exists()) {
+//            containerClient.create();
+//        }
+//
+//        BlobClient blobClient = containerClient.getBlobClient(blobName);
+//        blobClient.uploadFromFile(filePath, true);
+//    }
+
     // Method to upload a file
     public void uploadFile(String containerName, String blobName, String filePath) {
         try {
@@ -33,7 +48,7 @@ public class BlobStorage {
         } catch (Exception e) {
             throw new AzureBlobStorageException("Error uploading file: " + e.getMessage(), e);
         }
-    }
+    } 
 
     // Method to download a file
     public void downloadFile(String containerName, String blobName, String downloadFilePath) {

@@ -9,6 +9,13 @@ on:
     branches:
       - main
 
+env: 
+    AZURE_CONTAINER_REGISTRY: mybankrepository 
+    CLUSTER_NAME: my-aks-cluster
+    RESOURCE_GROUP: spring 
+    NAMESPACE: https-con
+
+
 jobs:
   build-nextjs:
     runs-on: ubuntu-22.04
@@ -90,3 +97,33 @@ jobs:
           cd backend
           # gradle build
           ./gradlew bootJar --no-daemon
+
+    deploy: 
+        runs-on: ubuntu-latest 
+        
+        steps:
+            - name: Checkout Repository 
+              uses: actions/chekcout@v3 
+
+            - name: Login to Azure 
+              uses: azure/login@v1 
+              with: 
+               creds: ${{ secrets.AZURE_CREDENTIALS}}
+
+            -name: Set AKS Credentials
+            uses: azure/aks-set-context@v3 
+            with:
+                resource-group: ${{ env.RESOURCE_GROUP}} 
+                cluster-name: ${{ env.CLUSTER_NAME}}  
+            -name: Create Namespace 
+            run: |
+                 kubectl create namespace $NAMESPACE || echo "Namespace exists"
+            -name: Deploy Kubernetes Manifest
+            run: |
+                  kubectl apply -n $NAMESPACE -f ./k8s/ 
+
+            -name: Verify Deployment
+            run: | 
+                  kubectl get all -n $NAMESPACE
+
+                

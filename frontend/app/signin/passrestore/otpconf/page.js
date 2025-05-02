@@ -10,7 +10,6 @@ const HomePass = () => {
   return (
     <div>
       <Header />
-      <ThemeSwitcher />
       <OTPGetter />
       <Footer />
     </div>

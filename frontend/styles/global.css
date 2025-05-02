@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
   --bg-color: #ffffff;
   --text-color: #000000;
@@ -40,7 +41,9 @@ body {
   padding: 0;
   background-color: var(--bg-color);
   color: var(--text-color);
-  transition: background 0.3s, color 0.3s;
+  transition:
+    background 0.3s,
+    color 0.3s;
   width: 100%;
   min-height: 100vh;
 }
@@ -59,4 +62,3 @@ body {
 .theme-toggle:hover {
   opacity: 0.8;
 }
-

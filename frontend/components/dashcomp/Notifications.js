@@ -33,16 +33,13 @@ const NotificationsPage = () => {
 
     const fetchNotifications = async () => {
       try {
-        const token = localStorage.getItem("token")?.replace(/"/g, ""); // Retrieve and clean token
-
+        const token = localStorage.getItem("token")?.replace(/"/g, "");
         if (!token) {
           setError("JWT Token is missing.");
           return;
         }
 
-        if (!formData.id) {
-          return; // Prevent request if user ID is not available
-        }
+        if (!formData.id) return;
 
         const response = await axios.get(
           `http://localhost:8080/operations/api/otp?userId=${encodeURIComponent(formData.id)}`,
@@ -55,24 +52,22 @@ const NotificationsPage = () => {
 
         if (response.status === 200) {
           setNotifications(response.data);
-          console.log("Data fetched successfully.");
         } else {
-          setError("Fetching notifications failed.");
+          setError("Failed to fetch notifications.");
         }
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error(err);
         setError("Data fetching failed.");
       }
     };
-    fetchNotifications();
 
     fetchUser();
-  }, []);
+    fetchNotifications();
+  }, [formData.id]);
 
-  // Toggle read/unread status of a specific notification
   const toggleReadStatus = (id) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notification) =>
+    setNotifications((prev) =>
+      prev.map((notification) =>
         notification.id === id
           ? { ...notification, read: !notification.read }
           : notification,
@@ -80,69 +75,77 @@ const NotificationsPage = () => {
     );
   };
 
-  // Mark all notifications as read
   const markAllAsRead = () => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notification) => ({
-        ...notification,
-        read: true,
-      })),
+    setNotifications((prev) =>
+      prev.map((notification) => ({ ...notification, read: true })),
     );
   };
 
-  // Clear all notifications
   const clearAllNotifications = () => {
     setNotifications([]);
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100 text-gray-900">
-      {/* Side Panel */}
       <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
         <PanelElements />
       </SidePanel>
 
-      {/* Header */}
-
-      {/* Notifications Header */}
       <div className="flex-1 flex flex-col">
         <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
-        <div className="p-8 max-4-4xl mx-auto bg-white shadow-md rounded-xl mt-8">
-          <div className="notifications-header">
-            <h1>Notifications</h1>
-            <div className="notifications-actions">
-              <button onClick={markAllAsRead}>Mark All as Read</button>
-              <button onClick={clearAllNotifications}>Clear All</button>
+
+        <div className="p-8 max-w-5xl mx-auto bg-white shadow-lg rounded-xl mt-8">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-bold">Notifikácie</h1>
+            <div className="flex space-x-4">
+              <button
+                onClick={markAllAsRead}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Označiť všetky ako prečítané
+              </button>
+              <button
+                onClick={clearAllNotifications}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Vymazať všetky
+              </button>
             </div>
           </div>
 
-          {/* Error Display */}
-          {error && <p className="error-message">{error}</p>}
+          {error && <p className="text-red-600 font-medium mb-4">{error}</p>}
 
-          {/* Notifications List */}
-          <div className="p-8">
+          <div className="space-y-4">
             {notifications.length === 0 ? (
-              <div className="bg-red-500">No notifications available</div>
+              <div className="text-center text-gray-500">
+                Žiadne dostupné notifikácie.
+              </div>
             ) : (
               notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`notification-item ${notification.read ? "read" : "unread"}`}
                   onClick={() => toggleReadStatus(notification.id)}
+                  className={`p-4 border rounded-lg shadow-sm cursor-pointer ${
+                    notification.read
+                      ? "bg-gray-100 text-gray-600"
+                      : "bg-blue-50 text-blue-900"
+                  }`}
                 >
-                  <div className="notification-header">
-                    <h4>{notification.title}</h4>
-                    <span className="timestamp">{notification.timestamp}</span>
+                  <div className="flex justify-between items-center">
+                    <h4 className="text-lg font-semibold">
+                      {notification.title}
+                    </h4>
+                    <span className="text-sm text-gray-500">
+                      {notification.timestamp}
+                    </span>
                   </div>
-                  <p className="notification-message">{notification.message}</p>
+                  <p className="mt-2 text-sm">{notification.message}</p>
                 </div>
               ))
             )}
           </div>
         </div>
       </div>
-
-      {/* Footer */}
     </div>
   );
 };

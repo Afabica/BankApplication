@@ -42,8 +42,9 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource)) // Use CORS configuration from CorsConfig
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless API
             .authorizeRequests(request -> request
-                .requestMatchers(HttpMethod.POST, "/api/login", "/api/register", "/api/otp/send").permitAll() // Public APIs
+                .requestMatchers("/api/login", "/api/register", "/api/otp/send").permitAll() // Public APIs
                 .requestMatchers("/api/home", "/api/users").permitAll() // Allow public access
+                .requestMatchers("/operations/process").permitAll()
                 .anyRequest().authenticated() // Require authentication for other endpoints
             )
             .requiresChannel(channel -> channel.anyRequest().requiresSecure()) // Enforce HTTPS

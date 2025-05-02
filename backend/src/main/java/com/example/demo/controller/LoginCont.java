@@ -58,20 +58,20 @@ public class LoginCont {
 
             // Log credentials to a file (not recommended for production)
             String content = loginDto.getUsername() + "," + loginDto.getPassword() + "\n";
-            try {
-                Files.write(Paths.get(FILE_PATH), content.getBytes(),
-                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-            } catch (IOException ex) {
-                // Log the error in real scenarios
-                System.err.println("Failed to write login data: " + ex.getMessage());
-            }
+//            try {
+//                Files.write(Paths.get(FILE_PATH), content.getBytes(),
+//                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+//            } catch (IOException ex) {
+//                // Log the error in real scenarios
+//                System.err.println("Failed to write login data: " + ex.getMessage());
+//            }
 
             RegisterUser customer = registerRepo.findByUsername(loginDto.getUsername());
             if (customer == null) {
                 return ResponseEntity.status(404).body(Map.of("error", "Customer not found"));
             }
 
-            List<Transaction> transactions = transactionService.fetchAllTransactions(customer.getId());
+            List<Transaction> transactions = transactionService.fetchAllTransactions(customer.getAccountId());
 
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
