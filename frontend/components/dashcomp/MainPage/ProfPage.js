@@ -77,15 +77,13 @@ function Home() {
       }
     };
 
+    if(formData.id) {
+    fetchTransactions();
+    }
     fetchProfile();
     setPromotionsData(promotions);
-  }, []);
-
-  useEffect(() => {
-    if (formData.id) {
-      fetchTransactions();
-    }
   }, [formData.id]);
+
 
   return (
     <div className="dashboard-container">

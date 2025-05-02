@@ -1,0 +1,9 @@
+services:
+    spring-boot-app:
+        image: bankapp
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://spring.postgres.database.azure.com:5432/bankapp?user=jonny&password=Leopard1000&sslmode=require
+            - SPRING_DATASOURCE_USERNAME=jonny
+            - SPRING_DATASOURCE_PASSWORD=Leopard1000
+        ports:
+            - "8080:8080"

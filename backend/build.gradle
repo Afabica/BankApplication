@@ -1,0 +1,225 @@
+//
+//
+//plugins {
+//    id 'java'
+//    id 'org.springframework.boot' version '3.3.3'
+//    id 'io.spring.dependency-management' version '1.1.6'
+//}
+//
+//group = 'com.example'
+//version = '0.0.1-SNAPSHOT'
+//
+//java {
+//    toolchain {
+//        languageVersion = JavaLanguageVersion.of(21)
+//    }
+//}
+//
+//repositories {
+//    mavenCentral()
+//}
+//
+//    main {
+//        resources {
+//            // Ensure that all resources, including application.properties, are included.
+//            srcDir 'src/main/resources'
+//        }
+//    }
+//}
+//
+//dependencyManagement {
+//    imports {
+//        mavenBom "org.junit:junit-bom:5.8.2"  // JUnit BOM for version management
+//    }
+//}
+//
+//dependencies {
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    implementation 'org.springframework.security:spring-security-web'
+//    implementation 'org.springframework.security:spring-security-config'
+//    implementation 'com.fasterxml.jackson.core:jackson-databind'
+//    runtimeOnly 'com.h2database:h2'
+//
+//    // JSON Web Token (JWT) dependencies
+//    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+//    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+//    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+//
+//
+//    // Spring Web and Web MVC
+//    implementation 'org.springframework.boot:spring-boot-starter-web'
+//
+//    // Spring Boot WebFlux (Optional, if you plan to use reactive features)
+//    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+//
+//    // Spring Boot Starter for Caching
+//    implementation 'org.springframework.boot:spring-boot-starter-cache'
+//
+//    // Reactor Core
+//    implementation 'io.projectreactor:reactor-core:3.4.20'
+//    implementation 'io.projectreactor.netty:reactor-netty:1.1.22'
+//
+//    // Grid Send
+//    implementation 'com.sendgrid:sendgrid-java:4.9.3'
+//
+//    // Twilio SDK (version 7.34.0 is set for you, change it if you need the latest)
+//    implementation 'com.twilio.sdk:twilio:7.34.0'
+//
+//    // Google Guava
+//    implementation 'com.google.guava:guava:19.0'
+//
+//    // SpringDoc OpenAPI UI for Swagger integration
+//    implementation 'org.springdoc:springdoc-openapi-ui:1.6.10'
+//
+//    // Connection Pooling (HikariCP is the default in Spring Boot)
+//    implementation 'com.zaxxer:HikariCP'
+//
+//    // Azure Communication and Blob Storage
+//    implementation 'com.azure:azure-communication-chat:1.0.0-beta.3'
+//    implementation 'com.azure:azure-storage-blob:12.12.0'
+//    implementation 'com.azure.spring:azure-spring-boot-starter-storage:3.14.0'
+//
+//    // Commons File Upload (for file handling)
+//    implementation 'commons-fileupload:commons-fileupload:1.3.1'
+//
+//    // PostgreSQL Driver
+//    implementation 'org.postgresql:postgresql:42.6.0'
+//
+//    // MongoDB Driver (Spring Boot integration for MongoDB)
+//    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+//
+//    // Thymeleaf (Spring Security integration)
+//    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.2.RELEASE'
+//
+//    // Jakarta Persistence and Validation API (Spring Boot 3.x uses Jakarta)
+//    implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+//    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+//
+//    // Lombok (Compile-time annotation processing)
+//    compileOnly 'org.projectlombok:lombok'
+//    annotationProcessor 'org.projectlombok:lombok'
+//
+//    // Test dependencies
+//    testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot starter for tests
+//    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0' // Update to JUnit 5.9.0
+//    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.0' // Update to JUnit 5.9.0
+//    testImplementation 'org.springframework.security:spring-security-test' // For Spring Security testing
+//    testRuntimeOnly 'com.h2database:h2'
+//}
+//
+//// Ensure resources are included in the build output
+//bootRun {
+//    sourceResources sourceSets.main
+//}
+//
+//bootJar {
+//    from 'src/main/resources'
+//}
+//
+//// Ensure duplicates in resources are handled correctly
+//tasks.withType(ProcessResources).configureEach {
+//    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+//}
+//
+//// Ensure JUnit 5 is used in tests
+//tasks.named('test') {
+//    useJUnitPlatform() 
+//}
+//
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.3' // verify latest version
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.junit:junit-bom:5.9.0"
+    }
+}
+
+dependencies {
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    // Security
+    implementation 'org.springframework.security:spring-security-web'
+    implementation 'org.springframework.security:spring-security-config'
+
+    // PDF 
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.itextpdf:itext7-core:7.2.5'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // for Jackson JSON binding
+
+    // JSON
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    // Database
+    runtimeOnly 'com.h2database:h2'
+    implementation 'org.postgresql:postgresql:42.6.0'
+    implementation 'com.zaxxer:HikariCP'
+
+    // UI and Documentation
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.10'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.2.RELEASE'
+
+    // Utilities
+    implementation 'com.google.guava:guava:19.0'
+    implementation 'commons-fileupload:commons-fileupload:1.3.1'
+
+    // Messaging / External APIs
+    implementation 'com.sendgrid:sendgrid-java:4.9.3'
+    implementation 'com.twilio.sdk:twilio:7.34.0'
+
+    // Azure (optional — verify need)
+    implementation 'com.azure:azure-communication-chat:1.0.0-beta.3'
+    implementation 'com.azure:azure-storage-blob:12.12.0'
+    implementation 'com.azure.spring:azure-spring-boot-starter-storage:3.14.0'
+
+    // Jakarta APIs
+    implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'com.h2database:h2'
+}
+
+tasks.withType(ProcessResources).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
