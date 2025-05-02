@@ -1,44 +1,97 @@
-name: Deploy to AKS
+name: Build and Test Spring Boot and Next.js
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
-env:
-  AZURE_CONTAINER_REGISTRY: myregistry.azurecr.io
+env: 
+  AZURE_CONTAINER_REGISTRY: mybankrepository 
   CLUSTER_NAME: my-aks-cluster
-  RESOURCE_GROUP: my-resource-group
-  NAMESPACE: my-namespace
+  RESOURCE_GROUP: spring 
+  NAMESPACE: https-con
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
+  build-nextjs:
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Repository
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Login to Azure
-        uses: azure/login@v1
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          node-version: 18
 
-      - name: Set AKS Credentials
-        uses: azure/aks-set-context@v3
+      - name: Cache Node modules
+        uses: actions/cache@v3
         with:
-          resource-group: ${{ env.RESOURCE_GROUP }}
-          cluster-name: ${{ env.CLUSTER_NAME }}
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
-      - name: Create Namespace (if not exists)
+      - name: Install and Build Next.js app
         run: |
-          kubectl create namespace $NAMESPACE || echo "Namespace exists"
+          cd frontend
+          npm install --legacy-peer-deps
+          npm install chart.js --legacy-peer-deps --force
+          npm install react-chartjs-2 --legacy-peer-deps --force
+          npm run build
 
-      - name: Deploy Kubernetes Manifests
+      - name: Test Next.js app
         run: |
-          kubectl apply -n $NAMESPACE -f ./k8s/
+          cd frontend
+          npm run test
 
-      - name: Verify Deployment
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3 
+        with: 
+            username: ${{ secrets.DOCKERHUB_USERNAME}}
+            password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Next js image 
+        uses: docker/build-push-action@v5 
+        with: 
+            context: ./frontend 
+            file: ./frontend/Dockerfile
+            push: true
+            tags: ${{ secrets.DOCKERHUB_USERNAME}}/nextjs-app:latest
+
+
+
+
+  build-springboot:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3 
+        with:
+          java-version: 21
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('backend/**/build.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build and Test Spring Boot app
         run: |
-          kubectl get all -n $NAMESPACE
+          cd backend
+          ./gradlew clean build test --no-daemon
+
+      - name: Package JAR 
+        run: |
+          cd backend
+          ./gradlew bootJar --no-daemon
 

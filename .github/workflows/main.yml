@@ -1,4 +1,4 @@
-name: Build and Test Spring Boot and Next.js
+name: Build, Test, and Deploy Spring Boot and Next.js
 
 on:
   push:
@@ -8,14 +8,13 @@ on:
     branches:
       - main
 
-env: 
-  AZURE_CONTAINER_REGISTRY: mybankrepository 
+env:
   CLUSTER_NAME: my-aks-cluster
-  RESOURCE_GROUP: spring 
+  RESOURCE_GROUP: spring
   NAMESPACE: https-con
 
 jobs:
-  build-nextjs:
+  build-and-push:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
@@ -47,15 +46,8 @@ jobs:
           cd frontend
           npm run test
 
-
-  build-springboot:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
       - name: Set up JDK
-        uses: actions/setup-java@v3 
+        uses: actions/setup-java@v3
         with:
           java-version: 21
           distribution: 'temurin'
@@ -74,8 +66,64 @@ jobs:
           cd backend
           ./gradlew clean build test --no-daemon
 
-      - name: Package JAR 
+      - name: Package JAR
         run: |
           cd backend
           ./gradlew bootJar --no-daemon
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Spring Boot image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/myapp-backend:latest
+
+      - name: Build and push Next.js image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/myapp-frontend:latest
+
+#  deploy-to-aks:
+#    needs: build-and-push
+#    runs-on: ubuntu-22.04
+#    steps:
+#      - name: Azure Login
+#        uses: azure/login@v1
+#        with:
+#          creds: ${{ secrets.AZURE_CREDENTIALS }}
+#
+#      - name: Set AKS context
+#        uses: azure/aks-set-context@v3
+#        with:
+#          resource-group: ${{ env.RESOURCE_GROUP }}
+#          cluster-name: ${{ env.CLUSTER_NAME }}
+#
+#      - name: Create image pull secret
+#        uses: azure/k8s-create-secret@v1
+#        with:
+#          secret-name: dockerhub-secret
+#          container-registry-url: https://index.docker.io/v1/
+#          container-registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          container-registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
+#          namespace: ${{ env.NAMESPACE }}
+#
+#      - name: Deploy Spring Boot app
+#        run: |
+#          kubectl apply -f k8s/springboot-deployment.yaml
+#          kubectl rollout status deployment/springboot-deployment -n ${{ env.NAMESPACE }}
+#
+#      - name: Deploy Next.js app
+#        run: |
+#          kubectl apply -f k8s/nextjs-deployment.yaml
+#          kubectl rollout status deployment/nextjs-deployment -n ${{ env.NAMESPACE }}
 
