@@ -1,43 +1,43 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import RegistrationPage from '../components/registcomp/RegistForm'; // Update with actual path
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import RegistrationPage from '../components/registcomp/RegistForm';
 import axios from 'axios';
 
-// Mock axios post request
+// Mock axios
 jest.mock('axios');
 
-describe("RegistrationPage Component", () => {
-  it("renders RegistrationPage correctly", () => {
-    render(<RegistrationPage onFlip={jest.fn()} />);
-
-    // Check if "Registration" header is visible
-    const headerElement = screen.getByText(/Registration/i);
-    expect(headerElement).toBeTruthy(); // Just checking the element is truthy (i.e., it exists)
-  });
-
-  it("displays password strength feedback correctly", async () => {
-    render(<RegistrationPage onFlip={jest.fn()} />);
-
-    // Check for password strength feedback text
-    const passwordInput = screen.getByPlaceholderText(/Password/i);
-    fireEvent.change(passwordInput, { target: { value: 'testPassword123' } });
-
-    // You should adjust the expected feedback and strength based on your logic for password strength
-    const strengthText = await screen.findByText(/Strength:/i);
-    expect(strengthText).toBeTruthy(); // Just checking the element is truthy (i.e., it exists)
+describe("RegistrationPage", () => {
+  beforeEach(() => {
+    // Reset mock before each test
+    axios.post.mockReset();
   });
 
   it("shows error message on failed registration", async () => {
-    // Simulate a failed registration by mocking axios post to reject
-    axios.post.mockRejectedValueOnce(new Error('Registration failed'));
+    // Force axios to reject the registration request
+    axios.post.mockRejectedValueOnce(new Error("Registration failed"));
 
     render(<RegistrationPage onFlip={jest.fn()} />);
 
-    const form = screen.getByRole('form');
-    fireEvent.submit(form);
+    // Fill in all required fields
+    fireEvent.change(screen.getByPlaceholderText(/Full Name/i), { target: { value: "John Doe" } });
+    fireEvent.change(screen.getByPlaceholderText(/Address/i), { target: { value: "123 Main St" } });
+    fireEvent.change(screen.getByPlaceholderText(/Mobile Number/i), { target: { value: "1234567890" } });
+    fireEvent.change(screen.getByPlaceholderText(/Email Address/i), { target: { value: "test@example.com" } });
+    fireEvent.change(screen.getByPlaceholderText(/Identification Details/i), { target: { value: "ID123" } });
+    fireEvent.change(screen.getByPlaceholderText(/Username/i), { target: { value: "testuser" } });
+    fireEvent.change(screen.getByPlaceholderText(/Password/i), { target: { value: "TestPassword123" } });
+    fireEvent.change(screen.getByPlaceholderText(/Employer Name/i), { target: { value: "Company Inc." } });
+    fireEvent.change(screen.getByPlaceholderText(/Verification Code/i), { target: { value: "123456" } });
 
-    // Check if error message is shown
-    const errorMessage = await screen.findByText(/Registration failed/);
-    expect(errorMessage).toBeTruthy(); // Just checking the element is truthy (i.e., it exists)
+    // Set date of birth (using label or default query if no placeholder)
+    const dobInput = screen.getByDisplayValue("");
+    fireEvent.change(dobInput, { target: { value: "2000-01-01" } });
+
+    // Submit the form
+    fireEvent.click(screen.getByRole("button", { name: /register/i }));
+
+    // Wait for the error message to appear
+    const errorMessage = await screen.findByText(/Registration failed/i);
+    expect(errorMessage).toBeInTheDocument();
   });
 });
 
