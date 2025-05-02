@@ -13,8 +13,6 @@
     "bcryptjs": "^3.0.0",
     "cookies-next": "^5.0.2",
     "dotenv": "^16.4.7",
-    "expo-gl": "^15.0.3",
-    "expo-three": "^8.0.0",
     "framer-motion": "^12.6.2",
     "gsap": "^3.12.7",
     "js-cookie": "^3.0.5",
@@ -39,7 +37,7 @@
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.1",
     "slick-carousel": "^1.8.1",
-    "three": "0.166.0",
+    "three": "^0.172.0",
     "twilio": "^5.4.4",
     "vanta": "^0.5.24",
     "web-vitals": "^4.2.4",
@@ -78,7 +76,6 @@
     "@testing-library/jest-dom": "github:testing-library/jest-dom",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
-    "@twilio/voice-react-native-sdk": "^1.4.0",
     "@types/node": "^22.10.6",
     "@types/react": "^19.0.6",
     "autoprefixer": "^10.4.20",
@@ -94,3 +91,4 @@
     "typescript": "^5.7.3"
   }
 }
+
