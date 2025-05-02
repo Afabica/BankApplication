@@ -126,4 +126,4 @@ jobs:
 #        run: |
 #          kubectl apply -f k8s/nextjs-deployment.yaml
 #          kubectl rollout status deployment/nextjs-deployment -n ${{ env.NAMESPACE }}
-
+# dckr_pat_Xwm7URgDEySEVdjK7DB7DsQ6d14
