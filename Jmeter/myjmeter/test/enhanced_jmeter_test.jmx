@@ -1,0 +1,94 @@
+<?xml version="1.0" ?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.5">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Enhanced Load Test Plan" enabled="true">
+      <stringProp name="TestPlan.comments">Enhanced test plan with assertions, metrics, and throughput control</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="HOST" elementType="Argument">
+            <stringProp name="Argument.name">HOST</stringProp>
+            <stringProp name="Argument.value">${__P(HOST,localhost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="PORT" elementType="Argument">
+            <stringProp name="Argument.name">PORT</stringProp>
+            <stringProp name="Argument.value">${__P(PORT,8080)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+    </TestPlan>
+    <hashTree>
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+        <stringProp name="HTTPSampler.domain">${HOST}</stringProp>
+        <stringProp name="HTTPSampler.port">${PORT}</stringProp>
+        <stringProp name="HTTPSampler.protocol">http</stringProp>
+      </ConfigTestElement>
+      <hashTree/>
+      <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Throughput Timer" enabled="true">
+        <doubleProp name="throughput">60.0</doubleProp>
+        <intProp name="calcMode">1</intProp>
+      </ConstantThroughputTimer>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Basic Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">10</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"/>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Login POST" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.name"/>
+                <stringProp name="Argument.value">{ &quot;username&quot;: &quot;user${__Random(1,100)}&quot;, &quot;password&quot;: &quot;pass${__Random(1,10)}&quot; }</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.path">/api/login</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">5000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">5000</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Status Code Assertion" enabled="true">
+          <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+          <intProp name="Assertion.test_type">2</intProp>
+          <collectionProp name="Asserion.test_strings">
+            <string>200</string>
+          </collectionProp>
+        </ResponseAssertion>
+        <hashTree/>
+      </hashTree>
+      <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Prometheus Backend Listener" enabled="true">
+        <stringProp name="classname">com.github.johrstrom.listener.PrometheusListener</stringProp>
+        <elementProp name="arguments" elementType="Arguments">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="port" elementType="Argument">
+              <stringProp name="Argument.name">port</stringProp>
+              <stringProp name="Argument.value">9270</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="metricPrefix" elementType="Argument">
+              <stringProp name="Argument.name">metricPrefix</stringProp>
+              <stringProp name="Argument.value">jmeter</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="percentiles" elementType="Argument">
+              <stringProp name="Argument.name">percentiles</stringProp>
+              <stringProp name="Argument.value">0.95;0.99</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </elementProp>
+      </BackendListener>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

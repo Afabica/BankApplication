@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jmeter-load-test
+  labels:
+    app: influxdb-jmeter
+data:
+  load_test.sh: |
+    #!/bin/bash
+    # This script is for running the JMeter test from the master pod
+    # It invokes JMeter test scripts with the IP addresses of the slave PODs.
+    # It can also enable Prometheus metrics during execution.
+    echo "Starting JMeter Test on Master..."
+
+    # Define the JMeter home directory
+    JMETER_HOME=/jmeter/apache-jmeter-5.0
+    JMETER_BIN=$JMETER_HOME/bin
+
+    # Path to the test JMX script passed as an argument
+    TEST_SCRIPT_PATH=$1
+
+    # Check if the test script exists
+    if [ ! -f "$TEST_SCRIPT_PATH" ]; then
+        echo "Error: Test script $TEST_SCRIPT_PATH not found!"
+        exit 1
+    fi
+
+    # Start JMeter in non-GUI mode and collect results
+    $JMETER_BIN/jmeter -n -t $TEST_SCRIPT_PATH \
+      -Jprometheus.listener.port=9270 \  # Prometheus listener port
+      -Dserver.rmi.ssl.disable=true \
+      -R $(getent ahostsv4 jmeter-slaves-svc | cut -d' ' -f1 | sort -u | awk -v ORS=, '{print $1}' | sed 's/,$//') \
+      -l /test/results.jtl  # You can modify the result output location based on your use case
+
+    echo "JMeter Test Completed. Results saved to /test/results.jtl"
+

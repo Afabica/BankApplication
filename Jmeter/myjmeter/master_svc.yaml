@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jmeter-master
+  labels:
+    jmeter_mode: master
+spec:
+  selector:
+    jmeter_mode: master  # Matches the label in the Deployment
+  ports:
+    - name: spring-boot-metrics
+      protocol: TCP
+      port: 8000           # Exposing Prometheus metrics on this port
+      targetPort: 8000     # The internal port for Prometheus metrics
+    - name: jmeter-metrics
+      protocol: TCP
+      port: 9270           # Prometheus metrics for JMeter backend
+      targetPort: 9270     # The internal port for Prometheus metrics
+  type: ClusterIP  # You can change to NodePort or LoadBalancer if required
