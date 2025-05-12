@@ -19,4 +19,3 @@ const SidePanel = ({ children, isOpen, onClose }) => {
 };
 
 export default SidePanel;
-

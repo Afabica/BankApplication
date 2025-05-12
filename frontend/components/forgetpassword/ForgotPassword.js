@@ -79,7 +79,7 @@ const ForgotPasswordPage = () => {
 
   return (
     <div
-      className="flex items-center justify-center min-h-screen bg-gray-100"
+      className="flex items-right justify-right min-h-screen bg-gray-100"
       style={{ backgroundImage: "url(../../images/SecureBank.jpeg)" }}
     >
       <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">

@@ -45,7 +45,7 @@ const ProfilePage = () => {
       const token = cookies.jwt;
       try {
         const response = await axios.post(
-          "http://localhost:8080/dashboard/changeprofile",
+          "http://localhost:8443/api/profile/user",
           {},
           {
             headers: {
