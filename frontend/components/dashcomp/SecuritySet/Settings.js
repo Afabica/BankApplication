@@ -5,8 +5,12 @@ import "../../../styles/NavDash.css";
 import axios from "axios";
 import dynamic from "next/dynamic";
 
-const SidePanel = dynamic(() => import("../../dashcomp/MainPage/SidePanel"), { ssr: false });
-const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), { ssr: false });
+const SidePanel = dynamic(() => import("../../dashcomp/MainPage/SidePanel"), {
+  ssr: false,
+});
+const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), {
+  ssr: false,
+});
 const Header = dynamic(() => import("../../hedfot/DashHeader"), { ssr: false });
 const Footer = dynamic(() => import("../../hedfot/DashFooter"), { ssr: false });
 
@@ -57,37 +61,43 @@ const SecuritySettings = () => {
   };
 
   return (
-    <div className="security-container">
+    <div className="flex min-h-screen bg-gray-100 text-gray-900">
       <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
       <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
         <PanelElements />
       </SidePanel>
 
-      <div className="settings-content">
+      <div className="flex-1 flex flex-col">
         <h1>Security Settings</h1>
 
-        <div className="security-settings-section">
+        <div className="p-8 max-w-xl mx-auto bg-white shadow-md rounded-xl mt-8">
           {/* Theme Selection */}
-          <div className="option-group">
-            <p className="option-header">Theme Selection</p>
-            <button className="theme-toggle-button" onClick={toggleTheme}>
+          <div className="flex items-center space-x-6">
+            <p className="text-2xl font-bold">Theme Selection</p>
+            <button
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+              onClick={toggleTheme}
+            >
               Switch to {currentTheme === "light" ? "Dark" : "Light"} Mode
             </button>
           </div>
 
           {/* Notifications */}
-          <div className="option-group">
-            <p className="option-header">Notifications</p>
-            <button className="toggle-button" onClick={toggleNotifications}>
+          <div className="flex items-center space-x-6">
+            <p className="text-2xl font-bold">Notifications</p>
+            <button
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+              onClick={toggleNotifications}
+            >
               {notifications ? "Disable" : "Enable"} Notifications
             </button>
           </div>
 
           {/* Language Selection */}
-          <div className="option-group">
-            <p className="option-header">Language Selection</p>
+          <div className="flex items-center space-x-6">
+            <p className="text-2xl font-bold">Language Selection</p>
             <select
-              className="language-select"
+              className=""
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
             >
@@ -98,10 +108,12 @@ const SecuritySettings = () => {
           </div>
 
           {/* Balance Threshold */}
-          <div className="option-group">
-            <p className="option-header">Balance Threshold for Notifications</p>
+          <div className="flex items-center space-x-6">
+            <p className="text-2xl font-bold">
+              Balance Threshold for Notifications
+            </p>
             <input
-              className="balance-input"
+              className="w-full p-2 border border-gray-300 rounded"
               type="number"
               value={balanceThreshold}
               onChange={(e) => setBalanceThreshold(e.target.value)}
@@ -109,17 +121,20 @@ const SecuritySettings = () => {
           </div>
 
           {/* Change Password */}
-          <div className="option-group change-password-section">
-            <p className="option-header">Change Password</p>
+          <div className="flex items-center space-x-6">
+            <p className="text-2xl font-bold">Change Password</p>
             <form onSubmit={handleChangePassword}>
               <input
-                className="password-input"
+                className="w-full p-2 border border-gray-300 rounded"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter new password"
               />
-              <button className="submit-button" type="submit">
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                type="submit"
+              >
                 Change Password
               </button>
             </form>
@@ -131,4 +146,3 @@ const SecuritySettings = () => {
 };
 
 export default SecuritySettings;
-

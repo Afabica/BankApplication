@@ -1,18 +1,18 @@
 package com.example.demo.controller;
 
+import com.example.demo.jwtsecurity.JwtUtils;
 import com.example.demo.model.Transaction;
-import com.example.demo.service.TransactionService;
-import com.example.demo.service.CustomerService;
 import com.example.demo.repository.CustomerRepo;
 import com.example.demo.repository.LoginRepo;
 import com.example.demo.repository.RegisterRepo;
 import com.example.demo.repository.TransactionRepo;
-import com.example.demo.jwtsecurity.JwtUtils;
+import com.example.demo.service.CustomerService;
+import com.example.demo.service.TransactionService;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import com.example.demo.model.Customer;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -31,14 +31,13 @@ public class TransactionCont {
 
     @Autowired
     public TransactionCont(
-        CustomerService customerService,
-        LoginRepo loginRepo,
-        RegisterRepo registerRepo,
-        TransactionRepo transactionRepo,
-        CustomerRepo customerRepo,
-        TransactionService transactionService,
-        JwtUtils jwtUtils
-    ) {
+            CustomerService customerService,
+            LoginRepo loginRepo,
+            RegisterRepo registerRepo,
+            TransactionRepo transactionRepo,
+            CustomerRepo customerRepo,
+            TransactionService transactionService,
+            JwtUtils jwtUtils) {
         this.customerService = customerService;
         this.loginRepo = loginRepo;
         this.registerRepo = registerRepo;
@@ -51,8 +50,7 @@ public class TransactionCont {
     // Endpoint to fetch the transaction list of a user
     @GetMapping("/translist")
     public ResponseEntity<?> getTransactionList(
-            @RequestParam("userId") Long userId,
-            Authentication authentication) {
+            @RequestParam("userId") Long userId, Authentication authentication) {
 
         try {
             // Ensure the user is authenticated
@@ -60,6 +58,8 @@ public class TransactionCont {
 
             // Fetch transactions for the given userId
             List<Transaction> listtrans = transactionService.fetchAllTransactions(userId);
+            List<Transaction> listtrans1 = transactionService.fetchAllDestTransactions(userId);
+            listtrans.addAll(listtrans1);
 
             if (listtrans.isEmpty()) {
                 return ResponseEntity.status(404).body(Map.of("message", "No transactions found"));
@@ -79,7 +79,8 @@ public class TransactionCont {
 
     // Endpoint to process a transaction (Deposit, Withdrawal, Transfer, Payment)
     @PostMapping("/process")
-    public ResponseEntity<?> processTransaction(@RequestBody Transaction transaction, Authentication authentication) {
+    public ResponseEntity<?> processTransaction(
+            @RequestBody Transaction transaction, Authentication authentication) {
 
         try {
             // Ensure the user is authenticated
@@ -113,24 +114,31 @@ public class TransactionCont {
         }
     }
 
+    @GetMapping("/stats")
+    public ResponseEntity<?> getStatisticOfExpenses(
+            @RequestParam("user_id") Long user_id, Authentication authentication) {
+
+        return ResponseEntity.status(200).body("Statistics fetched");
+    }
+
     // Secured endpoint (accessible only for authenticated users)
     @GetMapping("/transcheck")
     public String getSecureData() {
         return "This is a secured endpoint.";
     }
- 
 
     // Optional: Helper method to check if the authenticated user is an admin
     private boolean isAdmin(Authentication authentication) {
-        // You can check if the authenticated user has admin privileges based on roles or any other logic
+        // You can check if the authenticated user has admin privileges based on roles or any other
+        // logic
         return authentication.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
     }
 
     // Optional: Helper method to fetch user ID from username (assuming your JWT contains user info)
-//    private Long getUserIdFromUsername(String username) {
-//        // Fetch the user ID from the database or service layer based on the username
-//        Customer customer = customerRepo.findByUsername(username);
-//        return customer != null ? customer.getId() : null;
-//    }
+    //    private Long getUserIdFromUsername(String username) {
+    //        // Fetch the user ID from the database or service layer based on the username
+    //        Customer customer = customerRepo.findByUsername(username);
+    //        return customer != null ? customer.getId() : null;
+    //    }
 }

@@ -53,7 +53,7 @@ const ForgotPasswordPage = () => {
       //        phone,
       //      });
       const response = await axios.post(
-        "/api/send/otp",
+        "https://localhost:8443/api/otp/send",
         {
           phone,
         },

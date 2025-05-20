@@ -73,7 +73,6 @@ const RewardsPage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      {/* Ensure SidePanel is only rendered when open */}
       {isPanelOpen && (
         <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
           <PanelElements />

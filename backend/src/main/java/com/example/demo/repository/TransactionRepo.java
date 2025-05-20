@@ -38,5 +38,6 @@ import java.util.List;
 public interface TransactionRepo extends JpaRepository<Transaction, Long> {
     Transaction findOneByAccountId(Long accountId);
     List<Transaction> findAllByAccountId(Long accountId);
+    List<Transaction> findAllByDestination_account_id(Long destination_account_id);
 }
 

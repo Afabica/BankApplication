@@ -45,13 +45,6 @@ export default function FeedbackPage() {
         console.error("User ID is missing");
         return;
       }
-      //      const res = await axios.post("https://localhost:8443/api/feedback", {
-      //        headers: {
-      //          "Content-Type": "application/json",
-      //        },
-      //        body: JSON.stringify(feedbackData),
-      //      });
-      //
       const res = await axios.post("https://localhost:8443/api/feedback", {
         headers: {
           "Content-Type": "application/json",

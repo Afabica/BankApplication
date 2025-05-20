@@ -70,15 +70,24 @@ public class TransactionService {
         return customerRepo.findByUsername(username);
     }
 
-    public Transaction findOneTransaction(Long accountId) {
+    public Transaction findOneTransaction(Long accountId) { 
         return transactionRepo.findOneByAccountId(accountId);
     }
+ 
 
     public List<Transaction> fetchAllTransactions(Long accountId) {
         try {
             return transactionRepo.findAllByAccountId(accountId);
         } catch (Exception e) {
             throw new IllegalStateException("Error fetching transactions", e);
+        }
+    }
+
+    public List<Transaction> fetchAllDestTransactions(Long destination_account_id) {
+        try {
+            return transactionRepo.findAllByDestination_account_id(destination_account_id);
+        } catch (Exception e) {
+            throw new IllegalStateException("Error feetching transactions1", e);
         }
     }
 
