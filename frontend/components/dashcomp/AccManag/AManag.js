@@ -54,17 +54,16 @@ const AccountManagement = () => {
           ? JSON.parse(storedCustomer)
           : null;
 
-        // Ensure it's an array or fallback to an empty array
         if (Array.isArray(parsedCustomer)) {
           setAccounts(parsedCustomer);
         } else if (parsedCustomer) {
-          setAccounts([parsedCustomer]); // Wrap in an array if it's a single object
+          setAccounts([parsedCustomer]);
         } else {
-          setAccounts([]); // Default to an empty array
+          setAccounts([]); 
         }
       } catch (error) {
         console.error("Error parsing customer data:", error);
-        setAccounts([]); // Set to empty array on error
+        setAccounts([]);
       }
     };
 

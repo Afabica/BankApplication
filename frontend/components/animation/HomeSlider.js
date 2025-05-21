@@ -49,7 +49,7 @@ const HomeSlider = () => {
     },
   ];
 
-  if (!mounted) return null; // Ensures the component renders only after mounting
+  if (!mounted) return null;
 
   return (
     <div className={styles.sliderContainer}>

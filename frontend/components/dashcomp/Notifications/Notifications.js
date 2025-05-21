@@ -4,14 +4,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dynamic from "next/dynamic";
 
-//const Header = dynamic(() => import("../hedfot/DashHeader"), { ssr: false });
-//const Footer = dynamic(() => import("../hedfot/DashFooter"), { ssr: false });
-//const SidePanel = dynamic(() => import("../dashcomp/MainPage/SidePanel"), {
-//  ssr: false,
-//});
-//const PanelElements = dynamic(() => import("../hedfot/PanelElements"), {
-//  ssr: false,
-//});
 const Header = dynamic(() => import("../../hedfot/DashHeader"), { ssr: false });
 const SidePanel = dynamic(() => import("../../hedfot/DashHeader"), {
   ssr: false,

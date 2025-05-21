@@ -32,7 +32,6 @@ const ExchangeRatesTable = () => {
   const rates = exchangeRates.conversion_rates;
   const currencies = Object.entries(rates);
 
-  // Get the currencies for the current page
   const displayedCurrencies = currencies.slice(
     pageNumber * itemsPerPage,
     (pageNumber + 1) * itemsPerPage,

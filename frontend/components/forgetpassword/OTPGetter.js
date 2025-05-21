@@ -12,10 +12,6 @@ const OtpGetter = () => {
 
   const handleSendOtp = async () => {
     try {
-      //      const response = await axios.post("http://localhsot:8080/api/send/otp", {
-      //        headers: { "Content-Type": "application/json" },
-      //        body: JSON.stringify({ otpcode }),
-      //      });
       const response = await axios.post(
         "http://localhost:8443/api/otp/verify",
         {
