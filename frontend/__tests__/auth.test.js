@@ -45,7 +45,7 @@ describe("SignInPage Component", () => {
   });
 
   it("logs in successfully and redirects to dashboard", async () => {
-    mock.onPost("https://bankapplication.local/api/login").reply(200, {
+    mock.onPost("https://localhost:8443/api/login").reply(200, {
       token: "fake.jwt.token",
     });
 
@@ -64,7 +64,7 @@ describe("SignInPage Component", () => {
 
     await waitFor(() => {
       const request = mock.history.post[0];
-      expect(request.url).toBe("https://bankapplication.local/api/login");
+      expect(request.url).toBe("https://localhost:8443/api/login");
       expect(request.data).toContain("maria123");
 
       expect(setCookie).toHaveBeenCalledWith(
@@ -76,7 +76,7 @@ describe("SignInPage Component", () => {
           httpOnly: false,
           secure: true,
           maxAge: 86400,
-        })
+        }),
       );
 
       expect(mockRouter.push).toHaveBeenCalledWith("/dashboard");
@@ -84,7 +84,7 @@ describe("SignInPage Component", () => {
   });
 
   it("shows an error message for failed login", async () => {
-    mock.onPost("https://bankapplication.local/api/login").reply(401, {
+    mock.onPost("https://localhost:8443/api/login").reply(401, {
       message: "Invalid credentials",
     });
 
@@ -101,10 +101,9 @@ describe("SignInPage Component", () => {
 
     await waitFor(() => {
       const errorText = screen.queryByText(
-        "Login failed. Please check your credentials and try again."
+        "Login failed. Please check your credentials and try again.",
       );
       expect(errorText).not.toBeNull(); // Standard Jest fallback
     });
   });
 });
-
