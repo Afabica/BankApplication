@@ -39,21 +39,27 @@ jobs:
           secret-name: dockerhub-secret 
           container-registry-url: https://index.docker.io/v1/ 
           container-registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
-          container-registry-password: ${{ secrets.DOCKERHUB_TOKEN }} 
+          container-registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set AKS context
+        uses: azure/aks-set-context@v3
+        with:
+            resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
+            cluster-name: ${{ secrets.CLUSTER_NAME }}
 
       # Step 3: Deploy Spring Boot app
       - name: Deploy Spring Boot app
         run: |
           kubectl apply -f k8s/backend-deploy.yaml
           kubectl apply -f k8s/backend-svc.yaml
-          kubectl rollout status deployment/backend-deploy -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/backend-deploy -n ${{ secrets.CLUSTER_NAME }}
 
       # Step 4: Deploy Next.js app
       - name: Deploy Next.js app
         run: |
           kubectl apply -f k8s/frontend-deploy.yaml
           kubectl apply -f k8s/frontend-svc.yaml
-          kubectl rollout status deployment/nextjs-deployment -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/nextjs-deployment -n ${{ secrets.CLUSTER_NAME }}
 
       # Step 5: Deploy Nginx server
       - name: Deploy Nginx server
