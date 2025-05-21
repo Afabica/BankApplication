@@ -6,7 +6,7 @@ on:
       - main
     pull_request: 
         branches: 
-         - manin 
+         - main
 
 env: 
     CLUSTER_NAME: my-aks-cluster

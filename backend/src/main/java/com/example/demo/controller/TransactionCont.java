@@ -1,19 +1,20 @@
 package com.example.demo.controller;
 
-import com.example.demo.jwtsecurity.JwtUtils;
+import com.example.demo.model.CurrentBalance;
+import com.example.demo.model.StatisticsSummary;
 import com.example.demo.model.Transaction;
-import com.example.demo.repository.CustomerRepo;
-import com.example.demo.repository.LoginRepo;
-import com.example.demo.repository.RegisterRepo;
 import com.example.demo.repository.TransactionRepo;
-import com.example.demo.service.CustomerService;
+import com.example.demo.service.CalculationService;
 import com.example.demo.service.TransactionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,83 +22,81 @@ import java.util.Map;
 @RequestMapping("/operations")
 public class TransactionCont {
 
-    private final CustomerService customerService;
-    private final JwtUtils jwtUtils;
-    private final CustomerRepo customerRepo;
-    private final LoginRepo loginRepo;
-    private final RegisterRepo registerRepo;
-    private final TransactionRepo transactionRepo;
     private final TransactionService transactionService;
+    private final CalculationService calculationService;
+    private final TransactionRepo transactionRepo;
 
     @Autowired
     public TransactionCont(
-            CustomerService customerService,
-            LoginRepo loginRepo,
-            RegisterRepo registerRepo,
-            TransactionRepo transactionRepo,
-            CustomerRepo customerRepo,
             TransactionService transactionService,
-            JwtUtils jwtUtils) {
-        this.customerService = customerService;
-        this.loginRepo = loginRepo;
-        this.registerRepo = registerRepo;
-        this.transactionRepo = transactionRepo;
-        this.jwtUtils = jwtUtils;
-        this.customerRepo = customerRepo;
+            CalculationService calculationService,
+            TransactionRepo transactionRepo) {
         this.transactionService = transactionService;
+        this.calculationService = calculationService;
+        this.transactionRepo = transactionRepo;
     }
 
     // Endpoint to fetch the transaction list of a user
+    //    @GetMapping("/translist")
+    //    public ResponseEntity<?> getTransactionList(
+    //            @RequestParam("user_id") Long userId, Authentication authentication) {
+    //
+    //        try {
+    //            // Ensure the user is authenticated
+    //            //
+    //            String loggedInUser = authentication.getName(); // Get the authenticated user from
+    // JWT
+    //
+    //            // Fetch transactions for the given userId
+    //            List<Transaction> listtrans = transactionService.fetchAllTransactions(userId);
+    //            List<Transaction> listtrans1 =
+    // transactionService.fetchAllDestTransactions(userId);
+    //            listtrans.addAll(listtrans1);
+    //
+    //            if (listtrans.isEmpty()) {
+    //                return ResponseEntity.status(404).body(Map.of("message", "No transactions
+    // found"));
+    //            } else {
+    //                return ResponseEntity.status(200)
+    //                        .body(Map.of("message", "Transactions have found"));
+    //            }
+    //        } catch (IllegalArgumentException e) {
+    //            // Return error response with 400 status for bad request
+    //            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
+    //        } catch (Exception e) {
+    //            // Return generic error response
+    //            return ResponseEntity.status(500).body(Map.of("error", "Internal Server Error"));
+    //        }
+    //    }
     @GetMapping("/translist")
-    public ResponseEntity<?> getTransactionList(
-            @RequestParam("userId") Long userId, Authentication authentication) {
-
+    public ResponseEntity<?> getTransctionList(@RequestParam("user_id") Long userId) {
         try {
-            // Ensure the user is authenticated
-            String loggedInUser = authentication.getName(); // Get the authenticated user from JWT
-
-            // Fetch transactions for the given userId
             List<Transaction> listtrans = transactionService.fetchAllTransactions(userId);
-            List<Transaction> listtrans1 = transactionService.fetchAllDestTransactions(userId);
-            listtrans.addAll(listtrans1);
-
             if (listtrans.isEmpty()) {
                 return ResponseEntity.status(404).body(Map.of("message", "No transactions found"));
             }
 
-            // Return the list of transactions with a 200 OK status
             return ResponseEntity.ok(listtrans);
-
         } catch (IllegalArgumentException e) {
-            // Return error response with 400 status for bad request
             return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            // Return generic error response
             return ResponseEntity.status(500).body(Map.of("error", "Internal Server Error"));
         }
     }
 
-    // Endpoint to process a transaction (Deposit, Withdrawal, Transfer, Payment)
     @PostMapping("/process")
     public ResponseEntity<?> processTransaction(
             @RequestBody Transaction transaction, Authentication authentication) {
-
         try {
-            // Ensure the user is authenticated
-            String loggedInUser = authentication.getName(); // Get the authenticated user from JWT
 
-            // Process the transaction
             transactionService.processTransaction(transaction);
-
-            // Return success response
-            return ResponseEntity.ok(Map.of("message", "Transaction processed successfully"));
-
+            return ResponseEntity.ok(Map.of("message", "Transaction processed sucessfully"));
         } catch (IllegalArgumentException e) {
-            // Return error response if transaction processing fails
-            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            // Return generic error response
-            return ResponseEntity.status(500).body(Map.of("error", "Internal Server Error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
@@ -114,11 +113,48 @@ public class TransactionCont {
         }
     }
 
-    @GetMapping("/stats")
-    public ResponseEntity<?> getStatisticOfExpenses(
-            @RequestParam("user_id") Long user_id, Authentication authentication) {
+    @GetMapping("/balance")
+    public ResponseEntity<?> getUserCurrentBalance(@RequestParam("user_id") Long user_id) {
+        try {
+            CurrentBalance balance = transactionService.getCurrentBalance(user_id);
+            if (balance.getStatus() != false) {
+                return ResponseEntity.ok(balance);
+            } else {
+                return ResponseEntity.status(404).body("No balance information found.");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400)
+                    .body("Erorr during fetchig balance information. " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", "Ineternal Server Error: " + e.getMessage()));
+        }
+    }
 
-        return ResponseEntity.status(200).body("Statistics fetched");
+    @GetMapping("/stats")
+    public ResponseEntity<?> getUserStats(
+            @RequestParam("user_id") Long user_id, Authentication authentication) {
+        LocalDateTime now = LocalDateTime.now();
+        List<Transaction> transactions = transactionRepo.findAllByAccountId(user_id);
+        List<Transaction> yeartrans =
+                calculationService.filterTransactionsByYear(
+                        transactions, now.getYear(), now.getMonthValue());
+
+        List<Transaction> monthtrans =
+                calculationService.filterTransactionsByMonth(
+                        transactions, now.getYear(), now.getMonthValue());
+
+        StatisticsSummary yearly = calculationService.calculateStatistics(yeartrans);
+        StatisticsSummary monthly = calculationService.calculateStatistics(monthtrans);
+
+        if (yearly.getTotal() != null && monthly.getTotal() != null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("yearly", yearly);
+            response.put("monthly", monthly);
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(404).body("Calculation process was not successful.");
+        }
     }
 
     // Secured endpoint (accessible only for authenticated users)

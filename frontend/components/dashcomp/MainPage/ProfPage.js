@@ -8,8 +8,8 @@ import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import dynamic from "next/dynamic";
 import PieChart from "./PieChart";
 import Promotions from "./Promotions";
-import { parseCookies } from "nookies";
-import withAuth from "../../tools/withAuth";
+// import { parseCookies } from "nookies"; // Not used in your current code
+// import withAuth from "../../tools/withAuth"; // Uncomment if you want auth wrapper
 import ProfileCards from "../Cards/ProfileCards";
 import BankCardsCarousel from "../Cards/ProfileCards";
 import CurrencyTable from "../Currency/CurrencyTable";
@@ -36,40 +36,46 @@ function Home() {
     setIsPanelOpen((prev) => !prev);
   };
 
-  const promotions = [/* (keep your existing 10 promotions here) */];
+  const promotions = [
+    // Keep your promotions here or load dynamically
+  ];
 
   useEffect(() => {
+    // Load stored customer data from localStorage
     const fetchProfile = () => {
       const storedCustomer = localStorage.getItem("customer");
       if (storedCustomer) {
-        const parsedData = JSON.parse(storedCustomer);
-        setFormData(parsedData);
-        setUserData(parsedData); // Assuming userData mirrors formData
+        try {
+          const parsedData = JSON.parse(storedCustomer);
+          setFormData(parsedData);
+          setUserData(parsedData);
+        } catch (e) {
+          console.error("Failed to parse stored customer data", e);
+        }
       }
     };
 
     const fetchTransactions = async () => {
-      const token = localStorage.getItem("token")?.replace(/"/g, "");
-      if (!token || !formData.id) {
-        console.error("Missing token or user ID");
-        return;
-      }
+      // If you want dynamic userId based on formData, wait until formData.customerId is set
+      const userId = formData.customerId || 1; // default fallback to 3 if no customerId yet
 
+      const token = localStorage.getItem("token")?.replace(/"/g, "");
       try {
         const response = await axios.get(
-          `https://backend-service:8443/operations/translist?userId=${encodeURIComponent(formData.id)}`,
+          `https://localhost:8443/operations/translist?user_id=${encodeURIComponent(userId)}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token || "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbGlzYWJldGgiLCJpYXQiOjE3NDc4MjU3NDcsImV4cCI6MTc0NzkxMjE0N30.VA-OfEdwN0NxWYqVh9h1DbEnskurwWMqUK5yC9FZOtVKrdFtmHqsZ8MVPzHMGXNetNIElCIWgAD8JyQPvCWefQ"}`,
               "Content-Type": "application/json",
             },
-          }
+          },
         );
 
         if (response.status === 200) {
           setTransactions(response.data);
         } else {
-          console.error("Failed to fetch transactions");
+          setError("Failed to fetch transactions");
+          console.error("Failed to fetch transactions", response);
         }
       } catch (err) {
         setError("Error fetching transactions");
@@ -77,60 +83,118 @@ function Home() {
       }
     };
 
-    if(formData.id) {
-    fetchTransactions();
-    }
     fetchProfile();
-    setPromotionsData(promotions);
-  }, [formData.id]);
+    fetchTransactions();
+  }, []); // Empty dependency: run once on mount
 
+  useEffect(() => {
+    if (formData.customerId) {
+      // Fetch transactions after formData.customerId is loaded
+      const fetchTransactions = async () => {
+        const token = localStorage.getItem("token")?.replace(/"/g, "");
+        try {
+          const response = await axios.get(
+            `https://localhost:8443/operations/translist?user_id=${encodeURIComponent(formData.customerId)}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token || "YOUR_FALLBACK_TOKEN_HERE"}`,
+                "Content-Type": "application/json",
+              },
+            },
+          );
+
+          if (response.status === 200) {
+            setTransactions(response.data);
+          } else {
+            setError("Failed to fetch transactions");
+            console.error("Failed to fetch transactions", response);
+          }
+        } catch (err) {
+          setError("Error fetching transactions");
+          console.error("Fetch error:", err.response?.data || err.message);
+        }
+      };
+
+      fetchTransactions();
+    }
+  }, [formData.customerId]);
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container flex min-h-screen bg-gray-50 text-gray-900">
       <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
         <PanelElements />
       </SidePanel>
-      <div className="main-layout">
+
+      <div className="flex flex-col flex-1">
         <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
-        <main className="main-content">
-          <div>
-            <p>{userData.name || "No Name"}</p>
-            <p>{userData.amount || "No Amount"}</p>
-            <p>{userData.cardnumber || "No Card Number"}</p>
+
+        <main className="main-content p-6 flex-1 overflow-auto max-w-7xl mx-auto">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold mb-3">
+              Welcome, {userData.fullName || userData.name || "User"}
+            </h1>
+            <p>Balance: {userData.amount ? `$${userData.amount}` : "N/A"}</p>
+            <p>
+              Card Number: {userData.cardNumber || userData.cardnumber || "N/A"}
+            </p>
           </div>
 
-          <section className="account-statistics">
-            <div className="stat-card"><h2>Total Savings</h2><p>{statistics.savings || "$0"}</p></div>
-            <div className="stat-card"><h2>Credit Score</h2><p>{statistics.creditScore || "N/A"}</p></div>
-            <div className="stat-card"><h2>Monthly Income</h2><p>{statistics.monthlyIncome || "$0"}</p></div>
-            <div className="stat-card"><h2>Monthly Expenses</h2><p>{statistics.monthlyExpenses || "$0"}</p></div>
+          <section className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div className="stat-card p-4 bg-white rounded shadow">
+              <h2 className="font-semibold mb-2">Total Savings</h2>
+              <p>{statistics.savings || "$0"}</p>
+            </div>
+            <div className="stat-card p-4 bg-white rounded shadow">
+              <h2 className="font-semibold mb-2">Credit Score</h2>
+              <p>{statistics.creditScore || "N/A"}</p>
+            </div>
+            <div className="stat-card p-4 bg-white rounded shadow">
+              <h2 className="font-semibold mb-2">Monthly Income</h2>
+              <p>{statistics.monthlyIncome || "$0"}</p>
+            </div>
+            <div className="stat-card p-4 bg-white rounded shadow">
+              <h2 className="font-semibold mb-2">Monthly Expenses</h2>
+              <p>{statistics.monthlyExpenses || "$0"}</p>
+            </div>
           </section>
 
-          {error && <p style={{ color: "red" }}>{error}</p>}
+          {error && <p className="text-red-600 font-semibold mb-6">{error}</p>}
 
-          <section id="transactions" className="transactions">
-            <div className="title"><h1>Recent Transactions</h1></div>
-            <table>
-              <thead>
+          <section id="transactions" className="transactions mb-8">
+            <h2 className="text-2xl font-bold mb-4">Recent Transactions</h2>
+            <table className="min-w-full bg-white rounded shadow overflow-hidden">
+              <thead className="bg-gray-200">
                 <tr>
-                  <th>*</th>
-                  <th>Date</th>
-                  <th>Description</th>
-                  <th>Amount</th>
+                  <th className="p-3">#</th>
+                  <th className="p-3 text-left">Date</th>
+                  <th className="p-3 text-left">Description</th>
+                  <th className="p-3 text-right">Amount</th>
                 </tr>
               </thead>
               <tbody>
                 {transactions.length === 0 ? (
-                  <tr><td colSpan="4">No transactions available</td></tr>
+                  <tr>
+                    <td colSpan={4} className="text-center p-4">
+                      No transactions available
+                    </td>
+                  </tr>
                 ) : (
                   transactions.map((tx) => (
-                    <tr key={tx.id}>
-                      <td>
-                        <FontAwesomeIcon icon={faShoppingCart} size="lg" color="#A3C600" />
+                    <tr key={tx.id} className="border-b hover:bg-gray-50">
+                      <td className="p-3 text-center">
+                        <FontAwesomeIcon
+                          icon={faShoppingCart}
+                          size="lg"
+                          color="#A3C600"
+                        />
                       </td>
-                      <td>{tx.transactionDate}</td>
-                      <td>{tx.description}</td>
-                      <td>{tx.amount}</td>
+                      <td className="p-3">
+                        {new Date(tx.transactionDate).toLocaleDateString()}
+                      </td>
+                      <td className="p-3">{tx.description || "-"}</td>
+                      <td className="p-3 text-right">
+                        ${parseFloat(tx.amount).toFixed(2)}
+                      </td>
                     </tr>
                   ))
                 )}
@@ -138,32 +202,50 @@ function Home() {
             </table>
           </section>
 
-          <section><BankCardsCarousel /></section>
-          <section className="pie_chart"><PieChart /></section>
+          <section className="mb-8">
+            <BankCardsCarousel />
+          </section>
 
-          <section id="bank-offers" className="bank-offers">
-            <h2>Bank Offers</h2>
-            <div className="offers">
-              {offers.map((offer) => (
-                <div key={offer.id} className="offer-card">
-                  <h3>{offer.title}</h3>
-                  <p>{offer.description}</p>
-                </div>
-              ))}
+          <section className="mb-8">
+            <PieChart />
+          </section>
+
+          <section id="bank-offers" className="bank-offers mb-8">
+            <h2 className="text-2xl font-bold mb-4">Bank Offers</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {offers.length === 0 ? (
+                <p>No offers available</p>
+              ) : (
+                offers.map((offer) => (
+                  <div
+                    key={offer.id}
+                    className="offer-card p-4 bg-white rounded shadow"
+                  >
+                    <h3 className="font-semibold mb-2">{offer.title}</h3>
+                    <p>{offer.description}</p>
+                  </div>
+                ))
+              )}
             </div>
           </section>
 
-          <section><CurrencyTable /></section>
-          <section><Promotions promotions={promotionsData} /></section>
+          <section className="mb-8">
+            <CurrencyTable />
+          </section>
+
+          <section className="mb-8">
+            <Promotions promotions={promotionsData} />
+          </section>
         </main>
-        {/* Optionally include Footer */}
+
+        {/* Uncomment if you want footer */}
         {/* <Footer /> */}
       </div>
     </div>
   );
 }
 
-// Uncomment this if you want to protect the page with authentication
+// Uncomment if you want authentication wrapping
 // export default withAuth(Home);
-export default Home;
 
+export default Home;

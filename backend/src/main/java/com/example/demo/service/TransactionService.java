@@ -1,83 +1,148 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Transaction;
-import com.example.demo.model.Customer;
+import com.example.demo.model.BankCardsEnt;
+import com.example.demo.model.CurrentBalance;
 import com.example.demo.model.RegisterUser;
-import com.example.demo.repository.TransactionRepo;
-import com.example.demo.repository.CustomerRepo;
+import com.example.demo.model.Transaction;
+import com.example.demo.repository.CardRepository;
 import com.example.demo.repository.RegisterRepo;
+import com.example.demo.repository.RegisteredAccountRepo;
+import com.example.demo.repository.TransactionRepo;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.demo.model.RegisteredAccount;
-import com.example.demo.repository.RegisteredAccountRepo;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TransactionService {
 
     private final TransactionRepo transactionRepo;
-    private final CustomerRepo customerRepo;
     private final RegisterRepo registerRepo;
+    private final CardRepository cardRepository;
     private final RegisteredAccountRepo accountRepo;
 
     @Autowired
-    public TransactionService(TransactionRepo transactionRepo, CustomerRepo customerRepo, RegisterRepo registerRepo, RegisteredAccountRepo accountRepo) {
+    public TransactionService(
+            TransactionRepo transactionRepo,
+            RegisterRepo registerRepo,
+            CardRepository cardRepository,
+            RegisteredAccountRepo accountRepo) {
         this.transactionRepo = transactionRepo;
-        this.customerRepo = customerRepo;
         this.registerRepo = registerRepo;
-        this.accountRepo =accountRepo;
+        this.accountRepo = accountRepo;
+        this.cardRepository = cardRepository;
     }
 
-    
+    //    public void processTransaction(Transaction transaction) {
+    //        // Fetch source and destination accounts via IBAN
+    //        RegisteredAccount sourceAccount =
+    //                accountRepo
+    //                        .findByIban(transaction.getIban())
+    //                        .orElseThrow(
+    //                                () -> new IllegalArgumentException("Source account not
+    // found"));
+    //
+    //        RegisteredAccount destinationAccount =
+    //                accountRepo
+    //                        .findByIban(transaction.getDestinationIban())
+    //                        .orElseThrow(
+    //                                () ->
+    //                                        new IllegalArgumentException(
+    //                                                "Destination account not found"));
+    //
+    //        BigDecimal transactionAmount = transaction.getAmount();
+    //
+    //        if (sourceAccount.getBalance().compareTo(transactionAmount) < 0) {
+    //            throw new IllegalArgumentException("Insufficient funds.");
+    //        }
+    //
+    //        // Process transfer
+    //        sourceAccount.setBalance(sourceAccount.getBalance().subtract(transactionAmount));
+    //        destinationAccount.setBalance(destinationAccount.getBalance().add(transactionAmount));
+    //
+    //        sourceAccount.setUpdatedAt(LocalDateTime.now());
+    //        destinationAccount.setUpdatedAt(LocalDateTime.now());
+    //
+    //        // Update transaction info
+    //        transaction.setAccount(sourceAccount);
+    //        transaction.setDestinationAccount(destinationAccount);
+    //        transaction.setTransactionDate(LocalDateTime.now());
+    //        transaction.setStatus("COMPLETED");
+    //
+    //        // Save changes
+    //        accountRepo.save(sourceAccount);
+    //        accountRepo.save(destinationAccount);
+    //        transactionRepo.save(transaction);
+    //    }
+    @Transactional
     public void processTransaction(Transaction transaction) {
-        // Fetch source and destination accounts via IBAN
-        RegisteredAccount sourceAccount = accountRepo.findByIban(transaction.getIban())
-                .orElseThrow(() -> new IllegalArgumentException("Source account not found"));
+        BankCardsEnt sourceCard =
+                cardRepository
+                        .findByCardNumber(transaction.getSourceCardNumber())
+                        .orElseThrow(() -> new IllegalArgumentException("Source card not found"));
 
-        RegisteredAccount destinationAccount = accountRepo.findByIban(transaction.getDestinationIban())
-                .orElseThrow(() -> new IllegalArgumentException("Destination account not found"));
+        BankCardsEnt destinationCard =
+                cardRepository
+                        .findByCardNumber(transaction.getDestinationCardNumber())
+                        .orElseThrow(
+                                () -> new IllegalArgumentException("Destination card not found"));
 
-        BigDecimal transactionAmount = transaction.getAmount();
+        RegisterUser sourceAccount = sourceCard.getAccount();
+        RegisterUser destinationAccount = destinationCard.getAccount();
 
-        if (sourceAccount.getBalance().compareTo(transactionAmount) < 0) {
+        BigDecimal amount = transaction.getAmount();
+
+        if (sourceAccount.getAmount().compareTo(amount) < 0) {
             throw new IllegalArgumentException("Insufficient funds.");
         }
 
-        // Process transfer
-        sourceAccount.setBalance(sourceAccount.getBalance().subtract(transactionAmount));
-        destinationAccount.setBalance(destinationAccount.getBalance().add(transactionAmount));
+        // Deduct from source, add to destination
+        sourceAccount.setAmount(sourceAccount.getAmount().subtract(amount));
 
-        sourceAccount.setUpdatedAt(LocalDateTime.now());
-        destinationAccount.setUpdatedAt(LocalDateTime.now());
+        destinationAccount.setAmount(destinationAccount.getAmount().add(amount));
 
-        // Update transaction info
+        LocalDateTime now = LocalDateTime.now();
+        //        sourceAccount.setUpdatedAt(now);
+        //        destinationAccount.setUpdatedAt(now);
+
         transaction.setAccount(sourceAccount);
         transaction.setDestinationAccount(destinationAccount);
-        transaction.setTransactionDate(LocalDateTime.now());
+        transaction.setTransactionDate(now);
         transaction.setStatus("COMPLETED");
 
-        // Save changes
-        accountRepo.save(sourceAccount);
-        accountRepo.save(destinationAccount);
+        registerRepo.save(sourceAccount);
+        registerRepo.save(destinationAccount);
         transactionRepo.save(transaction);
     }
 
-    public Customer findByUsername(String username) {
-        return customerRepo.findByUsername(username);
+    public CurrentBalance getCurrentBalance(Long accountId) {
+        RegisterUser user = registerRepo.findOneById(accountId);
+        if (user != null) {
+            CurrentBalance balance = new CurrentBalance();
+            balance.setId(user.getAccountId());
+            balance.setAmount(user.getAmount());
+            balance.setCurrency("USD");
+            balance.setStatus(true);
+            return balance;
+        } else {
+            CurrentBalance balance = new CurrentBalance();
+            balance.setStatus(false);
+            return balance;
+        }
     }
 
-    public Transaction findOneTransaction(Long accountId) { 
+    public Transaction findOneTransaction(Long accountId) {
         return transactionRepo.findOneByAccountId(accountId);
     }
- 
 
     public List<Transaction> fetchAllTransactions(Long accountId) {
         try {
-            return transactionRepo.findAllByAccountId(accountId);
+            return transactionRepo.findAllByDestinationAccountId(accountId);
         } catch (Exception e) {
             throw new IllegalStateException("Error fetching transactions", e);
         }
@@ -85,7 +150,7 @@ public class TransactionService {
 
     public List<Transaction> fetchAllDestTransactions(Long destination_account_id) {
         try {
-            return transactionRepo.findAllByDestination_account_id(destination_account_id);
+            return transactionRepo.findAllByDestinationAccountId(destination_account_id);
         } catch (Exception e) {
             throw new IllegalStateException("Error feetching transactions1", e);
         }
@@ -99,4 +164,3 @@ public class TransactionService {
         }
     }
 }
-

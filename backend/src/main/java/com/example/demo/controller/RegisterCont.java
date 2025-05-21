@@ -1,26 +1,15 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.LoginUser;
 import com.example.demo.model.RegisterUser;
 import com.example.demo.repository.RegisterRepo;
 import com.example.demo.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.example.demo.model.LoginUser;
-import com.example.demo.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.validation.annotation.Validated;
-import jakarta.validation.Valid;
-import org.springframework.validation.BindingResult;
-import org.springframework.ui.Model;
-import java.util.*;
-import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -33,35 +22,36 @@ public class RegisterCont {
     private RegisterRepo registerRepo;
     private PasswordEncoder passwordEncoder;
 
-    public RegisterCont(@Lazy UserService userService, @Lazy RegisterRepo registerRepo, @Lazy PasswordEncoder passwordEncoder) {
+    public RegisterCont(
+            @Lazy UserService userService,
+            @Lazy RegisterRepo registerRepo,
+            @Lazy PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.registerRepo = registerRepo;
         this.passwordEncoder = passwordEncoder;
     }
 
-
-
-//    @PostMapping("/register")
-//    public ResponseEntity<?> registration( @RequestBody RegisterUser userDto) {
-//        registerRepo.save(userDto);
-//        //boolean regist = userService.registerUser(userDto);
-//        //if(regist) {
-//        //    return ResponseEntity.ok("User registered");
-//        //} else {
-//        //    return ResponseEntity.badRequest().body("User not registered");
-//       // }
-////        try {
-////            RegisterUser registeredUser = userService.registerUser(userDto);
-////            return ResponseEntity.ok("User registered successfully.");
-////        } catch (IllegalArgumentException ex) {
-////            return ResponseEntity.badRequest().body(ex.getMessage());
-////        }
-//      //  if(users.containsKey(userDto.getUsername())) {
-//       //     return ResponseEntity.badRequest().body("User already exist");
-//        //}
-//        //users.put(userDto.getUsername(), userDto.getPassword());
-//    return ResponseEntity.ok("User registered");
-//    }
+    //    @PostMapping("/register")
+    //    public ResponseEntity<?> registration( @RequestBody RegisterUser userDto) {
+    //        registerRepo.save(userDto);
+    //        //boolean regist = userService.registerUser(userDto);
+    //        //if(regist) {
+    //        //    return ResponseEntity.ok("User registered");
+    //        //} else {
+    //        //    return ResponseEntity.badRequest().body("User not registered");
+    //       // }
+    ////        try {
+    ////            RegisterUser registeredUser = userService.registerUser(userDto);
+    ////            return ResponseEntity.ok("User registered successfully.");
+    ////        } catch (IllegalArgumentException ex) {
+    ////            return ResponseEntity.badRequest().body(ex.getMessage());
+    ////        }
+    //      //  if(users.containsKey(userDto.getUsername())) {
+    //       //     return ResponseEntity.badRequest().body("User already exist");
+    //        //}
+    //        //users.put(userDto.getUsername(), userDto.getPassword());
+    //    return ResponseEntity.ok("User registered");
+    //    }
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterUser userDto) {
         try {
@@ -78,10 +68,10 @@ public class RegisterCont {
         return ResponseEntity.ok(users);
     }
 
-//    @GetMappign("/stat")
-//    public ResponseEntity<?> getUserStat(@RequestBody RegisterUser registerUser) {
-//        RegisterUser regUser = 
-//
-//    }
+    //    @GetMappign("/stat")
+    //    public ResponseEntity<?> getUserStat(@RequestBody RegisterUser registerUser) {
+    //        RegisterUser regUser =
+    //
+    //    }
 
 }

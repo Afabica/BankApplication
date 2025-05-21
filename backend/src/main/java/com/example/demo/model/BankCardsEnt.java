@@ -1,100 +1,66 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-//import org.jasypt.util.text.AES256TextEncryptor;
 
 @Entity
-@Table(name = "bank_cards")
+@Table(name = "user_cards")
 public class BankCardsEnt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "card_id")
-    private Long cardId;
+    private Long id;
 
-    @Column(name = "customer_id", nullable = false)
-    private Long customerId;
+    // Many cards can belong to one account
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false)
+    private RegisterUser account;
 
-    @Column(name = "card_number", nullable = false, unique = true, length = 19)
-//    @Convert(converter = CardNumberEncryptionConverter.class)
+    @Column(name = "card_number", nullable = false, unique = true, length = 20)
     private String cardNumber;
 
-    @Column(name = "card_type", nullable = false, length = 10)
+    @Column(name = "card_expiry", nullable = false)
+    private LocalDate cardExpiry;
+
+    @Column(name = "card_cvv", nullable = false, length = 4)
+    private String cardCvv;
+
+    @Column(name = "card_type", nullable = false, length = 20)
     private String cardType;
 
-    @Column(name = "expiration_date", nullable = false)
-    private LocalDate expirationDate;
-
-    @Column(name = "issue_date", nullable = false)
-    private LocalDate issueDate;
-
-    @Column(name = "status", nullable = false, length = 10)
-    private String status;
-
-    @Column(name = "cash") 
-    private Long cash;
-
-    @Column(name = "daily_limit", precision = 10, scale = 2, nullable = false)
-    private Long dailyLimit;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "customers", referencedColumnName = "customer_id", insertable = false, updatable = false)
-    private Customer customers;
+    @Column(name = "iban", nullable = false, length = 34)
+    private String iban;
 
-    public BankCardsEnt(Long customerId, String cardType, LocalDate expirationDate, LocalDate issueDate, String status, Customer customers) {
-        this.customerId = customerId;
-        this.cardType = cardType; 
-        this.expirationDate = expirationDate;
-        this.issueDate = issueDate;
-        this.status = status;
-        this.customers = customers;
+    // Constructors, getters, setters
 
-    }
-    // Default Constructor
     public BankCardsEnt() {
-        Long value = 5000L; 
-        this.issueDate = LocalDate.now();
-        this.status = "Active";
-        this.dailyLimit = value;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    // Lifecycle Hooks
-    @PrePersist
-    protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
-    protected void onUpdate() {
+    public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
-    public Long getCardId() {
-        return cardId;
+    public Long getId() {
+        return id;
     }
 
-    public void setCardId(Long cardId) {
-        this.cardId = cardId;
+    public RegisterUser getAccount() {
+        return account;
     }
 
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setAccount(RegisterUser account) {
+        this.account = account;
     }
 
     public String getCardNumber() {
@@ -105,6 +71,22 @@ public class BankCardsEnt {
         this.cardNumber = cardNumber;
     }
 
+    public LocalDate getCardExpiry() {
+        return cardExpiry;
+    }
+
+    public void setCardExpiry(LocalDate cardExpiry) {
+        this.cardExpiry = cardExpiry;
+    }
+
+    public String getCardCvv() {
+        return cardCvv;
+    }
+
+    public void setCardCvv(String cardCvv) {
+        this.cardCvv = cardCvv;
+    }
+
     public String getCardType() {
         return cardType;
     }
@@ -113,105 +95,19 @@ public class BankCardsEnt {
         this.cardType = cardType;
     }
 
-    public LocalDate getExpirationDate() {
-        return expirationDate;
-    }
-
-    public void setExpirationDate(LocalDate expirationDate) {
-        this.expirationDate = expirationDate;
-    }
-
-    public LocalDate getIssueDate() {
-        return issueDate;
-    }
-
-    public void setIssueDate(LocalDate issueDate) {
-        this.issueDate = issueDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Long getDailyLimit() {
-        return dailyLimit;
-    }
-
-    public void setDailyLimit(Long dailyLimit) {
-        this.dailyLimit = dailyLimit;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setIban(String iban) {
+        this.iban = iban;
     }
 
-    public Customer getCustomer() {
-        return customers;
+    public String getIban() {
+        return iban;
     }
-
-    public void setCustomer(Customer customers) {
-        this.customers = customers;
-
-    }
-
-    public Long getBalance() {
-        return cash;
-    }
-
-    public void setBalance(Long cash) {
-        this.cash = cash;
-    }
-
-    // Encryption Converter
-//    @Converter
-//    public static class CardNumberEncryptionConverter implements AttributeConverter<String, String> {
-//        private static final String SECRET_KEY = "leopard1000";
-//
-//        private final AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
-//
-//        public CardNumberEncryptionConverter() {
-//            textEncryptor.setPassword(SECRET_KEY);
-//        }
-//
-//        @Override
-//        public String convertToDatabaseColumn(String attribute) {
-//            try {
-//                if (attribute == null) {
-//                    return null;
-//                }
-//                return textEncryptor.encrypt(attribute);
-//            } catch (Exception e) {
-//                throw new IllegalArgumentException("Error encrypting card number", e);
-//            }
-//        }
-//
-//        @Override
-//        public String convertToEntityAttribute(String dbData) {
-//            try {
-//                if (dbData == null) {
-//                    return null;
-//                }
-//                return textEncryptor.decrypt(dbData);
-//            } catch (Exception e) {
-//                throw new IllegalArgumentException("Error decrypting card number", e);
-//            }
-//        }
-//    }
 }
-

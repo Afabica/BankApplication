@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.model.LoginUser;
 import com.example.demo.model.RegisterUser;
 import com.example.demo.model.Transaction;
-import com.example.demo.repository.CustomerRepo;
 import com.example.demo.repository.RegisterRepo;
 import com.example.demo.service.TransactionService;
 import com.example.demo.service.UserService;
@@ -24,17 +23,14 @@ public class LoginCont {
     private static final String FILE_PATH = "/data/logins.txt";
 
     private final UserService userService;
-    private final CustomerRepo customerRepo;
     private final TransactionService transactionService;
     private final RegisterRepo registerRepo;
 
     @Autowired
     public LoginCont(UserService userService,
-                     CustomerRepo customerRepo,
                      TransactionService transactionService,
                      RegisterRepo registerRepo) {
         this.userService = userService;
-        this.customerRepo = customerRepo;
         this.transactionService = transactionService;
         this.registerRepo = registerRepo;
     }

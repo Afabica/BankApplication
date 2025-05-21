@@ -46,7 +46,9 @@ RUN chmod -R 777 /jmeter/apache-jmeter-${JMETER_VERSION}/test
 WORKDIR /jmeter/apache-jmeter-${JMETER_VERSION}
 
 # Start Metrics Server first, then JMeter
-CMD ["sh", "-c", "java -jar demo-1.0-all.jar & sleep 2 && jmeter -n -t /jmeter/apache-jmeter-5.5/test/login_test1.jmx -l /jmeter/apache-jmeter-5.5/test/results.csv -Jprometheus.listener.port=9270"]
+##CMD ["sh", "-c", "java -jar demo-1.0-all.jar & sleep 2 && jmeter -n -t /jmeter/apache-jmeter-5.5/test/login_test1.jmx -l /jmeter/apache-jmeter-5.5/test/results.csv -Jprometheus.listener.port=9270"]
+CMD ["sh", "-c", jmeter -n -t /jmeter/apache-jmeter-5.5/test/login_test.jmx -l /jmeter/apache-jmeter-5.5/test/results.jtl]
+
 
 # Expose Prometheus metrics port
 EXPOSE 9270

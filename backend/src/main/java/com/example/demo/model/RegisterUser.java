@@ -1,12 +1,13 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 
 @Entity
 @Table(name = "user_authentication")
@@ -15,7 +16,7 @@ public class RegisterUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_id")
-    private Long accountId;
+    private Long id;
 
     @Column(name = "full_name")
     private String fullName;
@@ -42,8 +43,8 @@ public class RegisterUser {
     private String verificationCode;
 
     @Column(name = "customer_id")
-    private Long customerId; 
-    
+    private Long customerId;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<RegisteredAccount> accounts = new ArrayList<>();
@@ -54,11 +55,11 @@ public class RegisterUser {
     // Getters and Setters
 
     public Long getAccountId() {
-        return accountId;
+        return id;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setAccountId(Long id) {
+        this.id = id;
     }
 
     public String getFullName() {
@@ -165,4 +166,3 @@ public class RegisterUser {
         this.customerId = customerId;
     }
 }
-
