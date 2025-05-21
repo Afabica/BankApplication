@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation"; // Correct import for Next.js 13 (App Router)
 import { setCookie } from "nookies";
 import ThemeSwitcher from "../../scripts/theme";
-import ScrollTriggerComponent from "../animation/ScrollTriggerComponent.js"; // Assuming this will be used in animation logic
 import https from "https";
 
 const SignInPage = () => {

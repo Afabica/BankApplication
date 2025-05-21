@@ -1,13 +1,14 @@
 "use client";
 
-import About from "../../components/aboutcomp/AboutComp";
+import React from "react";
+import AccountTypes from "../../components/aboutcomp/AboutComp";
 import Header from "../../components/hedfot/HeaderHome";
 import Footer from "../../components/hedfot/FooterHome";
 
-export default function AboutPage() {
-  <div>
-    <Header />
-    <About />
-    <Footer />
-  </div>;
-}
+const AboutPage = () => {
+  <>
+    <AccountTypes />
+  </>;
+};
+
+export default AboutPage;
