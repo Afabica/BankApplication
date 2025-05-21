@@ -14,17 +14,15 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(List.of("https://jmeter-master.https-test.svc.cluster.local", "https://localhost:3000", "https://localhost:8443/api/login", "https://bankapplication.local", "https://jmeter-slaves.https-test.svc.cluster.local")); // Allow both HTTP and HTTPS origins
-//        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Restrict allowed methods
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Allow only necessary headers
-        configuration.setAllowCredentials(true); // Enable cookies for authentication
+        configuration.setAllowedMethods(
+                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); 
+        configuration.setAllowedHeaders(
+                List.of("Authorization", "Content-Type")); 
+        configuration.setAllowCredentials(true); 
 
-        // Register CORS settings for all paths
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }
-
