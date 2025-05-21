@@ -1,12 +1,17 @@
-name: Deploying application to Azure Kubernetes Service
+name: Second Workflow
 
 on: 
-  push: 
-    branches:
-      - main
-  pull_request: 
-    branches:
-      - main
+#  push: 
+#    branches:
+#      - main
+#  pull_request: 
+#    branches:
+#      - main
+    workflow_run:
+        workflows: ["First Workflow"] 
+        types:
+            - completed
+
 
 env: 
   CLUSTER_NAME: my-aks-cluster

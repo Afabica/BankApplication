@@ -1,4 +1,4 @@
-name: Build, Test, and Deploy Spring Boot and Next.js
+name: First Workflow
 
 on:
   push:
