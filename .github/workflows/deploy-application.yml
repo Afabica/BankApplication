@@ -7,8 +7,8 @@ on:
       - completed
 
 env: 
-  CLUSTER_NAME: my-aks-cluster
-  RESOURCE_GROUP: spring
+  CLUSTER_NAME: BankCluster
+  RESOURCE_GROUP: Kubernetes
   NAMESPACE: https-con
 
 jobs: 

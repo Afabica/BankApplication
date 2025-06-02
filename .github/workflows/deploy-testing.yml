@@ -1,83 +1,83 @@
-#name: Deployment of testing environment 
-# 
-#on: 
-#    push: 
-#     branches: 
-#      - main
-#    pull_request: 
-#        branches: 
-#         - main
-#
-#env: 
-#    CLUSTER_NAME: my-aks-cluster
-#    RESOURCE_GROUP: spring
-#    NAMESPACE: https-test
-#
-#jobs: 
-#    build-and-push:
-#        runs-on: ubuntu-22.04
-#        steps:
-#            - name: Azure login
-#              uses: azure/login@v1
-#              with: 
-#                client-id: ${{ secrets.AZURE_CLIENT_ID }} 
-#                tenant-id: ${{ secrets.AZURE_TENANT_ID }} 
-#                secret: ${{ secretes.AZURE_CLIENT_SECRET }}
-#            - name: Create image pull secret
-#              uses: azure/k8s-create-secret@v1
-#              with: 
-#                secret-name: dockerhub-secret
-#                container-refistry-url: https://index.docker.io/v1/
-#                container-registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
-#                container-registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
-#                          
-#            - name: Building jmeter-base
-#              uses: docker/build-push-action@v5
-#              with: 
-#                context: ./backend/Jmeter
-#                push: true
-#                tags: ${{ secrets.DOCKERHUB_USERNAME}}/jmeter-base:latest
-#                
-#            - name: Building jmeter-master
-#              uses: docker/build-push-action@v5 
-#              with: 
-#                context: ./backend/Jmeter
-#                push: true
-#                tags: ${{ secrets.DOCKERHUB_USERNAME}}/jmeter-master:latest
-#
-#    deploy-to-aks: 
-#        needs: build-and-push
-#        runs-on: ubuntu-22.04
-#        steps:
-#         - name: Azure Login
-#           uses: azure/login@v1
-#           with: 
-#            creds: ${{ secrets.AZURE_CRiEDENTIALS }}
-#
-#         - name: Set AKS context 
-#           uses: azure/aks-set-context@v3
-#           with: 
-#            resource-group: ${{ env.RESOURCE_GROUP}}
-#            cluster-name: ${{env.CLUSTER_NAME}}
-#            
-#         - name: Deploy jmeter-master pod 
-#           run: |
-#               kubectl apply -f Jmeter/jmeter_master_deploy.yaml 
-#               kubectl apply -f Jmeter/jmeter_master_configmap.yaml 
-#               kuebctl rollout status deployment/jmeter-master -n ${{ env.NAMESPACE }}
-#
-#         - name: Deploy jmeter-graphana pod
-#           run: |
-#               kubectl apply -f Jmeter/jmeter_grafana_deploy.yaml 
-#               kubectl apply -f Jmeter/jmeter_grafana_svc.yaml
-#
-#         - name: Deploy jmeter-prometheus
-#           run: |
-#               kubectl apply -f Jmeter/jmeter-prometheus.yaml
-#               kubectl rollout status deployment/jmeter-prometheus.yaml 
-#             
-#
-#
-#
-#             
-#            
+name: Deployment of testing environment 
+ 
+on: 
+    push: 
+     branches: 
+      - main
+    pull_request: 
+        branches: 
+         - main
+
+env: 
+    CLUSTER_NAME: my-aks-cluster
+    RESOURCE_GROUP: spring
+    NAMESPACE: https-test
+
+jobs: 
+    build-and-push:
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Azure login
+              uses: azure/login@v1
+              with: 
+                client-id: ${{ secrets.AZURE_CLIENT_ID }} 
+                tenant-id: ${{ secrets.AZURE_TENANT_ID }} 
+                secret: ${{ secretes.AZURE_CLIENT_SECRET }}
+            - name: Create image pull secret
+              uses: azure/k8s-create-secret@v1
+              with: 
+                secret-name: dockerhub-secret
+                container-refistry-url: https://index.docker.io/v1/
+                container-registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
+                container-registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
+                          
+            - name: Building jmeter-base
+              uses: docker/build-push-action@v5
+              with: 
+                context: ./backend/Jmeter
+                push: true
+                tags: ${{ secrets.DOCKERHUB_USERNAME}}/jmeter-base:latest
+                
+            - name: Building jmeter-master
+              uses: docker/build-push-action@v5 
+              with: 
+                context: ./backend/Jmeter
+                push: true
+                tags: ${{ secrets.DOCKERHUB_USERNAME}}/jmeter-master:latest
+
+    deploy-to-aks: 
+        needs: build-and-push
+        runs-on: ubuntu-22.04
+        steps:
+         - name: Azure Login
+           uses: azure/login@v1
+           with: 
+            creds: ${{ secrets.AZURE_CRiEDENTIALS }}
+
+         - name: Set AKS context 
+           uses: azure/aks-set-context@v3
+           with: 
+            resource-group: ${{ env.RESOURCE_GROUP}}
+            cluster-name: ${{env.CLUSTER_NAME}}
+            
+         - name: Deploy jmeter-master pod 
+           run: |
+               kubectl apply -f Jmeter/jmeter_master_deploy.yaml 
+               kubectl apply -f Jmeter/jmeter_master_configmap.yaml 
+               kuebctl rollout status deployment/jmeter-master -n ${{ env.NAMESPACE }}
+
+         - name: Deploy jmeter-graphana pod
+           run: |
+               kubectl apply -f Jmeter/jmeter_grafana_deploy.yaml 
+               kubectl apply -f Jmeter/jmeter_grafana_svc.yaml
+
+         - name: Deploy jmeter-prometheus
+           run: |
+               kubectl apply -f Jmeter/jmeter-prometheus.yaml
+               kubectl rollout status deployment/jmeter-prometheus.yaml 
+             
+
+
+
+             
+            
