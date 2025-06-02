@@ -44,19 +44,19 @@ jobs:
 
       - name: Deploy Spring Boot app
         run: |
-          kubectl apply -f k8s/backend-deploy.yaml -n ${{ env.NAMESPACE }}
+            kubectl apply -f AppDeploy/backend-deploy.yaml -n ${{ env.NAMESPACE }}
           kubectl apply -f k8s/backend-svc.yaml -n ${{ env.NAMESPACE }}
           kubectl rollout status deployment/backend-deploy -n ${{ env.NAMESPACE }}
 
       - name: Deploy Next.js app
         run: |
-          kubectl apply -f k8s/frontend-deploy.yaml -n ${{ env.NAMESPACE }}
-          kubectl apply -f k8s/frontend-svc.yaml -n ${{ env.NAMESPACE }}
+          kubectl apply -f AppDeploy/frontend-deploy.yaml -n ${{ env.NAMESPACE }}
+          kubectl apply -f AppDeploy/frontend-svc.yaml -n ${{ env.NAMESPACE }}
           kubectl rollout status deployment/nextjs-deployment -n ${{ env.NAMESPACE }}
 
       - name: Deploy Nginx server
         run: |
-          kubectl apply -f k8s/nginx-deploy.yaml -n ${{ env.NAMESPACE }}
-          kubectl apply -f k8s/nginx-configmap.yaml -n ${{ env.NAMESPACE }}
-          kubectl apply -f k8s/nginx-svc.yaml -n ${{ env.NAMESPACE }}
+          kubectl apply -f AppDeploy/nginx-deploy.yaml -n ${{ env.NAMESPACE }}
+          kubectl apply -f AppDeploy/nginx-configmap.yaml -n ${{ env.NAMESPACE }}
+          kubectl apply -f AppDeploy/nginx-svc.yaml -n ${{ env.NAMESPACE }}
 
