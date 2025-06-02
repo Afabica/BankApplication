@@ -41,6 +41,16 @@ jobs:
       - name: Create namespace 
         run: kubectl create namespace https-con || echo "Namespace already exists"
 
+      - name: Create docker registry secret for this service
+        uses: azure/k8s-create-secret@v1
+        with:
+             secret-name: dockerhub-secret
+             namespace: https-con
+             docker-server: https://index.docker.io/v1/
+             docker-username: ${{ secrets.DOCKER_USERNAME }}
+             docker-password: ${{ secrets.DOCKER_TOKEN }}
+             docker-email: ""  # can be empty string if you don't have an email
+
       - name: Deploy Spring Boot app
         run: |
           kubectl apply -f k8s/backend-deploy.yaml -n ${{ env.NAMESPACE }}
