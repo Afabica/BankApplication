@@ -60,15 +60,7 @@ public class SmsService {
         this.twilioConfig = twilioConfig;
         this.passwordEncoder = passwordEncoder;
         this.loginRepo = loginRepo;
-        this.registerRepo = registerRepo;            return false; 
-        } else if board[0][i] != 0 {
-            return false;
-        } else if board[i][i] != 0 {
-            return false;
-        } else {
-            return true;
-        }
-    }
+        this.registerRepo = registerRepo;
         //        this.notifiRepo = notifiRepo;
     }
 
