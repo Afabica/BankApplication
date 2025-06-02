@@ -32,24 +32,14 @@ jobs:
       - name: Create namespace 
         run: kubectl create namespace https-con || echo "Namespace already exists"
 
-      - name: Create image pull secret
+      - name: Create docker registry secret
         uses: azure/k8s-create-secret@v1
         with:
-          secret-name: dockerhub-secret 
-          namespace: ${{ env.NAMESPACE }}
-          container-registry-url: https://index.docker.io/v1/ 
-          container-registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
-          container-registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Create docker registry secret for image pull
-        uses: azure/k8s-create-secret@v1
-        with:
-         secret-name: dockerhub-secret
-         namespace: https-con
-         container-registry-url: https://index.docker.io/v1/
-         container-registry-username: ${{ secrets.DOCKER_USERNAME }}
-         container-registry-password: ${{ secrets.DOCKER_TOKEN }}
-         container-registry-email: ""  # optional
+            secret-name: dockerhub-secret
+            namespace: https-con
+            container-registry-url: https://index.docker.io/v1/
+            container-registry-username: ${{ secrets.DOCKER_USERNAME }}
+            container-registry-password: ${{ secrets.DOCKER_TOKEN }}
 
 
       - name: Deploy Spring Boot app
