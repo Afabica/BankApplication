@@ -1,27 +1,32 @@
 package com.example.demo.service;
 
-import com.example.demo.config.TwilioConfig;
 import com.example.demo.model.OTPUser;
-import com.example.demo.model.RegisterUser;
-import com.example.demo.repository.LoginRepo;
 import com.example.demo.repository.OtpRepository;
 import com.example.demo.repository.RegisterRepo;
-import com.twilio.Twilio;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.example.demo.model.RegisterUser;
+import com.example.demo.model.LoginUser;
+import com.example.demo.repository.LoginRepo;
+import com.example.demo.config.TwilioConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+//import com.example.demo.mode.Notifications;
+
+//import com.example.demo.repository.NotifiRepo;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.Random;
-import java.util.regex.Pattern;
+import java.util.Optional;
 
 @Service
 public class SmsService {
@@ -29,9 +34,9 @@ public class SmsService {
     private final OtpRepository otpRepository;
     private final TwilioConfig twilioConfig;
     private final PasswordEncoder passwordEncoder;
-    private final RegisterRepo registerRepo;
+    private final RegisterRepo registerRepo; 
     private final LoginRepo loginRepo;
-    // private final NotifiRepo notifiRepo;
+    //private final NotifiRepo notifiRepo; 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmsService.class);
 
@@ -41,112 +46,109 @@ public class SmsService {
     public static final String TWILIO_PHONE_NUMBER = "+16088798709";
 
     private static final String EMAIL_PATTERN =
-            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@" +
+            "(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 
     // Regex pattern for a valid phone number (E.164 format + local formats)
-    private static final String PHONE_PATTERN = "^(\\+\\d{1,3}[- ]?)?\\d{10,15}$";
+    private static final String PHONE_PATTERN =
+            "^(\\+\\d{1,3}[- ]?)?\\d{10,15}$"; 
 
     private static final Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
     private static final Pattern phonePattern = Pattern.compile(PHONE_PATTERN);
 
     @Autowired
-    public SmsService(
-            OtpRepository otpRepository,
-            TwilioConfig twilioConfig,
-            PasswordEncoder passwordEncoder,
-            LoginRepo loginRepo,
-            RegisterRepo registerRepo) {
+    public SmsService(OtpRepository otpRepository, TwilioConfig twilioConfig, PasswordEncoder passwordEncoder, LoginRepo loginRepo, RegisterRepo registerRepo) {
         this.otpRepository = otpRepository;
         this.twilioConfig = twilioConfig;
         this.passwordEncoder = passwordEncoder;
         this.loginRepo = loginRepo;
         this.registerRepo = registerRepo;
-        //        this.notifiRepo = notifiRepo;
+//        this.notifiRepo = notifiRepo;
     }
-
+ 
     public OTPUser sendOtp(OTPUser user) {
         // Initialize Twilio with account credentials
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-
+        
         Optional<RegisterUser> registeredUser = registerRepo.findByMobile(user.getPhoneNumber());
         OTPUser otpUser = new OTPUser();
 
         // Create OTP user record
-        if (registeredUser.isPresent()) {
+        if(registeredUser.isPresent()) {
+        
+        otpUser.setPhoneNumber(user.getPhoneNumber());
+        otpUser.setCreatedAt(LocalDateTime.now());
+        otpUser.setExpiresAt(LocalDateTime.now().plusMinutes(5)); // OTP expires in 5 minutes
+        otpUser.setOtpCode(generateOtp(user.getPhoneNumber()));
+        otpUser.setVerified(false); // Initially, OTP is not verified
 
-            otpUser.setPhoneNumber(user.getPhoneNumber());
-            otpUser.setCreatedAt(LocalDateTime.now());
-            otpUser.setExpiresAt(LocalDateTime.now().plusMinutes(5)); // OTP expires in 5 minutes
-            otpUser.setOtpCode(generateOtp(user.getPhoneNumber()));
-            otpUser.setVerified(false); // Initially, OTP is not verified
+        // Send the OTP via SMS
+        sendSms(otpUser.getPhoneNumber(), otpUser.getOtpCode());
 
-            // Send the OTP via SMS
-            sendSms(otpUser.getPhoneNumber(), otpUser.getOtpCode());
         }
         // Save OTP details to the database
         return otpRepository.save(otpUser);
     }
 
-    //    public void deleteNotification(Long id) {
-    //        notifiRepo.deleteById(id);
-    //    }
-    //
-    //    public void deleteAllNotificationsForUser(Long userId) {
-    //        List<Notifications> notifications = notifiRepo.findAllByCustomerId(userId);
-    //        notifirepo.deleteAll(notifications);
-    //    }
+//    public void deleteNotification(Long id) {
+//        notifiRepo.deleteById(id);
+//    }
+//
+//    public void deleteAllNotificationsForUser(Long userId) {
+//        List<Notifications> notifications = notifiRepo.findAllByCustomerId(userId);
+//        notifirepo.deleteAll(notifications);
+//    }
 
-    //    public String sendStringOtp(String phoneemail) {
-    //        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-    //        OTPUser otpUser = new OTPUser();
-    //        String validata = checkString(phoneemail);
-    //        char[] validArr = validata.toCharArray();
-    //        String response = StringOTP(phoneemail);
-    //        if((validArr[validArr.length() -1] == '+') {
-    //            otpUser.setPhoneNumber(phoneemail);
-    //        } else if(validArr[validArr.length() - 1] == '-') {
-    //            otpUser.setEmail(emailadd);
-    //        }
-    //        return phoneemail;
-    //    }
+//    public String sendStringOtp(String phoneemail) {
+//        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+//        OTPUser otpUser = new OTPUser();
+//        String validata = checkString(phoneemail);
+//        char[] validArr = validata.toCharArray();
+//        String response = StringOTP(phoneemail);
+//        if((validArr[validArr.length() -1] == '+') {
+//            otpUser.setPhoneNumber(phoneemail);
+//        } else if(validArr[validArr.length() - 1] == '-') {
+//            otpUser.setEmail(emailadd);
+//        }
+//        return phoneemail;
+//    }
 
-    //    private String checkString(String phoneemail) {
-    //        if(phoneemail == null) {
-    //            return false;
-    //        }
-    //        Matcher emailMatcher = emailPattern.matcher(phoneemail);
-    //        Matcher phoneMatcher = phonePattern.matcher(phoneemail);
-    //
-    //        chat[] dataarray = phoneemail.toCharArray();
-    //        chat[] modifiedArray = addToArray(dataarray);
-    //
-    //        if (emailMatcher.matches()) {
-    //            addCharToArray(dataarray, '-');
-    //        } else {
-    //            addCharToArray(dataarray, '+');
-    //        }
-    //        return dataarray;
-    //    }
+//    private String checkString(String phoneemail) {
+//        if(phoneemail == null) {
+//            return false;
+//        }
+//        Matcher emailMatcher = emailPattern.matcher(phoneemail);
+//        Matcher phoneMatcher = phonePattern.matcher(phoneemail);
+//
+//        chat[] dataarray = phoneemail.toCharArray();
+//        chat[] modifiedArray = addToArray(dataarray);
+//
+//        if (emailMatcher.matches()) {
+//            addCharToArray(dataarray, '-');
+//        } else {
+//            addCharToArray(dataarray, '+');
+//        }
+//        return dataarray;
+//    }
 
-    //    public static char[] addCharToArray(char[] array, char newChar) {
-    //        char[] newArray = Arrays.copyOf(array, array.length + 1);
-    //        newArray[array.length] = newChar;
-    //        return newArray;
-    //    }
-    //    public List<Notifications> fetchAllNotifications(Long user_id) {
-    //        try {
-    //            return notifoRepo.fetchAllNotifications(user_id);
-    //        } catch (Exception e) {
-    //            throw new IllegalStateException("Error fetching notifications", e);
-    //        }
-    //    }
-    //
+//    public static char[] addCharToArray(char[] array, char newChar) {
+//        char[] newArray = Arrays.copyOf(array, array.length + 1);
+//        newArray[array.length] = newChar;
+//        return newArray;
+//    }
+//    public List<Notifications> fetchAllNotifications(Long user_id) {
+//        try {
+//            return notifoRepo.fetchAllNotifications(user_id);
+//        } catch (Exception e) {
+//            throw new IllegalStateException("Error fetching notifications", e);
+//        }
+//    }
+//
     private String generateOtp(String phoneNo) {
         HashMap<String, String> otpData = getRandomOtp(phoneNo);
         return otpData.get(phoneNo);
     }
-
-    //
+//
     private HashMap<String, String> getRandomOtp(String phoneNo) {
         String otp = new DecimalFormat("000000").format(new Random().nextInt(999999));
         HashMap<String, String> data = new HashMap<>();
@@ -154,35 +156,25 @@ public class SmsService {
         return data;
     }
 
-    public String resendOtp(String phoneNo) {
-        OTPUser otpcode = otpRepository.findByPhoneNumber(phoneNo);
-        if (otpcode.getOtpCode() != null) {
-            return otpcode.getOtpCode();
-        } else {
-            return "Not present in the table";
-        }
-    }
-
-    ////    private String StringOTP(String phoneemail) {
-    //        String otp = String.valueOf((int) (Math.random() * 9000) + 1000);
-    //        otpStorage.put(phone, otp);
-    //
-    //        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-    //        Message.creator(
-    //                new com.twilio.type.PhoneNumber(phone),
-    //                new com.twilio.type.PhoneNumber(TWILIO_PHONE_NUMBER),
-    //                "Your OTP code is: " + otp
-    //        ).create();
-    //
-    //        return "OTP Sent";
-    //    }
+////    private String StringOTP(String phoneemail) {
+//        String otp = String.valueOf((int) (Math.random() * 9000) + 1000);
+//        otpStorage.put(phone, otp);
+//
+//        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+//        Message.creator(
+//                new com.twilio.type.PhoneNumber(phone),
+//                new com.twilio.type.PhoneNumber(TWILIO_PHONE_NUMBER),
+//                "Your OTP code is: " + otp
+//        ).create();
+//
+//        return "OTP Sent";
+//    }
 
     public boolean verifyOtpCode(String phoneNumber, String otpCode) {
 
         OTPUser otpUser = otpRepository.findByOtpCode(otpCode);
-        if (otpUser != null
-                && otpUser.getPhoneNumber().equals(phoneNumber)
-                && otpUser.getExpiresAt().isAfter(LocalDateTime.now())) {
+        if (otpUser != null && otpUser.getPhoneNumber().equals(phoneNumber) &&
+                otpUser.getExpiresAt().isAfter(LocalDateTime.now())) {
             return true;
         }
         return false;
@@ -191,8 +183,7 @@ public class SmsService {
     private void sendSms(String toPhoneNumber, String otpCode) {
         try {
             PhoneNumber to = new PhoneNumber(toPhoneNumber);
-            PhoneNumber from =
-                    new PhoneNumber("+16088798709"); // Replace with your Twilio phone number
+            PhoneNumber from = new PhoneNumber("+16088798709"); // Replace with your Twilio phone number
             String message = "Your OTP code is: " + otpCode;
 
             Message.creator(to, from, message).create();
@@ -201,4 +192,6 @@ public class SmsService {
             LOGGER.error("Failed to send SMS to {}: {}", toPhoneNumber, e.getMessage());
         }
     }
+
 }
+

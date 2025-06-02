@@ -173,9 +173,6 @@ const RegistrationPage = ({ onFlip }) => {
           </a>
         </form>
       </section>
-      <footer className="text-center">
-        <Footer />
-      </footer>
     </div>
   );
 };
