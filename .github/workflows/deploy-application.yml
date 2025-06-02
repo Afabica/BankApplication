@@ -38,6 +38,9 @@ jobs:
           container-registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
           container-registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Create namespace 
+        run: kubectl create namespace https-con || echo "Namespace already exists"
+
       - name: Deploy Spring Boot app
         run: |
           kubectl apply -f k8s/backend-deploy.yaml -n ${{ env.NAMESPACE }}
