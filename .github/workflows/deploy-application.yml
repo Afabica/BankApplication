@@ -1,17 +1,10 @@
 name: Second Workflow
 
 on: 
-#  push: 
-#    branches:
-#      - main
-#  pull_request: 
-#    branches:
-#      - main
-    workflow_run:
-        workflows: ["First Workflow"] 
-        types:
-            - completed
-
+  workflow_run:
+    workflows: ["First Workflow"] 
+    types:
+      - completed
 
 env: 
   CLUSTER_NAME: my-aks-cluster
@@ -22,49 +15,44 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-22.04
     steps:
-      # Step 1: Azure Login
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Azure Login 
-        uses: azure/login@v1 
+        uses: azure/login@v1
         with: 
-          creds: ${{ secrets.AZURE_CREDENTIALS }} 
-#            client-id: ${{ secrets.AZURE_CLIENT_ID }}
-#            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-#            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-#            client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-#            auth-type: service-principal
-        # Step 2: Create image pull secret
-      - name: Create image pull secret
-        uses: azure/k8s-create-secret@v1
-        with:
-          secret-name: dockerhub-secret 
-          container-registry-url: https://index.docker.io/v1/ 
-          container-registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
-          container-registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Set AKS context
         uses: azure/aks-set-context@v3
         with:
-            resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
-            cluster-name: ${{ secrets.CLUSTER_NAME }}
+          resource-group: ${{ env.RESOURCE_GROUP }}
+          cluster-name: ${{ env.CLUSTER_NAME }}
 
-      # Step 3: Deploy Spring Boot app
+      - name: Create image pull secret
+        uses: azure/k8s-create-secret@v1
+        with:
+          secret-name: dockerhub-secret 
+          namespace: ${{ env.NAMESPACE }}
+          container-registry-url: https://index.docker.io/v1/ 
+          container-registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          container-registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Deploy Spring Boot app
         run: |
-          kubectl apply -f k8s/backend-deploy.yaml
-          kubectl apply -f k8s/backend-svc.yaml
-          kubectl rollout status deployment/backend-deploy -n ${{ secrets.CLUSTER_NAME }}
+          kubectl apply -f k8s/backend-deploy.yaml -n ${{ env.NAMESPACE }}
+          kubectl apply -f k8s/backend-svc.yaml -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/backend-deploy -n ${{ env.NAMESPACE }}
 
-      # Step 4: Deploy Next.js app
       - name: Deploy Next.js app
         run: |
-          kubectl apply -f k8s/frontend-deploy.yaml
-          kubectl apply -f k8s/frontend-svc.yaml
-          kubectl rollout status deployment/nextjs-deployment -n ${{ secrets.CLUSTER_NAME }}
+          kubectl apply -f k8s/frontend-deploy.yaml -n ${{ env.NAMESPACE }}
+          kubectl apply -f k8s/frontend-svc.yaml -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/nextjs-deployment -n ${{ env.NAMESPACE }}
 
-      # Step 5: Deploy Nginx server
       - name: Deploy Nginx server
-        run: | 
-          kubectl apply -f k8s/nginx-deploy.yaml
-          kubectl apply -f k8s/nginx-configmap.yaml
-          kubectl apply -f k8s/nginx-svc.yaml
+        run: |
+          kubectl apply -f k8s/nginx-deploy.yaml -n ${{ env.NAMESPACE }}
+          kubectl apply -f k8s/nginx-configmap.yaml -n ${{ env.NAMESPACE }}
+          kubectl apply -f k8s/nginx-svc.yaml -n ${{ env.NAMESPACE }}
 

@@ -1,21 +1,17 @@
 package com.example.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import com.example.demo.service.SmsService;
 import com.example.demo.model.OTPUser;
+import com.example.demo.service.SmsService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import java.util.List;
-import java.util.ArrayList;
-import java.math.BigInteger;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/otp")
 public class OtpController {
 
     private final SmsService smsService;
-    
-    
 
     @Autowired
     public OtpController(SmsService smsService) {
@@ -42,12 +38,17 @@ public class OtpController {
         }
     }
 
-//    @GetMapping("/notifications")
-//    public List<notifications> fetchUserNotifications(@Request Long user_id) {
-//        try {
-//            return smsService.fetchUserNotifications(user_id); 
-//        } catch (Exception e) {
-//            throw new IllegalStateException("Error fetching notifications");
-//        }
-//    }
+    @PostMapping("/resend")
+    public ResponseEntity<?> resendOtp(@RequestParam String phoneNumber) {
+        
+    }
+
+    //    @GetMapping("/notifications")
+    //    public List<notifications> fetchUserNotifications(@Request Long user_id) {
+    //        try {
+    //            return smsService.fetchUserNotifications(user_id);
+    //        } catch (Exception e) {
+    //            throw new IllegalStateException("Error fetching notifications");
+    //        }
+    //    }
 }
