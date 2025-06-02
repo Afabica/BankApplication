@@ -6,6 +6,7 @@ on:
     types:
       - completed
 
+
 env: 
   CLUSTER_NAME: BankCluster
   RESOURCE_GROUP: Kubernetes
