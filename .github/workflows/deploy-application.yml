@@ -46,8 +46,8 @@ jobs:
       - name: Deploy Spring Boot app
         run: |
             kubectl apply -f AppDeploy/backend-deploy.yaml -n ${{ env.NAMESPACE }}
-          kubectl apply -f k8s/backend-svc.yaml -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/backend-deploy -n ${{ env.NAMESPACE }}
+            kubectl apply -f k8s/backend-svc.yaml -n ${{ env.NAMESPACE }}
+            kubectl rollout status deployment/backend-deploy -n ${{ env.NAMESPACE }}
 
       - name: Deploy Next.js app
         run: |
