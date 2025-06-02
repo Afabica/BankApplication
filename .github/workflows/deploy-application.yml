@@ -29,6 +29,9 @@ jobs:
           resource-group: ${{ env.RESOURCE_GROUP }}
           cluster-name: ${{ env.CLUSTER_NAME }}
 
+      - name: Create namespace 
+        run: kubectl create namespace https-con || echo "Namespace already exists"
+
       - name: Create image pull secret
         uses: azure/k8s-create-secret@v1
         with:
@@ -37,9 +40,6 @@ jobs:
           container-registry-url: https://index.docker.io/v1/ 
           container-registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
           container-registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Create namespace 
-        run: kubectl create namespace https-con || echo "Namespace already exists"
 
       - name: Create docker registry secret for this service
         uses: azure/k8s-create-secret@v1
