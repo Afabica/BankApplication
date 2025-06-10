@@ -1,10 +1,12 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import ThemeChanger from "../../tools/ThemeChanger.js";
 import "../../../styles/NavDash.css";
 import axios from "axios";
 import dynamic from "next/dynamic";
 
+// Dynamic imports
 const SidePanel = dynamic(() => import("../../dashcomp/MainPage/SidePanel"), {
   ssr: false,
 });
@@ -28,20 +30,20 @@ const SecuritySettings = () => {
     const fetchUserSettings = async () => {
       try {
         const response = await axios.get("http://localhost:8080/");
-        console.log("User settings:", response.data);
-        // Example: Assume API returns settings object
-        setTwoFAEnabled(response.data.twoFAEnabled || false);
-        setBiometricEnabled(response.data.biometricEnabled || true);
-        setLanguage(response.data.language || "en");
-        setBalanceThreshold(response.data.balanceThreshold || "");
-        setNotifications(response.data.notifications || false);
+        const data = response.data;
+
+        setTwoFAEnabled(data.twoFAEnabled || false);
+        setBiometricEnabled(data.biometricEnabled || true);
+        setLanguage(data.language || "en");
+        setBalanceThreshold(data.balanceThreshold || "");
+        setNotifications(data.notifications || false);
       } catch (error) {
         console.error("Error fetching user settings:", error);
       }
     };
 
     fetchUserSettings();
-  }, []); // Runs only once when the component mounts
+  }, []);
 
   const toggleNotifications = () => {
     setNotifications((prev) => !prev);
@@ -57,89 +59,94 @@ const SecuritySettings = () => {
 
   const handleChangePassword = (e) => {
     e.preventDefault();
-    console.log("Password changed!");
+    console.log("Password changed to:", password);
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100 text-gray-900">
-      <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
+      {/* Side Panel */}
       <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
         <PanelElements />
       </SidePanel>
 
-      <div className="flex-1 flex flex-col">
-        <h1>Security Settings</h1>
+      {/* Main Content Area */}
+      <div className="flex flex-col flex-1">
+        <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
 
-        <div className="p-8 max-w-xl mx-auto bg-white shadow-md rounded-xl mt-8">
-          {/* Theme Selection */}
-          <div className="flex items-center space-x-6">
-            <p className="text-2xl font-bold">Theme Selection</p>
-            <button
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-              onClick={toggleTheme}
-            >
-              Switch to {currentTheme === "light" ? "Dark" : "Light"} Mode
-            </button>
-          </div>
+        <main className="flex-1 overflow-y-auto p-6 max-w-4xl mx-auto w-full">
+          <h1 className="text-3xl font-bold mb-8">Security Settings</h1>
 
-          {/* Notifications */}
-          <div className="flex items-center space-x-6">
-            <p className="text-2xl font-bold">Notifications</p>
-            <button
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-              onClick={toggleNotifications}
-            >
-              {notifications ? "Disable" : "Enable"} Notifications
-            </button>
-          </div>
+          <div className="space-y-8 bg-white p-6 rounded-xl shadow">
+            {/* Theme Selection */}
+            <div>
+              <p className="text-xl font-semibold mb-2">Theme</p>
+              <button
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                onClick={toggleTheme}
+              >
+                Switch to {currentTheme === "light" ? "Dark" : "Light"} Mode
+              </button>
+            </div>
 
-          {/* Language Selection */}
-          <div className="flex items-center space-x-6">
-            <p className="text-2xl font-bold">Language Selection</p>
-            <select
-              className=""
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-            >
-              <option value="en">English</option>
-              <option value="es">Spanish</option>
-              <option value="fr">French</option>
-            </select>
-          </div>
+            {/* Notifications */}
+            <div>
+              <p className="text-xl font-semibold mb-2">Notifications</p>
+              <button
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                onClick={toggleNotifications}
+              >
+                {notifications ? "Disable" : "Enable"} Notifications
+              </button>
+            </div>
 
-          {/* Balance Threshold */}
-          <div className="flex items-center space-x-6">
-            <p className="text-2xl font-bold">
-              Balance Threshold for Notifications
-            </p>
-            <input
-              className="w-full p-2 border border-gray-300 rounded"
-              type="number"
-              value={balanceThreshold}
-              onChange={(e) => setBalanceThreshold(e.target.value)}
-            />
-          </div>
+            {/* Language Selection */}
+            <div>
+              <p className="text-xl font-semibold mb-2">Language</p>
+              <select
+                className="w-full border border-gray-300 p-2 rounded"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+              >
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+              </select>
+            </div>
 
-          {/* Change Password */}
-          <div className="flex items-center space-x-6">
-            <p className="text-2xl font-bold">Change Password</p>
-            <form onSubmit={handleChangePassword}>
+            {/* Balance Threshold */}
+            <div>
+              <p className="text-xl font-semibold mb-2">
+                Balance Threshold for Alerts
+              </p>
               <input
                 className="w-full p-2 border border-gray-300 rounded"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter new password"
+                type="number"
+                value={balanceThreshold}
+                onChange={(e) => setBalanceThreshold(e.target.value)}
               />
-              <button
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                type="submit"
-              >
-                Change Password
-              </button>
-            </form>
+            </div>
+
+            {/* Change Password */}
+            <div>
+              <p className="text-xl font-semibold mb-2">Change Password</p>
+              <form onSubmit={handleChangePassword} className="space-y-4">
+                <input
+                  className="w-full p-2 border border-gray-300 rounded"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter new password"
+                />
+                <button
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  type="submit"
+                >
+                  Change Password
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

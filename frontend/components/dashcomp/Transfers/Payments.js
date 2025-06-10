@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { parseCookies } from "nookies";
 
 import PaymentForm from "./PaymentForm.js";
 import TransferList from "./TransferList.js";
-import ConfirmationModal from "./ConfirmationModel";
+import ConfirmationModal from "./ConfirmationModel"; // Corrected import
 import dynamic from "next/dynamic";
 
+// Lazy-load components with SSR disabled
 const Header = dynamic(() => import("../../hedfot/DashHeader"), {
   ssr: false,
 });
@@ -21,7 +21,6 @@ const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), {
 const PaymentsAndTransfers = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
-
   const [paymentDetails, setPaymentDetails] = useState(null);
 
   const handlePaymentSubmit = (details) => {
@@ -41,27 +40,25 @@ const PaymentsAndTransfers = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <Header />
-      <SidePanel>
+      <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
+      <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
         <PanelElements />
       </SidePanel>
 
       <h1 className="text-3xl font-bold text-center mb-8">
         Payments and Transfers
       </h1>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Payment Form */}
         <div className="bg-white shadow-lg rounded-lg p-6">
           <PaymentForm onSubmit={handlePaymentSubmit} />
         </div>
 
-        {/* Transfer List */}
         <div className="bg-white shadow-lg rounded-lg p-6">
           <TransferList />
         </div>
       </div>
 
-      {/* Confirmation Modal */}
       {isModalOpen && (
         <ConfirmationModal
           details={paymentDetails}

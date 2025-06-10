@@ -36,10 +36,6 @@ function Home() {
     setIsPanelOpen((prev) => !prev);
   };
 
-  const promotions = [
-    // Keep your promotions here or load dynamically
-  ];
-
   useEffect(() => {
     // Load stored customer data from localStorage
     const fetchProfile = () => {

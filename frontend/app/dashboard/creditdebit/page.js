@@ -1,21 +1,14 @@
 "use client";
 
 import React from "react";
+import InvestmentPage from "../../../components/dashcomp/MainPage/Investment";
 
-export default function CreditDebit() {
+const CreditDebit = () => {
   return (
-    <div className="CreditDebit">
-      <section></section>
-      <footer>
-        <div className="footer-nav">
-          <nav>
-            <ul className="footer-nav">
-              <li></li>
-            </ul>
-          </nav>
-          <p className="footer-text"> 2024 BankApp, All Rights Reserver</p>
-        </div>
-      </footer>
+    <div>
+      <InvestmentPage />
     </div>
   );
-}
+};
+
+export default CreditDebit;
