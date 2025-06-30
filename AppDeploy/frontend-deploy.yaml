@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: afabica234/myapp-frontend:v6
+          image: afabica234/myapp-frontend:v13
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000

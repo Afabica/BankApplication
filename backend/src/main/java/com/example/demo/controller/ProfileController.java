@@ -2,10 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Profile;
 import com.example.demo.repository.ProfileRepo;
-import com.example.demo.repository.RegisteredAccountRepo;
 import com.example.demo.service.ProfileService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -15,68 +15,73 @@ import java.util.Map;
 @RestController
 @RequestMapping("/profile")
 public class ProfileController {
-    private final RegisteredAccountRepo registeredAccountRepo;
+
     private final ProfileRepo profileRepo;
     private final ProfileService profileService;
 
     @Autowired
-    public ProfileController(
-            RegisteredAccountRepo registeredAccountRepo,
-            ProfileRepo profileRepo,
-            ProfileService profileService) {
-        this.registeredAccountRepo = registeredAccountRepo;
+    public ProfileController(ProfileRepo profileRepo, ProfileService profileService) {
         this.profileRepo = profileRepo;
         this.profileService = profileService;
     }
 
-    @GetMapping("/oldprofile")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getUserProfile(
-            @RequestParam("id") Long userId, Authentication authentication) {
+            @PathVariable("id") Long userId, Authentication authentication) {
         try {
             String loggedInUser = authentication.getName();
 
-            Profile userprofile = profileService.fetchUserProfile(userId);
+            Profile userProfile = profileService.fetchUserProfile(userId);
 
-            if (userprofile == null) {
-                return ResponseEntity.status(404).body(Map.of("message", "No user profile found."));
+            if (userProfile == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "No user profile found."));
             }
-            return ResponseEntity.ok(userprofile);
+            return ResponseEntity.ok(userProfile);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Internal ServiceError"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Internal Server Error"));
         }
     }
 
-    @PostMapping("/newprofile")
+    @PostMapping
     public ResponseEntity<?> addUserProfile(
             @RequestBody Profile profile, Authentication authentication) {
         try {
-            Boolean operation = profileService.createProfile(profile);
-            if (operation == true) {
-                return ResponseEntity.status(200).body("User profile successfully added.");
+            boolean operation = profileService.createProfile(profile);
+            if (operation) {
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body("User profile successfully added.");
             } else {
-                return ResponseEntity.status(200).body("User profile seccessfully added.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Profile creation failed.");
             }
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Internal Server Error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Internal Server Error"));
         }
     }
 
-    @DeleteMapping("/delprofile")
+    @DeleteMapping("/{user_id}")
     public ResponseEntity<?> deleteUserProfile(
-            @RequestParam("user_id") Long user_id, Authentication authentication) {
+            @PathVariable("user_id") Long userId, Authentication authentication) {
         try {
-            Boolean operation = profileService.deleteProfile(user_id);
-            if (operation == true) {
-                return ResponseEntity.status(200).body("Profile deleted successfully.");
+            boolean operation = profileService.deleteProfile(userId);
+            if (operation) {
+                return ResponseEntity.ok("Profile deleted successfully.");
             } else {
-                return ResponseEntity.status(400).body("Profile not deleted, please try again.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Profile not deleted, please try again.");
             }
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 }

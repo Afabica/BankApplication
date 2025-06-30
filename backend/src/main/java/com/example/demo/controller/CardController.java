@@ -74,7 +74,7 @@ public class CardController {
     @GetMapping("/cards")
     public List<BankCardsEnt> fetchCards(Long account_id) {
         try {
-            return cardRepository.findAllByAccountId(account_id);
+            return cardRepository.findAllByAccount_AccountId(account_id);
         } catch (Exception e) {
             throw new IllegalStateException("Error fetching user cards");
         }

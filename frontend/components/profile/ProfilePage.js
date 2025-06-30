@@ -39,32 +39,32 @@ const ProfilePage = () => {
     phone: "(123) 456-7890",
   };
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      const cookies = parseCookies();
-      const token = cookies.jwt;
-      try {
-        const response = await axios.post(
-          "http://localhost:8443/api/profile/user",
-          {},
-          {
-            headers: {
-              Authentication: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          },
-        );
-
-        if (response.status === 200) {
-          setFormData(response.data); // Assuming proper shape
-        }
-      } catch (err) {
-        console.error("Error fetching profile:", err);
-      }
-    };
-
-    fetchProfileData();
-  }, []);
+  //  useEffect(() => {
+  //    const fetchProfileData = async () => {
+  //      const cookies = parseCookies();
+  //      const token = cookies.jwt;
+  //      try {
+  //        const response = await axios.post(
+  //          "http://localhost:8443/api/profile/user",
+  //          {},
+  //          {
+  //            headers: {
+  //              Authentication: `Bearer ${token}`,
+  //              "Content-Type": "application/json",
+  //            },
+  //          },
+  //        );
+  //
+  //        if (response.status === 200) {
+  //          setFormData(response.data); // Assuming proper shape
+  //        }
+  //      } catch (err) {
+  //        console.error("Error fetching profile:", err);
+  //      }
+  //    };
+  //
+  //    fetchProfileData();
+  //  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

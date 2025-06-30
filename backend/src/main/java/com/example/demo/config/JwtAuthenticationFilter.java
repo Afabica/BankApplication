@@ -1,63 +1,82 @@
 package com.example.demo.config;
 
 import com.example.demo.jwtsecurity.JwtUtils;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
+import com.example.demo.service.CustomerUserDetailsService;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
+    private final CustomerUserDetailsService customerUserDetailsService;
 
-    public JwtAuthenticationFilter(JwtUtils jwtUtils) {
+    @Autowired
+    public JwtAuthenticationFilter(
+            JwtUtils jwtUtils, CustomerUserDetailsService customerUserDetailsService) {
         this.jwtUtils = jwtUtils;
+        this.customerUserDetailsService = customerUserDetailsService;
+    }
+
+    // Skip JWT validation on public endpoints like /login and /register
+    private boolean isPublicEndpoint(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.equals("/login") || path.equals("/register");
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(
+            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String token = getJwtFromRequest(request);
+        if (isPublicEndpoint(request)) {
+            // Skip JWT validation for login and register
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-        if (token != null && jwtUtils.verifyToken(token)) {
-            try {
-                // Extract username from the token
-                String username = jwtUtils.extractUsername(token);
+        String token = extractJwtFromRequest(request);
 
-                // Create an authentication token, if valid
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        username, null, null // You can pass user authorities if required
-                );
+        try {
+            if (token != null && jwtUtils.validateAccessToken(token)) {
+                String username = jwtUtils.extractUsernameFromAccessToken(token);
+                UserDetails userDetails = customerUserDetailsService.loadUserByUsername(username);
 
-                // Set the authentication context for the request
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (ExpiredJwtException e) {
-                // Catch the ExpiredJwtException separately
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Expired JWT token");
-                return;
-            } catch (JwtException e) {
-                // Catch other JWT-related exceptions
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
-                return;
             }
+        } catch (ExpiredJwtException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT token expired");
+            return;
+        } catch (JwtException | IllegalArgumentException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
+            return;
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private String getJwtFromRequest(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            return header.substring(7);  // Return the token part after "Bearer "
+    private String extractJwtFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
         }
-        return null;  // No token found
+        return null;
     }
 }

@@ -13,7 +13,7 @@ const OtpGetter = () => {
   const handleSendOtp = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8443/api/otp/verify",
+        "https://localhost:8443/api/otp/verify",
         {
           headers: { "Content-Type": "application/json" },
           body: JSON.stingify({ otpcode }),
@@ -24,7 +24,7 @@ const OtpGetter = () => {
         const data = await response.json();
 
         alert(data.message);
-        router.push("http://localhost:3000/signin");
+        router.push("https://localhost:3000/signin");
       } else {
         setError(response.data.message);
         console.error("Wrong code entered.");

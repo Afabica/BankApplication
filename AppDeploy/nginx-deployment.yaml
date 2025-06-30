@@ -1,119 +1,9 @@
-#apiVersion: apps/v1
-#kind: Deployment
-#metadata:
-#  name: nginx-deployment
-#  namespace: https-con
-#spec:
-#  replicas: 1
-#  selector:
-#    matchLabels:
-#      app: nginx
-#  template:
-#    metadata:
-#      labels:
-#        app: nginx
-#    spec:
-#      containers:
-#        - name: nginx
-#          image: nginx:latest
-#          ports:
-#            - containerPort: 80
-#            - containerPort: 443
-#          volumeMounts:
-#            - name: nginx-config
-#              mountPath: /etc/nginx/nginx.conf
-#              subPath: nginx.conf
-#            - name: tls-certs
-#              mountPath: /etc/ssl/certs/tls.crt
-#              subPath: tls-certificate.crt
-#              readOnly: true
-#            - name: tls-keys
-#              mountPath: /etc/ssl/private/tls.key
-#              subPath: private-key-decrypted.pem
-#              readOnly: true
-#      volumes:
-#        - name: nginx-config
-#          configMap:
-#            name: nginx-configmap
-#        - name: tls-certs
-#          secret:
-#            secretName: my-tls-secret
-#            items:
-#              - key: tls-certificate.crt
-#                path: tls.crt
-#        - name: tls-keys
-#          secret:
-#            secretName: my-tls-secret
-#            items:
-#              - key: private-key-decrypted.pem
-#                path: tls.key
-
-#apiVersion: apps/v1
-#kind: Deployment
-#metadata:
-#  name: nginx-deployment
-#  namespace: https-con
-#spec:
-#  replicas: 1
-#  selector:
-#    matchLabels:
-#      app: nginx
-#  template:
-#    metadata:
-#      labels:
-#        app: nginx
-#    spec:
-#      containers:
-#        - name: nginx
-#          image: nginx:latest
-#          ports:
-#            - containerPort: 443
-#            - containerPort: 8443
-#          volumeMounts:
-#            - name: nginx-config
-#              mountPath: /etc/nginx/nginx.conf
-#              subPath: nginx.conf
-#            - name: tls-certs
-#              mountPath: /etc/ssl/certs/tls.crt
-#              subPath: tls.crt
-#              readOnly: true
-#            - name: tls-keys
-#              mountPath: /etc/ssl/private/tls.key
-#              subPath: tls.key
-#              readOnly: true
-#     volumeMounts:
-#            - name: nginx-config
-#              mountPath: /etc/nginx/nginx.conf
-#              subPath: nginx.conf
-#            - name: tls-certs
-#              mountPath: /etc/ssl/certs/tls.crt
-#              subPath: tls.crt
-#              readOnly: true
-#            - name: tls-keys
-#              mountPath: /etc/ssl/private/tls.key
-#              subPath: tls.key
-#              readOnly: true
- 
-#      volumes:
-#        - name: nginx-config
-#          configMap:
-#            name: nginx-configmap
-#        - name: tls-certs
-#          secret:
-#            secretName: my-tls-secret
-#            items:
-#              - key: tls.crt
-#                path: tls.crt
-#        - name: tls-keys
-#          secret:
-#            secretName: my-tls-secret
-#            items:
-#              - key: tls.key
-#                path: tls.key
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-deployment
+  labels:
+    app: nginx
 spec:
   replicas: 1
   selector:
@@ -127,21 +17,19 @@ spec:
       containers:
         - name: nginx
           image: nginx:latest
+          ports:
+            - containerPort: 8443
           volumeMounts:
             - name: nginx-config
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
               readOnly: true
             - name: tls-certs
-              mountPath: /etc/ssl/certs/tls.crt
-              subPath: tls.crt
+              mountPath: /etc/ssl/certs
               readOnly: true
             - name: tls-keys
-              mountPath: /etc/ssl/private/tls.key
-              subPath: tls.key
+              mountPath: /etc/ssl/private
               readOnly: true
-          ports:
-            - containerPort: 8443
       volumes:
         - name: nginx-config
           configMap:

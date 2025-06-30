@@ -16,7 +16,7 @@ const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), {
   ssr: false,
 });
 const Header = dynamic(() => import("../../hedfot/DashHeader"), {
-  ssr: false,
+  ssr: true,
 });
 
 const TransactionsPage = () => {
@@ -27,104 +27,48 @@ const TransactionsPage = () => {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [files, setFiles] = useState([]); // Added missing state for files
 
-  // Fetch transactions (Mock Data)
-  const fetchTransactions = () => {
-    const data = [
-      {
-        id: 1,
-        date: "2025-01-01",
-        category: "Food",
-        amount: 120,
-        description: "Grocery shopping",
-      },
-      {
-        id: 2,
-        date: "2025-01-02",
-        category: "Transport",
-        amount: 50,
-        description: "Taxi fare",
-      },
-      {
-        id: 3,
-        date: "2025-01-03",
-        category: "Food",
-        amount: 80,
-        description: "Restaurant",
-      },
-      {
-        id: 4,
-        date: "2025-01-04",
-        category: "Rent",
-        amount: 800,
-        description: "January rent",
-      },
-      {
-        id: 5,
-        date: "2025-01-05",
-        category: "Utilities",
-        amount: 200,
-        description: "Electricity bill",
-      },
-      {
-        id: 6,
-        date: "2025-01-06",
-        category: "Transport",
-        amount: 30,
-        description: "Bus ticket",
-      },
-    ];
-    setTransactions(data);
-    setFilteredTransactions(data);
-  };
+//  const fetchDataFromStorage = async () => {
+//    try {
+//      const cookies = parseCookies();
+//      const token = cookies.token; // Ensure token is retrieved from cookies
+//      console.log(token);
+//
+//      if (!token) {
+//        console.error("No authentication token found");
+//        return;
+//      }
+//
+//      const response = await axios.get(
+//        `https://localhost:8443/operations/translist?user_id=${encodeURIComponent()}`,
+//        {
+//          headers: {
+//            "Content-Type": "application/json",
+//            Authorization: `Bearer ${token}`,
+//          },
+//          credentials: "include",
+//        },
+//      );
+//    } catch (err) {
+//      console.log("Error occured: " + err);
+//    }
+//  };
 
-  // Fetch Data from Storage (API Call)
-  const fetchDataFromStorage = async () => {
-    try {
-      const cookies = parseCookies();
-      const token = cookies.token; // Ensure token is retrieved from cookies
-
-      if (!token) {
-        console.error("No authentication token found");
-        return;
-      }
-
-      const response = await axios.get("http://localhost:8080/", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
-      });
-
-      if (response.status === 200) {
-        setFiles(response.data);
-      }
-    } catch (err) {
-      console.error("Error fetching files:", err);
-    }
-  };
-
-  // UseEffect to fetch data on component mount
   useEffect(() => {
     fetchTransactions();
-    fetchDataFromStorage();
   }, []); // Empty dependency array ensures this runs only once
 
-  // Handle search term change
   const handleSearchChange = (event) => {
     const newSearchTerm = event.target.value;
     setSearchTerm(newSearchTerm);
     filterTransactions(newSearchTerm, filterCategory);
   };
 
-  // Handle category filter change
   const handleCategoryChange = (event) => {
     const newCategory = event.target.value;
     setFilterCategory(newCategory);
     filterTransactions(searchTerm, newCategory);
   };
 
-  // Filter Transactions
   const filterTransactions = (searchTerm, category) => {
     let filtered = transactions;
 

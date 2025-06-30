@@ -1,15 +1,15 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_profiles")
 public class Profile {
-    
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -154,4 +154,3 @@ public class Profile {
         this.updatedAt = updatedAt;
     }
 }
-

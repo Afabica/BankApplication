@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProfileRepo extends JpaRepository<Profile, Long> {
-    Profile findOneById(Long id);
+    Optional<Profile> findOneById(Long id);
 }

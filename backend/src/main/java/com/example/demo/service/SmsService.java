@@ -5,7 +5,6 @@ import com.example.demo.repository.OtpRepository;
 import com.example.demo.repository.RegisterRepo;
 import com.example.demo.model.RegisterUser;
 import com.example.demo.model.LoginUser;
-import com.example.demo.repository.LoginRepo;
 import com.example.demo.config.TwilioConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,8 +34,6 @@ public class SmsService {
     private final TwilioConfig twilioConfig;
     private final PasswordEncoder passwordEncoder;
     private final RegisterRepo registerRepo; 
-    private final LoginRepo loginRepo;
-    //private final NotifiRepo notifiRepo; 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmsService.class);
 
@@ -57,38 +54,40 @@ public class SmsService {
     private static final Pattern phonePattern = Pattern.compile(PHONE_PATTERN);
 
     @Autowired
-    public SmsService(OtpRepository otpRepository, TwilioConfig twilioConfig, PasswordEncoder passwordEncoder, LoginRepo loginRepo, RegisterRepo registerRepo) {
+    public SmsService(OtpRepository otpRepository, TwilioConfig twilioConfig, PasswordEncoder passwordEncoder, RegisterRepo registerRepo) {
         this.otpRepository = otpRepository;
         this.twilioConfig = twilioConfig;
         this.passwordEncoder = passwordEncoder;
-        this.loginRepo = loginRepo;
         this.registerRepo = registerRepo;
 //        this.notifiRepo = notifiRepo;
     }
  
     public OTPUser sendOtp(OTPUser user) {
-        // Initialize Twilio with account credentials
-        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-        
-        Optional<RegisterUser> registeredUser = registerRepo.findByMobile(user.getPhoneNumber());
-        OTPUser otpUser = new OTPUser();
+    // Initialize Twilio
+    Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+    
+    System.out.println("Phone number: " + user.getPhoneNumber());
+    Optional<RegisterUser> registeredUser = registerRepo.findByMobile(user.getPhoneNumber());
 
-        // Create OTP user record
-        if(registeredUser.isPresent()) {
-        
-        otpUser.setPhoneNumber(user.getPhoneNumber());
-        otpUser.setCreatedAt(LocalDateTime.now());
-        otpUser.setExpiresAt(LocalDateTime.now().plusMinutes(5)); // OTP expires in 5 minutes
-        otpUser.setOtpCode(generateOtp(user.getPhoneNumber()));
-        otpUser.setVerified(false); // Initially, OTP is not verified
+//    if (registeredUser.isEmpty()) {
+//        // You can throw an exception or return null or handle as needed
+//        throw new IllegalArgumentException("User not registered with this phone number.");
+//    }
 
-        // Send the OTP via SMS
-        sendSms(otpUser.getPhoneNumber(), otpUser.getOtpCode());
+    // Create OTP user record
+    OTPUser otpUser = new OTPUser();
+    otpUser.setPhoneNumber(user.getPhoneNumber());
+    otpUser.setCreatedAt(LocalDateTime.now());
+    otpUser.setExpiresAt(LocalDateTime.now().plusMinutes(5));
+    otpUser.setOtpCode(generateOtp(user.getPhoneNumber()));
+    otpUser.setVerified(false);
 
-        }
-        // Save OTP details to the database
-        return otpRepository.save(otpUser);
-    }
+    // Send OTP SMS
+    sendSms(otpUser.getPhoneNumber(), otpUser.getOtpCode());
+
+    // Save and return
+    return otpRepository.save(otpUser);
+}
 
 //    public void deleteNotification(Long id) {
 //        notifiRepo.deleteById(id);

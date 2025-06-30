@@ -66,6 +66,7 @@ const ForgotPasswordPage = () => {
 
       if (response.status === 200) {
         alert(response.data.message);
+        localStorage.setItem("phone", JSON.stringify(phone));
         router.push("/signin/passrestore/otpconf");
       } else {
         setError(response.data.message || "Failed to send OTP.");

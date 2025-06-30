@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -16,6 +18,7 @@ public class BankCardsEnt {
     // Many cards can belong to one account
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
+    @JsonIgnore
     private RegisterUser account;
 
     @Column(name = "card_number", nullable = false, unique = true, length = 20)

@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.model.BankCardsEnt;
 import com.example.demo.repository.CardRepository;
-import com.example.demo.repository.LoginRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -14,17 +13,15 @@ import java.util.Optional;
 @Service
 public class CardService {
 
-    private final LoginRepo loginRepo;
     private final CardRepository cardRepository;
 
     @Autowired
-    public CardService(@Lazy LoginRepo loginRepo, @Lazy CardRepository cardRepository) {
-        this.loginRepo = loginRepo;
+    public CardService(@Lazy CardRepository cardRepository) {
         this.cardRepository = cardRepository;
     }
 
     public List<BankCardsEnt> findAllUserCards(Long userId) {
-        List<BankCardsEnt> user_cards = cardRepository.findAllByAccountId(userId);
+        List<BankCardsEnt> user_cards = cardRepository.findAllByAccount_AccountId(userId);
         return user_cards;
     }
 

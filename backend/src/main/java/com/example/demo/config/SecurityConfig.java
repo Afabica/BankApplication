@@ -1,16 +1,18 @@
 package com.example.demo.config;
 
 import com.example.demo.jwtsecurity.JwtUtils;
+import com.example.demo.service.CustomerUserDetailsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,13 +23,19 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired private UserDetailsService userDetailsService;
-
-    @Autowired private JwtUtils jwtUtils;
+    private final CustomerUserDetailsService customerUserDetailsService;
+    private final JwtUtils jwtUtils;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Autowired
-    private CorsConfigurationSource
-            corsConfigurationSource; // Inject the CorsConfigurationSource bean
+    public SecurityConfig(
+            CustomerUserDetailsService customerUserDetailsService,
+            JwtUtils jwtUtils,
+            CorsConfigurationSource corsConfigurationSource) {
+        this.customerUserDetailsService = customerUserDetailsService;
+        this.jwtUtils = jwtUtils;
+        this.corsConfigurationSource = corsConfigurationSource;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -35,36 +43,53 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+            throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(customerUserDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtUtils, customerUserDetailsService);
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
-                .cors(
-                        cors ->
-                                cors.configurationSource(
-                                        corsConfigurationSource)) // Use CORS configuration from
-                // CorsConfig
+        http.csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(
-                        session ->
-                                session.sessionCreationPolicy(
-                                        SessionCreationPolicy.STATELESS)) // Stateless API
-                .authorizeRequests(
-                        request ->
-                                request
-                                        //                .requestMatchers("/api/login",
-                                        // "/api/register", "/api/otp/send",
-                                        // "/operations/process").permitAll() // Public APIs
-                                        .requestMatchers(
-                                                "/api/login", "/api/register", "/api/otp/send")
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(
+                        auth ->
+                                auth.requestMatchers(
+                                                "/api/login",
+                                                "/api/register",
+                                                "/api/otp/send",
+                                                "/api/otp/verify",
+                                                "/operations/iban",
+                                                "/api/home",
+                                                "/api/users")
                                         .permitAll()
-                                        .requestMatchers("/api/home", "/api/users")
-                                        .permitAll() // Allow public access
+                                        .requestMatchers("/client/**")
+                                        .hasRole("USER")
+                                        .requestMatchers("/manager/**")
+                                        .hasRole("MANAGER")
+                                        .requestMatchers("/admin/**")
+                                        .hasRole("ADMIN")
                                         .anyRequest()
-                                        .authenticated() // Require authentication for other
-                        // endpoints
-                        )
-                .requiresChannel(channel -> channel.anyRequest().requiresSecure()) // Enforce HTTPS
+                                        .authenticated())
+                .requiresChannel(channel -> channel.anyRequest().requiresSecure())
+                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtUtils),
-                        UsernamePasswordAuthenticationFilter.class) // Add JWT filter
+                        jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .logout(
                         logout ->
                                 logout.logoutUrl("/api/logout")
@@ -72,13 +97,5 @@ public class SecurityConfig {
                                         .permitAll());
 
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
     }
 }

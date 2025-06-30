@@ -12,7 +12,7 @@ const Footer = dynamic(() => import("../../components/hedfot/FooterHome"), {
   ssr: false,
 });
 
-const API_URL = "http://backend:8080/api";
+const API_URL = "https://localhost:8443/api";
 
 const RegistrationPage = ({ onFlip }) => {
   const [formData, setFormData] = useState({

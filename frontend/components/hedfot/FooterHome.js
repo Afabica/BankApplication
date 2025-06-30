@@ -1,67 +1,89 @@
-import Link from 'next/link';
-import React from 'react';
+import Link from "next/link";
+import React from "react";
+
+const footerSections = [
+  {
+    title: "About",
+    links: [
+      { href: "/about", label: "About Us" },
+      { href: "/careers", label: "Careers" },
+      { href: "/blog", label: "Blog" },
+    ],
+  },
+  {
+    title: "Support",
+    links: [
+      { href: "/contact", label: "Contact Us" },
+      { href: "/faq", label: "FAQs" },
+      { href: "/help-center", label: "Help Center" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { href: "/terms", label: "Terms of Service" },
+      { href: "/privacy", label: "Privacy Policy" },
+      { href: "/security", label: "Security" },
+    ],
+  },
+];
 
 const Footer = () => {
-    return (
-        <footer className="FooterCont">
-            <div className="container">
-                <div className="footer-content">
-                    <div className="footer-sections">
-                        {/* About Section */}
-                        <div className="footer-section">
-                            <h4 className="footer-heading">About</h4>
-                            <ul className="footer-links">
-                                <li>
-                                    <Link href="/about">About Us</Link>
-                                </li>
-                                <li>
-                                    <Link href="/careers">Careers</Link>
-                                </li>
-                                <li>
-                                    <Link href="/blog">Blog</Link>
-                                </li>
-                            </ul>
-                        </div>
+  const currentYear = new Date().getFullYear();
 
-                        {/* Support Section */}
-                        <div className="footer-section">
-                            <h4 className="footer-heading">Support</h4>
-                            <ul className="footer-links">
-                                <li>
-                                    <Link href="/contact">Contact Us</Link>
-                                </li>
-                                <li>
-                                    <Link href="/faq">FAQs</Link>
-                                </li>
-                                <li>
-                                    <Link href="/help-center">Help Center</Link>
-                                </li>
-                            </ul>
-                        </div>
+  return (
+    <footer className="FooterCont bg-gray-900 text-white py-10">
+      <div className="container mx-auto px-4">
+        <div className="footer-content grid grid-cols-1 md:grid-cols-4 gap-8">
+          <nav
+            className="col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-4"
+            aria-label="Footer navigation"
+          >
+            {footerSections.map((section) => (
+              <div key={section.title} className="footer-section">
+                <h4 className="footer-heading text-lg font-semibold mb-4">
+                  {section.title}
+                </h4>
+                <ul className="footer-links space-y-2">
+                  {section.links.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="hover:underline text-sm"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
 
-                        {/* Legal Section */}
-                        <div className="footer-section">
-                            <h4 className="footer-heading">Legal</h4>
-                            <ul className="footer-links">
-                                <li>
-                                    <Link href="/terms">Terms of Service</Link>
-                                </li>
-                                <li>
-                                    <Link href="/privacy">Privacy Policy</Link>
-                                </li>
-                                <li>
-                                    <Link href="/security">Security</Link>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <p className="footer-text">© 2024 BankApp, All Rights Reserved</p>
-                </div>
+          {/* Optional: Social Links or App Info */}
+          <div className="footer-brand">
+            <h4 className="text-lg font-semibold mb-4">Follow Us</h4>
+            <div className="flex space-x-4">
+              {/* Replace with real icons */}
+              <a href="#" aria-label="Facebook" className="hover:text-blue-400">
+                Fb
+              </a>
+              <a href="#" aria-label="Twitter" className="hover:text-blue-300">
+                Tw
+              </a>
+              <a href="#" aria-label="LinkedIn" className="hover:text-blue-200">
+                Ln
+              </a>
             </div>
-        </footer>
-    );
+          </div>
+        </div>
+
+        <div className="border-t border-gray-700 mt-8 pt-4 text-center text-sm">
+          <p>© {currentYear} BankApp. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  );
 };
 
 export default Footer;
-

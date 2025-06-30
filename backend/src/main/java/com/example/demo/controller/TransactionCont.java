@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.CurrentBalance;
 import com.example.demo.model.StatisticsSummary;
 import com.example.demo.model.Transaction;
+import com.example.demo.repository.CardRepository;
 import com.example.demo.repository.TransactionRepo;
 import com.example.demo.service.CalculationService;
 import com.example.demo.service.TransactionService;
@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -25,15 +26,18 @@ public class TransactionCont {
     private final TransactionService transactionService;
     private final CalculationService calculationService;
     private final TransactionRepo transactionRepo;
+    private final CardRepository cardRepository;
 
     @Autowired
     public TransactionCont(
             TransactionService transactionService,
             CalculationService calculationService,
-            TransactionRepo transactionRepo) {
+            TransactionRepo transactionRepo,
+            CardRepository cardRepository) {
         this.transactionService = transactionService;
         this.calculationService = calculationService;
         this.transactionRepo = transactionRepo;
+        this.cardRepository = cardRepository;
     }
 
     // Endpoint to fetch the transaction list of a user
@@ -100,7 +104,6 @@ public class TransactionCont {
         }
     }
 
-    // Endpoint to delete a transaction by its ID
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTransaction(@PathVariable Long id) {
         try {
@@ -116,8 +119,8 @@ public class TransactionCont {
     @GetMapping("/balance")
     public ResponseEntity<?> getUserCurrentBalance(@RequestParam("user_id") Long user_id) {
         try {
-            CurrentBalance balance = transactionService.getCurrentBalance(user_id);
-            if (balance.getStatus() != false) {
+            BigDecimal balance = transactionService.getCurrentBalance(user_id);
+            if (balance != null) {
                 return ResponseEntity.ok(balance);
             } else {
                 return ResponseEntity.status(404).body("No balance information found.");
@@ -135,7 +138,7 @@ public class TransactionCont {
     public ResponseEntity<?> getUserStats(
             @RequestParam("user_id") Long user_id, Authentication authentication) {
         LocalDateTime now = LocalDateTime.now();
-        List<Transaction> transactions = transactionRepo.findAllByAccountId(user_id);
+        List<Transaction> transactions = transactionRepo.findByAccount_AccountId(user_id);
         List<Transaction> yeartrans =
                 calculationService.filterTransactionsByYear(
                         transactions, now.getYear(), now.getMonthValue());
@@ -157,16 +160,34 @@ public class TransactionCont {
         }
     }
 
-    // Secured endpoint (accessible only for authenticated users)
     @GetMapping("/transcheck")
     public String getSecureData() {
         return "This is a secured endpoint.";
     }
 
-    // Optional: Helper method to check if the authenticated user is an admin
+    @GetMapping("/iban")
+    public ResponseEntity<?> getUserIbans(
+            @RequestParam("user_id") Long userId, Authentication auth) {
+        System.out.println("Auth: " + auth);
+        return ResponseEntity.ok(cardRepository.findAllByAccount_AccountId(userId));
+    }
+
+    //    @GetMapping("/iban")
+    //    public ResponseEntity<?> getUserIbans(@RequestParam("user_id") Long userId) {
+    //        try {
+    //            List<BankCardsEnt> cardlist = cardRepository.findAllByAccountId(userId);
+    //            if (cardlist.isEmpty()) {
+    //                return ResponseEntity.status(404).body(Map.of("message", "No ibans found"));
+    //            }
+    //            return ResponseEntity.ok(cardlist);
+    //        } catch (IllegalArgumentException e) {
+    //            return ResponseEntity.status(400).body(Map.of("message", "No ibans found"));
+    //        } catch (Exception e) {
+    //            return ResponseEntity.status(500).body(Map.of("error", "Internal Server Error"));
+    //        }
+    //    }
+
     private boolean isAdmin(Authentication authentication) {
-        // You can check if the authenticated user has admin privileges based on roles or any other
-        // logic
         return authentication.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
     }

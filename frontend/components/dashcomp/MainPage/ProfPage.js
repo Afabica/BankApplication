@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import fetchProfile from "../../tools/ApiCall";
 import dynamic from "next/dynamic";
 import PieChart from "./PieChart";
 import Promotions from "./Promotions";
@@ -31,37 +32,29 @@ function Home() {
   const [offers, setOffers] = useState([]);
   const [error, setError] = useState(null);
   const [promotionsData, setPromotionsData] = useState([]);
+  const parsedData = useState(null);
+  const max = 100000;
+  const min = 100;
+  const totalsaving = Math.floor(Math.random() * (max - min + 1)) + min;
+  const credit_score = Math.floor(Math.random() * (max - min + 1)) + min;
 
   const togglePanel = () => {
     setIsPanelOpen((prev) => !prev);
   };
 
   useEffect(() => {
-    // Load stored customer data from localStorage
-    const fetchProfile = () => {
-      const storedCustomer = localStorage.getItem("customer");
-      if (storedCustomer) {
-        try {
-          const parsedData = JSON.parse(storedCustomer);
-          setFormData(parsedData);
-          setUserData(parsedData);
-        } catch (e) {
-          console.error("Failed to parse stored customer data", e);
-        }
-      }
-    };
-
+    parsedData = fetchProfile();
     const fetchTransactions = async () => {
-      // If you want dynamic userId based on formData, wait until formData.customerId is set
-      const userId = formData.customerId || 1; // default fallback to 3 if no customerId yet
+      const userId = parsedData.accountId || 3; // default fallback to 3 if no customerId yet
 
       const token = localStorage.getItem("token")?.replace(/"/g, "");
+      console.log(token);
       try {
         const response = await axios.get(
           `https://localhost:8443/operations/translist?user_id=${encodeURIComponent(userId)}`,
           {
             headers: {
-              Authorization: `Bearer ${token || "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbGlzYWJldGgiLCJpYXQiOjE3NDc4MjU3NDcsImV4cCI6MTc0NzkxMjE0N30.VA-OfEdwN0NxWYqVh9h1DbEnskurwWMqUK5yC9FZOtVKrdFtmHqsZ8MVPzHMGXNetNIElCIWgAD8JyQPvCWefQ"}`,
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           },
@@ -74,7 +67,7 @@ function Home() {
           console.error("Failed to fetch transactions", response);
         }
       } catch (err) {
-        setError("Error fetching transactions");
+        setError("Transaction doesn't exist yet.");
         console.error("Fetch error:", err.response?.data || err.message);
       }
     };
@@ -107,7 +100,7 @@ function Home() {
           }
         } catch (err) {
           setError("Error fetching transactions");
-          console.error("Fetch error:", err.response?.data || err.message);
+          //          console.error("Fetch error:", err.response?.data || err.message);
         }
       };
 
@@ -127,9 +120,11 @@ function Home() {
         <main className="main-content p-6 flex-1 overflow-auto max-w-7xl mx-auto">
           <div className="mb-6">
             <h1 className="text-3xl font-bold mb-3">
-              Welcome, {userData.fullName || userData.name || "User"}
+              Welcome, {parsedData.fullName || parsedData.username || "User"}
             </h1>
-            <p>Balance: {userData.amount ? `$${userData.amount}` : "N/A"}</p>
+            <p>
+              Balance: {parsedData.amount ? `$${parsedData.amount}` : "N/A"}
+            </p>
             <p>
               Card Number: {userData.cardNumber || userData.cardnumber || "N/A"}
             </p>
@@ -138,11 +133,11 @@ function Home() {
           <section className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div className="stat-card p-4 bg-white rounded shadow">
               <h2 className="font-semibold mb-2">Total Savings</h2>
-              <p>{statistics.savings || "$0"}</p>
+              <p>{totalsaving || "$0"}</p>
             </div>
             <div className="stat-card p-4 bg-white rounded shadow">
               <h2 className="font-semibold mb-2">Credit Score</h2>
-              <p>{statistics.creditScore || "N/A"}</p>
+              <p>{credit_score || "N/A"}</p>
             </div>
             <div className="stat-card p-4 bg-white rounded shadow">
               <h2 className="font-semibold mb-2">Monthly Income</h2>

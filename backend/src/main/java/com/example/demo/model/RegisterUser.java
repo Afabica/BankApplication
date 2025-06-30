@@ -7,7 +7,9 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_authentication")
@@ -16,7 +18,7 @@ public class RegisterUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_id")
-    private Long id;
+    private Long accountId;
 
     @Column(name = "full_name")
     private String fullName;
@@ -39,6 +41,13 @@ public class RegisterUser {
     private String password;
     private String employer;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+
     @Column(name = "verification_code")
     private String verificationCode;
 
@@ -49,24 +58,29 @@ public class RegisterUser {
     @JsonIgnore
     private List<RegisteredAccount> accounts = new ArrayList<>();
 
-    // Default constructor
     public RegisterUser() {}
 
-    // Getters and Setters
+    public Set getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
 
     public Long getAccountId() {
-        return id;
+        return accountId;
     }
 
-    public void setAccountId(Long id) {
-        this.id = id;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
-    public String getFullName() {
+    public String getName() {
         return fullName;
     }
 
-    public void setFullName(String fullName) {
+    public void setName(String fullName) {
         this.fullName = fullName;
     }
 

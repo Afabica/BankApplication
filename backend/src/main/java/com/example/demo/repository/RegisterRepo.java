@@ -15,7 +15,7 @@ public interface RegisterRepo extends JpaRepository<RegisterUser, Long> {
 
     RegisterUser findByUsername(String username);
 
-    RegisterUser findOneById(Long id);
+    Optional<RegisterUser> findByAccountId(Long accountId);
 
     //    Optional<RegisterUser> findByUserId(Long account_id);
     Optional<RegisterUser> findByMobile(String mobile);

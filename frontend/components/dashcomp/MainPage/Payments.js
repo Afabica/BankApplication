@@ -3,19 +3,39 @@
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Header from "../../hedfot/DashHeader";
-import axios from "axios";
 
-const SidePanel = dynamic(() => import("./SidePanel"), {
-  ssr: false,
-});
-
+const SidePanel = dynamic(() => import("./SidePanel"), { ssr: false });
 const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), {
   ssr: false,
 });
 
 const PaymentsPage = () => {
+  // Mocked initial user data
+  const mockedUser = {
+    accountId: "user123",
+    ibans: [
+      "SK9764782389123467348912",
+      "SK3333333333333333333333",
+      "SK1234567890123456789012",
+      "SK9845677834128934902390",
+    ],
+  };
+
+  // Mocked initial balance by IBAN
+  const initialBalances = {
+    SK9764782389123467348912: 2500.0,
+    SK3333333333333333333333: 5200.55,
+    SK1234567890123456789012: 1350.25,
+    SK9845677834128934902390: 789.9,
+  };
+
+  const [parsedData] = useState(mockedUser);
+  const [balance, setBalance] = useState(
+    initialBalances[mockedUser.ibans[0]] || 0
+  );
+
   const [formData, setFormData] = useState({
-    iban: "",
+    iban: mockedUser.ibans[0],
     destinationIban: "",
     amount: "",
     sourceCardNumber: "",
@@ -24,102 +44,74 @@ const PaymentsPage = () => {
     description: "",
   });
 
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const [userIbans, setUserIbans] = useState([]);
-  const [balance, setBalance] = useState(null);
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
-  const [userData, setUserData] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
+  // Update balance when user selects a different IBAN
   useEffect(() => {
-    const fetchProfile = () => {
-      const storedCustomer = localStorage.getItem("customer");
-      if (storedCustomer) {
-        const parsedData = JSON.parse(storedCustomer);
-        setUserData(parsedData);
-      }
-    };
-
-    const fetchUserIbans = async () => {
-      const token = localStorage.getItem("token")?.replace(/"/g, "");
-      if (!token || !userData.id) {
-        console.error("Missing token or user ID");
-        return;
-      }
-      try {
-        const res = await axios.get(
-          `https://localhost:8443/profcards/getcards?user_id=${encodeURIComponent(userData.id)}`,
-          {
-            headers: {
-              Authorization: `Beaarer ${token}`,
-              "Content-Type": "application/json",
-            },
-          },
-        );
-        if (!res.ok) throw new Error("Failed to fetch user cards");
-        const data = await res.json();
-        setUserIbans(data.cards || []);
-        if (data.cards && data.cards.length > 0) {
-          setFormData((prev) => ({ ...prev, iban: data.cards[0].iban }));
-          setBalance(data.cards[0].balance);
-        }
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-    fetchProfile();
-    fetchUserIbans();
-  }, [userData.id]);
-
-  //  useEffect(() => {
-  //    if (!formData.iban) return;
-  //    const fetchBalance = async () => {
-  //      try {
-  //        const res = await fetch(
-  //          `/api/account/balance?iban=${encodeURIComponent(formData.iban)}`,
-  //        );
-  //        if (!res.ok) throw new Error("Failed to fetch balance");
-  //        const data = await res.json();
-  //        setBalance(data.balance);
-  //      } catch (err) {
-  //        setError(err.message);
-  //      }
-  //    };
-  //    fetchProfile();
-  //    fetchBalance();
-  //  }, [formData.iban]);
+    if (formData.iban) {
+      setBalance(initialBalances[formData.iban] ?? 0);
+    }
+  }, [formData.iban]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setResponse(null);
+    setError(null);
   };
 
   const togglePanel = () => setIsPanelOpen((prev) => !prev);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError(null);
     setResponse(null);
-    try {
-      const res = await fetch("/api/transactions/process", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Transaction failed");
-      }
-      setResponse("Transaction processed successfully!");
-      setBalance((prev) => prev - parseFloat(formData.amount));
-    } catch (err) {
-      setError(err.message);
+
+    const amountNum = parseFloat(formData.amount);
+
+    if (!formData.iban) {
+      setError("Please select a source IBAN.");
+      return;
     }
+    if (!formData.destinationIban) {
+      setError("Please enter a destination IBAN.");
+      return;
+    }
+    if (!amountNum || amountNum <= 0) {
+      setError("Please enter a valid amount greater than zero.");
+      return;
+    }
+    if (amountNum > balance) {
+      setError("Insufficient balance.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // Simulate API delay
+    setTimeout(() => {
+      // Update balance locally
+      setBalance((prev) => prev - amountNum);
+
+      // Clear amount and other optional fields, keep IBAN selected
+      setFormData((prev) => ({
+        ...prev,
+        amount: "",
+        destinationIban: "",
+        sourceCardNumber: "",
+        destinationCardNumber: "",
+        description: "",
+      }));
+
+      setResponse("🎉 Transaction processed successfully!");
+      setIsSubmitting(false);
+    }, 1000);
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100 text-gray-900">
+    <div className="flex min-h-screen bg-gray-50 text-gray-900">
       <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
         <PanelElements />
       </SidePanel>
@@ -127,38 +119,51 @@ const PaymentsPage = () => {
       <div className="flex flex-1 flex-col">
         <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
 
-        <main className="flex flex-1 justify-center items-start p-8">
-          <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-3xl">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-              Account Overview
-            </h2>
+        <main className="flex flex-1 justify-center items-start p-10">
+          <div className="bg-white p-10 rounded-2xl shadow-lg w-full max-w-xl">
+            <h1 className="text-3xl font-extrabold mb-8 text-blue-700">
+              Payment Portal
+            </h1>
 
             {error && (
-              <p className="mb-4 text-red-600 font-medium" role="alert">
+              <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg font-semibold">
                 {error}
-              </p>
+              </div>
             )}
 
-            {balance !== null ? (
-              <p className="mb-6 text-lg text-green-700">
-                <strong>Current Balance for {formData.iban}:</strong> ${" "}
-                {balance.toFixed(2)}
-              </p>
-            ) : (
-              <p className="mb-6 text-gray-500">Loading balance...</p>
+            {response && (
+              <div className="mb-6 p-5 bg-green-100 text-green-800 rounded-lg font-semibold flex items-center space-x-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span>{response}</span>
+              </div>
             )}
 
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-              Make a Payment
-            </h2>
+            <p className="mb-6 text-gray-700 font-semibold">
+              Balance for{" "}
+              <span className="font-mono">{formData.iban}</span>:{" "}
+              <span className="text-green-600">${balance.toFixed(2)}</span>
+            </p>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label
                   htmlFor="iban"
-                  className="block mb-1 font-medium text-gray-700"
+                  className="block mb-2 font-medium text-gray-700"
                 >
-                  Source IBAN (Your Account):
+                  Source IBAN (Your Account)
                 </label>
                 <select
                   id="iban"
@@ -166,11 +171,11 @@ const PaymentsPage = () => {
                   value={formData.iban}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {userIbans.map((card) => (
-                    <option key={card.iban} value={card.iban}>
-                      {card.iban} ({card.cardNumber})
+                  {parsedData.ibans.map((iban) => (
+                    <option key={iban} value={iban}>
+                      {iban}
                     </option>
                   ))}
                 </select>
@@ -179,9 +184,9 @@ const PaymentsPage = () => {
               <div>
                 <label
                   htmlFor="destinationIban"
-                  className="block mb-1 font-medium text-gray-700"
+                  className="block mb-2 font-medium text-gray-700"
                 >
-                  Destination IBAN:
+                  Destination IBAN
                 </label>
                 <input
                   type="text"
@@ -189,17 +194,18 @@ const PaymentsPage = () => {
                   name="destinationIban"
                   value={formData.destinationIban}
                   onChange={handleChange}
+                  placeholder="Enter destination IBAN"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="amount"
-                  className="block mb-1 font-medium text-gray-700"
+                  className="block mb-2 font-medium text-gray-700"
                 >
-                  Amount:
+                  Amount
                 </label>
                 <input
                   type="number"
@@ -209,17 +215,18 @@ const PaymentsPage = () => {
                   min="0.01"
                   value={formData.amount}
                   onChange={handleChange}
+                  placeholder="0.00"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="sourceCardNumber"
-                  className="block mb-1 font-medium text-gray-700"
+                  className="block mb-2 font-medium text-gray-700"
                 >
-                  Source Card Number:
+                  Source Card Number (Optional)
                 </label>
                 <input
                   type="text"
@@ -227,17 +234,17 @@ const PaymentsPage = () => {
                   name="sourceCardNumber"
                   value={formData.sourceCardNumber}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  placeholder="Optional"
+                  placeholder="•••• •••• •••• ••••"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="destinationCardNumber"
-                  className="block mb-1 font-medium text-gray-700"
+                  className="block mb-2 font-medium text-gray-700"
                 >
-                  Destination Card Number:
+                  Destination Card Number (Optional)
                 </label>
                 <input
                   type="text"
@@ -245,42 +252,41 @@ const PaymentsPage = () => {
                   name="destinationCardNumber"
                   value={formData.destinationCardNumber}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  placeholder="Optional"
+                  placeholder="•••• •••• •••• ••••"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="description"
-                  className="block mb-1 font-medium text-gray-700"
+                  className="block mb-2 font-medium text-gray-700"
                 >
-                  Description:
+                  Description (Optional)
                 </label>
                 <textarea
                   id="description"
                   name="description"
+                  rows={3}
                   value={formData.description}
                   onChange={handleChange}
-                  rows="3"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  placeholder="Optional"
+                  placeholder="Add a note or description"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors"
+                disabled={isSubmitting}
+                className={`w-full py-3 rounded-lg text-white font-bold transition-colors ${
+                  isSubmitting
+                    ? "bg-blue-300 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
               >
-                Process Payment
+                {isSubmitting ? "Processing..." : "Process Payment"}
               </button>
             </form>
-
-            {response && (
-              <p className="mt-4 text-green-700 font-medium" role="alert">
-                {response}
-              </p>
-            )}
           </div>
         </main>
       </div>
@@ -289,3 +295,4 @@ const PaymentsPage = () => {
 };
 
 export default PaymentsPage;
+
