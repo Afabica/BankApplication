@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Gift, ShoppingBag } from "lucide-react";
 import dynamic from "next/dynamic";
 import axios from "axios";
+import "../../../styles/DashPage.css";
 
 // Dynamically import components to avoid circular dependency issues
 const SidePanel = dynamic(() => import("../../dashcomp/MainPage/SidePanel"), {
@@ -74,9 +75,11 @@ const RewardsPage = () => {
   return (
     <div className="container mx-auto p-6">
       {isPanelOpen && (
-        <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
-          <PanelElements />
-        </SidePanel>
+        <aside className="w-64 bg-white shadow-md">
+          <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
+            <PanelElements />
+          </SidePanel>
+        </aside>
       )}
 
       <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />

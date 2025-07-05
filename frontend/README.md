@@ -68,3 +68,43 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+### Required packages
+
+
+#### For styling
+- npm install -D tailwindcss postcss autoprefixer
+- npm install sass
+- npm install clsx
+- npm install framer-motion
+
+#### HTTP & Data Fetching
+- npm install axios 
+- npm install swr
+- npm install @tanstack/react-query
+
+#### Authentication 
+- npm install next-auth
+- npm install jsonwebtoken
+- npm install cookie
+
+#### Backend / DB (if applicable)
+- npm install prisma --save-dev && npx prisma init 
+- npm install @prisma/client
+- npm install mongoose
+
+#### Testing & Dev Tools
+- npm install eslint --save-dev
+- npm install prettier --save-dev
+- npm install jest or vitest
+- npm install @testing-library/react
+
+#### Dev Utilities
+- npm install dotenv
+- npm install zod
+- npm install uuid
+
+#### Optional: State Management
+- npm install zustand - Lightweight global state
+- npm install @reduxjs/toolkit - Complex state
+

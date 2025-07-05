@@ -1,20 +1,17 @@
+"use client";
+
 import React from "react";
-import styles from "../../../styles/SidePanel.module.css";
 
 const SidePanel = ({ children, isOpen, onClose }) => {
   return (
-    <div className={`${styles.sidePanel} ${isOpen ? styles.open : ""}`}>
-      <div className={styles.overlay} onClick={onClose}></div>
-      <div className={styles.panelContent}>
-        {/* Conditionally Render Close Button */}
-        {!isOpen && (
-          <button className={styles.closeButton} onClick={onClose}>
-            &times;
-          </button>
-        )}
-        {children}
-      </div>
-    </div>
+    <>
+      <aside
+        className={`fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-900 shadow-lg z-50 transform transition-transform duration-300 ease-in-out
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        <div className="p-6 overflow-hidden h-full">{children}</div>
+      </aside>
+    </>
   );
 };
 

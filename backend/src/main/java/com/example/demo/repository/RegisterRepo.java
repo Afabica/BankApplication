@@ -13,9 +13,13 @@ public interface RegisterRepo extends JpaRepository<RegisterUser, Long> {
 
     boolean existsByUsername(String username);
 
+    boolean existsByMobile(String mobile);
+
     RegisterUser findByUsername(String username);
 
     Optional<RegisterUser> findByAccountId(Long accountId);
+
+    RegisterUser getByAccountId(Long accountId);
 
     //    Optional<RegisterUser> findByUserId(Long account_id);
     Optional<RegisterUser> findByMobile(String mobile);

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.*;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
+// @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
 
@@ -74,7 +76,7 @@ public class SecurityConfig {
                                                 "/api/register",
                                                 "/api/otp/send",
                                                 "/api/otp/verify",
-                                                "/operations/iban",
+                                                "/operations/newcard",
                                                 "/api/home",
                                                 "/api/users")
                                         .permitAll()

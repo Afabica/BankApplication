@@ -1,16 +1,17 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Profile;
+import com.example.demo.model.ProfileEntity;
+import com.example.demo.model.RegisterUser;
 import com.example.demo.repository.ProfileRepo;
 import com.example.demo.repository.RegisterRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProfileService {
+
     private final ProfileRepo profileRepo;
     private final RegisterRepo registerRepo;
 
@@ -20,42 +21,95 @@ public class ProfileService {
         this.registerRepo = registerRepo;
     }
 
-    public Profile fetchUserProfile(Long id) {
-        try {
-            Optional<Profile> userProfile = profileRepo.findOneById(id);
-            return userProfile.orElse(null);
-        } catch (Exception e) {
-            throw new IllegalStateException("Error fetching user profile", e);
-        }
+    /**
+     * Fetches the profile by its user ID.
+     *
+     * @throws IllegalArgumentException if no profile is found.
+     */
+    public ProfileEntity getProfile(Long userId) {
+        return profileRepo
+                .findById(userId)
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Profile not found for id: " + userId));
     }
 
-    public Boolean createProfile(Profile newProfile) {
-        Optional<Profile> existingProfile = profileRepo.findOneById(newProfile.getRegistrationId());
-        if (existingProfile.isPresent()) {
-            throw new IllegalArgumentException("This profile already exists.");
-        } else {
-            profileRepo.save(newProfile);
-            return true;
+    /**
+     * Creates a new profile for an existing user.
+     *
+     * @param userId ID of the user to attach the profile to.
+     * @param dto Profile data transfer object containing profile fields.
+     * @return the saved ProfileEntity
+     * @throws IllegalArgumentException if the user doesn't exist or profile already exists.
+     */
+    @Transactional
+    public ProfileEntity createProfile(Long userId, ProfileEntity dto) {
+        RegisterUser user =
+                registerRepo
+                        .findById(userId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "User not found for id: " + userId));
+
+        // Prevent duplicate profile
+        if (profileRepo.existsById(userId)) {
+            throw new IllegalArgumentException("Profile already exists for user id: " + userId);
         }
+
+        ProfileEntity profile = new ProfileEntity();
+        profile.setUser(user);
+        profile.setFullName(dto.getFullName());
+        profile.setDob(dto.getDob());
+        profile.setAddress(dto.getAddress());
+        profile.setMobile(dto.getMobile());
+        profile.setIdentificationDetails(dto.getIdentificationDetails());
+        profile.setAccountType(dto.getAccountType());
+        profile.setEmployer(dto.getEmployer());
+
+        return profileRepo.save(profile);
     }
 
-    public Boolean deleteProfile(Long id) {
-        Optional<Profile> profile = profileRepo.findOneById(id);
-        if (profile.isPresent()) {
-            profileRepo.deleteById(id);
-            return true;
-        } else {
-            return false;
-        }
+    /**
+     * Updates an existing profile for a given user.
+     *
+     * @param userId ID of the user whose profile is updated.
+     * @param dto Profile data transfer object containing updated fields.
+     * @return the updated ProfileEntity
+     * @throws IllegalArgumentException if the profile doesn't exist.
+     */
+    @Transactional
+    public ProfileEntity updateProfile(Long userId, ProfileEntity dto) {
+        ProfileEntity existing =
+                profileRepo
+                        .findById(userId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Cannot update; profile not found for id: "
+                                                        + userId));
+
+        existing.setFullName(dto.getFullName());
+        existing.setDob(dto.getDob());
+        existing.setAddress(dto.getAddress());
+        existing.setMobile(dto.getMobile());
+        existing.setIdentificationDetails(dto.getIdentificationDetails());
+        existing.setAccountType(dto.getAccountType());
+        existing.setEmployer(dto.getEmployer());
+
+        return profileRepo.save(existing);
     }
 
-    public Profile editProfile(Profile profile) {
-        Optional<Profile> userProfile = profileRepo.findOneById(profile.getId());
-        if (userProfile.isPresent()) {
-            return profileRepo.save(profile); // Updates the profile
-        } else {
-            throw new IllegalArgumentException("This profile doesn't exist.");
+    /**
+     * Deletes a profile by user ID.
+     *
+     * @throws IllegalArgumentException if no profile exists to delete.
+     */
+    @Transactional
+    public void deleteProfile(Long userId) {
+        if (!profileRepo.existsById(userId)) {
+            throw new IllegalArgumentException(
+                    "Cannot delete; profile not found for id: " + userId);
         }
+        profileRepo.deleteById(userId);
     }
 }
-

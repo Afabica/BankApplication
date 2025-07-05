@@ -1,8 +1,9 @@
 "use client";
+
 import React, { useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Correct import for Next.js 13 (App Router)
+import { useRouter } from "next/navigation";
 import { setCookie } from "nookies";
 import ThemeSwitcher from "../../scripts/theme";
 import https from "https";
@@ -10,147 +11,132 @@ import https from "https";
 const SignInPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // Error message state
-  const router = useRouter(); // Initialize useRouter
-  const [showPassword, setShowPassword] = useState(false); // Password visibility toggle
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission to avoid page reload
-
-    // Create an https agent to disable SSL verification (bypass SSL)
-    const agent = new https.Agent({
-      rejectUnauthorized: false, // Disable SSL validation (not recommended for production)
-    });
+    e.preventDefault();
 
     try {
       const response = await axios.post(
         "https://localhost:8443/api/login",
-        {
-          username: username,
-          password: password,
-        },
+        { username, password },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          httpsAgent: new https.Agent({
-            rejectUnauthorized: false, // This is to bypass the self-signed certificate warning for local development
-          }),
+          //httpsAgent: new https.Agent({ rejectUnauthorized: false }),
           withCredentials: true,
         },
       );
-      // Use axios with https agent to bypass SSL verification
-      //      const response = await axios.post(
-      //        "https://localhost:8443/api/login", // Your backend API endpoint
-      //        {
-      //          username,
-      //          password,
-      //        },
-      //        {
-      //          headers: {
-      //            "Content-Type": "application/json",
-      //             Accept: "application/json",
-      //          },
-      //        },
-      //      );
 
-      const { token, customer, transactions } = response.data;
-      //
+      const { token, customer } = response.data;
 
       if (response.status === 200) {
-        // Store the token in cookies
-        console.log(response);
         setCookie(null, "jwt", token, {
           path: "/",
-          maxAge: 86400, // 1 day expiration
-          httpOnly: false, // This is fine for front-end access to the cookie
+          maxAge: 86400,
+          httpOnly: false,
           secure: true,
         });
-        // Store user information and transactions in localStorage
+
         localStorage.setItem("token", JSON.stringify(token));
         localStorage.setItem("customer", JSON.stringify(customer));
-        // Redirect to dashboard
-        router.push("/dashboard");
+        router.push("/user/dashboard");
       } else {
         setError(response.data.message || "Login failed. Please try again.");
-        console.error("Login failed");
       }
     } catch (err) {
-      console.error("Login failed", err); // Log any errors to the console
+      console.error("Login failed", err);
       setError("Login failed. Please check your credentials and try again.");
     }
   };
 
   return (
     <div
-      className="SignInCont"
+      className="min-h-screen bg-cover bg-center flex flex-col items-center justify-center px-4 py-10"
       style={{ backgroundImage: "url(/images/home1.jpg)" }}
     >
       <ThemeSwitcher />
-      <section className="signin-section">
-        <form className="SignInForm" onSubmit={handleSubmit}>
-          <h2 className="signheader">Sign In</h2>
-          {error && <p className="error-message">{error}</p>}{" "}
-          {/* Display error if exists */}
-          <div className="forminput">
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              name="username"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
-          <div className="forminput">
-            <label htmlFor="password">Password</label>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button
-              type="button"
-              className="toggle-password"
-              onClick={togglePasswordVisibility}
-            >
-              {showPassword ? "Hide" : "Show"}
-            </button>
-          </div>
-          <button type="submit" className="buttonsign">
-            Sign In
+
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md bg-white bg-opacity-90 backdrop-blur-md p-8 rounded-lg shadow-xl"
+      >
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+          Sign In
+        </h2>
+
+        {error && (
+          <p className="mb-4 text-sm text-red-600 bg-red-100 px-3 py-2 rounded">
+            {error}
+          </p>
+        )}
+
+        <div className="mb-4">
+          <label
+            htmlFor="username"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Username
+          </label>
+          <input
+            type="text"
+            id="username"
+            className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-4 relative">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Password
+          </label>
+          <input
+            type={showPassword ? "text" : "password"}
+            id="password"
+            className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button
+            type="button"
+            onClick={togglePasswordVisibility}
+            className="absolute top-9 right-3 text-sm text-blue-600 hover:underline"
+          >
+            {showPassword ? "Hide" : "Show"}
           </button>
-          <div className="Links">
-            <ul className="ContainerLinks">
-              <li>
-                <Link href="/signin/passrestore">Forgot password?</Link>
-              </li>
-            </ul>
-          </div>
-        </form>
-      </section>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
+        >
+          Sign In
+        </button>
+
+        <div className="mt-4 text-center">
+          <Link
+            href="/signin/passrestore"
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
+      </form>
     </div>
   );
 };
 
 export default SignInPage;
-
-const extractToken = (data) => {
-  // Regular expression to match the token
-  const tokenRegex = /Token:\s([A-Za-z0-9\-_\.]+)/;
-  const match = data.match(tokenRegex);
-
-  if (match && match[1]) {
-    return match[1]; // Return the token
-  }
-
-  return null; // Return null if token not found
-};

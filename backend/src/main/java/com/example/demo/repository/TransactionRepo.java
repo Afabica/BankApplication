@@ -12,6 +12,8 @@ public interface TransactionRepo extends JpaRepository<Transaction, Long> {
 
     List<Transaction> findByAccount_AccountId(Long accountId);
 
+    List<Transaction> findByIban(String iban);
+
     //    List<Transaction> findAllBydestinationaccountid(Long destination_account_id);
     List<Transaction> findAllByDestinationAccount_AccountId(Long accountId);
 

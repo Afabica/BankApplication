@@ -73,7 +73,7 @@ public class TransactionCont {
     //        }
     //    }
     @GetMapping("/translist")
-    public ResponseEntity<?> getTransctionList(@RequestParam("user_id") Long userId) {
+    public ResponseEntity<?> getTransctionList(@RequestParam("user_id") Object userId) {
         try {
             List<Transaction> listtrans = transactionService.fetchAllTransactions(userId);
             if (listtrans.isEmpty()) {
@@ -119,7 +119,7 @@ public class TransactionCont {
     @GetMapping("/balance")
     public ResponseEntity<?> getUserCurrentBalance(@RequestParam("user_id") Long user_id) {
         try {
-            BigDecimal balance = transactionService.getCurrentBalance(user_id);
+            BigDecimal balance = transactionService.getCardBalance(user_id);
             if (balance != null) {
                 return ResponseEntity.ok(balance);
             } else {
@@ -133,6 +133,14 @@ public class TransactionCont {
                     .body(Map.of("error", "Ineternal Server Error: " + e.getMessage()));
         }
     }
+
+    //    @GetMapping("/card_balance")
+    //    public ResponseEntity<?> getCardCurrentBalance(@RequestParam("user_id") Long user_id) {
+    //        try {
+    //            BigDecimal balance = transactionService.getBalanceByCard(user_id);
+    //
+    //        }
+    //    }
 
     @GetMapping("/stats")
     public ResponseEntity<?> getUserStats(

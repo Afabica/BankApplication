@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dynamic from "next/dynamic";
+import "../../../styles/DashPage.css";
 
 const Header = dynamic(() => import("../../hedfot/DashHeader"), { ssr: false });
 const SidePanel = dynamic(() => import("../../hedfot/DashHeader"), {
@@ -86,10 +87,13 @@ const NotificationsPage = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-100 text-gray-900">
-      <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
-        <PanelElements />
-      </SidePanel>
-
+      {isPanelOpen && (
+        <aside className="w-64 bg-white shadow-md">
+          <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
+            <PanelElements />
+          </SidePanel>
+        </aside>
+      )}
       <div className="flex-1 flex flex-col">
         <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
 

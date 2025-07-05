@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-// Function to calculate time remaining
+// Function to calculate time remaining for a given expiry date
 function timeRemaining(expiryDate) {
   const now = new Date();
   const endTime = new Date(expiryDate);
@@ -19,18 +19,23 @@ function timeRemaining(expiryDate) {
   return `${days}d ${hours}h ${minutes}m ${seconds}s remaining`;
 }
 
-const PromotionsSlider = ({ promotions }) => {
+const PromotionsSlider = ({ promotions = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const [timer, setTimer] = useState("");
-  const currentDate = new Date("2025-03-27");
-  currentDate.setDate(currentDate.getDate() + 7);
 
-  // Update timer every second
   useEffect(() => {
+    if (!promotions.length) {
+      console.warn("No promotions data passed or promotions is empty.");
+      return;
+    }
+
+    // Update timer every second based on current promotion expiryDate
     const updateTimer = () => {
-      if (promotions.length > 0) {
-        setTimer(timeRemaining(currentDate));
+      const currentPromotion = promotions[currentIndex];
+      if (currentPromotion && currentPromotion.expiryDate) {
+        setTimer(timeRemaining(currentPromotion.expiryDate));
+      } else {
+        setTimer("No expiry date");
       }
     };
 
@@ -42,9 +47,12 @@ const PromotionsSlider = ({ promotions }) => {
 
   // Auto-slide every 5 seconds
   useEffect(() => {
+    if (!promotions.length) return;
+
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % promotions.length);
     }, 5000);
+
     return () => clearInterval(interval);
   }, [promotions.length]);
 
@@ -57,23 +65,31 @@ const PromotionsSlider = ({ promotions }) => {
   }
 
   return (
-    <div className="relative p-50 h-[400px] min-w-screen max-w-md mx-auto bg-white shadow-lg rounded-lg p-20">
+    <div className="relative max-w-md mx-auto bg-white shadow-lg rounded-lg p-6">
       {/* Slider Container */}
-      <div className="relative flex items-center justify-center min-h-[150px]">
+      <div className="relative flex flex-col items-center justify-center min-h-[150px] text-center">
         {promotions.map((promotion, index) => (
           <div
             key={index}
-            className={`absolute w-full transition-opacity duration-500 ${index === currentIndex ? "opacity-100 block" : "opacity-0 hidden"}`}
+            className={`absolute w-full transition-opacity duration-500 ${
+              index === currentIndex ? "opacity-100 block" : "opacity-0 hidden"
+            }`}
           >
-            <h3 className="text-xl font-bold">{promotion.title}</h3>
-            <p className="text-gray-600">{promotion.description}</p>
-            {/* ✅ Timer now dynamically updates and is visible */}
+            <h3 className="text-xl font-bold mb-2">{promotion.title}</h3>
+            <p className="text-gray-600 mb-2">{promotion.description}</p>
+            {/* Timer */}
             {index === currentIndex && (
-              <span className="block text-red-500 font-semibold">{timer}</span>
+              <span
+                className={`block font-semibold mb-3 ${
+                  timer === "Expired" ? "text-red-600" : "text-green-600"
+                }`}
+              >
+                {timer}
+              </span>
             )}
             <a
               href={promotion.link}
-              className="mt-3 inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+              className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -85,18 +101,20 @@ const PromotionsSlider = ({ promotions }) => {
 
       {/* Navigation Buttons */}
       <button
-        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-2 py-1 rounded-full hover:bg-gray-900 transition"
+        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-1 rounded-full hover:bg-gray-900 transition"
         onClick={() =>
           setCurrentIndex(
             (currentIndex - 1 + promotions.length) % promotions.length,
           )
         }
+        aria-label="Previous Promotion"
       >
         ❮
       </button>
       <button
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-2 py-1 rounded-full hover:bg-gray-900 transition"
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-1 rounded-full hover:bg-gray-900 transition"
         onClick={() => setCurrentIndex((currentIndex + 1) % promotions.length)}
+        aria-label="Next Promotion"
       >
         ❯
       </button>

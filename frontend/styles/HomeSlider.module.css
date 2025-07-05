@@ -41,23 +41,23 @@
 
 .slick-prev,
 .slick-next {
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   z-index: 10;
 }
 
 .slick-prev:before,
 .slick-next:before {
-  font-size: 30px;
-  color: #fff;
+  font-size: 2rem;
+  color: white;
 }
 
 .slick-dots {
-  bottom: 10px;
+  bottom: 12px;
 }
 
 .slick-dots li button:before {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: white;
 }
 

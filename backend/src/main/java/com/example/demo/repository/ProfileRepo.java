@@ -1,10 +1,13 @@
 package com.example.demo.repository;
 
-import com.example.demo.model.Profile;
+import com.example.demo.model.ProfileEntity;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
+
 import java.util.Optional;
 
-public interface ProfileRepo extends JpaRepository<Profile, Long> {
-    Optional<Profile> findOneById(Long id);
+public interface ProfileRepo extends JpaRepository<ProfileEntity, Long> {
+    Optional<ProfileEntity> findOneById(Long id);
+
+    boolean findByFullName(String fullName);
 }

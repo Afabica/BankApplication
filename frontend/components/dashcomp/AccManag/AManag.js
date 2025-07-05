@@ -1,8 +1,11 @@
 "use client";
 
 import axios from "axios";
+import Head from "next/head";
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import "../../../styles/DashPage.css";
+import "../../../styles/global.css";
 
 const SidePanel = dynamic(() => import("../../dashcomp/MainPage/SidePanel"), {
   ssr: false,
@@ -19,6 +22,7 @@ const Footer = dynamic(() => import("../../hedfot/DashFooter"), {
 
 const AccountManagement = () => {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+
   const [accounts, setAccounts] = useState([
     {
       id: 1,
@@ -36,19 +40,12 @@ const AccountManagement = () => {
     },
   ]);
 
-  const fetchAccount = async () => {
-    const response = await axios.get("http://localhost:8080/api/");
-  };
-
-  const togglePanel = () => {
-    setIsPanelOpen((prev) => !prev);
-  };
+  const togglePanel = () => setIsPanelOpen((prev) => !prev);
 
   useEffect(() => {
+    // Load accounts from localStorage "customer"
     const fetchProfile = async () => {
       const storedCustomer = localStorage.getItem("customer");
-      console.log("Stored customer data:", storedCustomer);
-
       try {
         const parsedCustomer = storedCustomer
           ? JSON.parse(storedCustomer)
@@ -59,7 +56,7 @@ const AccountManagement = () => {
         } else if (parsedCustomer) {
           setAccounts([parsedCustomer]);
         } else {
-          setAccounts([]); 
+          setAccounts([]);
         }
       } catch (error) {
         console.error("Error parsing customer data:", error);
@@ -73,23 +70,29 @@ const AccountManagement = () => {
   const [filters, setFilters] = useState({ date: "", type: "" });
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900">
-      <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
-        <PanelElements />
-      </SidePanel>
+    <div className="max-h-screen bg-gray-100 text-gray-900">
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      {/* Side panel toggle */}
+      {isPanelOpen && (
+        <aside className="w-64 bg-white bg-gray-100 text-gray-900">
+          <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
+            <PanelElements />
+          </SidePanel>
+        </aside>
+      )}
+
       <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
 
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-semibold text-center mb-6">
-          Account Management
-        </h1>
-
-        {accounts.map((account) => (
+      <div className="container mx-auto max-w-screen px-4 py-8 flex flex-col gap-6">
+        {accounts.map((account, index) => (
           <div
-            key={account.id}
-            className="bg-white shadow-lg rounded-lg p-6 mb-6"
+            key={account.id ?? index}
+            className="bg-white shadow-lg rounded-lg p-6"
           >
             <h2 className="text-2xl font-semibold mb-4">Account Overview</h2>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <p>
                 <strong>Account Holder:</strong> {account.name}
@@ -109,7 +112,7 @@ const AccountManagement = () => {
             </div>
 
             <h3 className="text-xl font-semibold mt-6">Balances</h3>
-            <div className="flex justify-between mt-2">
+            <div className="flex justify-between mt-2 flex-wrap gap-4">
               <p>
                 <strong>Current Balance:</strong> ${account.balance}
               </p>
@@ -119,11 +122,11 @@ const AccountManagement = () => {
             </div>
 
             <h3 className="text-xl font-semibold mt-6">Recent Transactions</h3>
-            <div className="flex gap-4 mt-2">
+            <div className="flex flex-col md:flex-row gap-4 mt-2">
               <input
                 type="text"
                 placeholder="Filter by date"
-                className="border px-3 py-2 rounded w-1/2"
+                className="border px-3 py-2 rounded w-full md:w-1/2"
                 value={filters.date}
                 onChange={(e) =>
                   setFilters({ ...filters, date: e.target.value })
@@ -132,23 +135,27 @@ const AccountManagement = () => {
               <input
                 type="text"
                 placeholder="Filter by type"
-                className="border px-3 py-2 rounded w-1/2"
+                className="border px-3 py-2 rounded w-full md:w-1/2"
                 value={filters.type}
                 onChange={(e) =>
                   setFilters({ ...filters, type: e.target.value })
                 }
               />
             </div>
-            <ul>
+            <ul className="mt-2">
               {account.transactions && Array.isArray(account.transactions) ? (
                 account.transactions
                   .filter(
                     (tx) =>
                       (!filters.date || tx.date.includes(filters.date)) &&
-                      (!filters.type || tx.type.includes(filters.type)),
+                      (!filters.type ||
+                        tx.type
+                          .toLowerCase()
+                          .includes(filters.type.toLowerCase())),
                   )
-                  .map((tx) => (
-                    <li key={tx.id}>
+                  .map((tx, idx) => (
+                    // Use tx.id if exists, fallback to idx to avoid key warning
+                    <li key={tx.id ?? idx}>
                       {tx.date} - {tx.type} - ${tx.amount}
                     </li>
                   ))
@@ -158,7 +165,7 @@ const AccountManagement = () => {
             </ul>
 
             <h3 className="text-xl font-semibold mt-6">Account Management</h3>
-            <div className="flex gap-4 mt-2">
+            <div className="flex flex-wrap gap-4 mt-2">
               <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                 Add Account
               </button>

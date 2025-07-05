@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import dynamic from "next/dynamic";
 import Header from "../../hedfot/DashHeader";
+import "../../../styles/DashPage.css";
 
 const SidePanel = dynamic(() => import("./SidePanel"), { ssr: false });
 const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), {
@@ -10,92 +12,119 @@ const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), {
 });
 
 const PaymentsPage = () => {
-  // Mocked initial user data
-  const mockedUser = {
-    accountId: "user123",
-    ibans: [
-      "SK9764782389123467348912",
-      "SK3333333333333333333333",
-      "SK1234567890123456789012",
-      "SK9845677834128934902390",
-    ],
-  };
+  // State for user IBANs fetched from backend
+  const [ibans, setIbans] = useState([]);
+  const [balance, setBalance] = useState(0);
+  const [loadingIbans, setLoadingIbans] = useState(true); // loading flag for fetching ibans
 
-  // Mocked initial balance by IBAN
-  const initialBalances = {
-    SK9764782389123467348912: 2500.0,
-    SK3333333333333333333333: 5200.55,
-    SK1234567890123456789012: 1350.25,
-    SK9845677834128934902390: 789.9,
-  };
-
-  const [parsedData] = useState(mockedUser);
-  const [balance, setBalance] = useState(
-    initialBalances[mockedUser.ibans[0]] || 0
-  );
-
-  const [formData, setFormData] = useState({
-    iban: mockedUser.ibans[0],
-    destinationIban: "",
-    amount: "",
-    sourceCardNumber: "",
-    destinationCardNumber: "",
-    transactionType: "TRANSFER",
-    description: "",
-  });
+  // Form state
+  const [formData, setFormData] = useState([]);
 
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  // Update balance when user selects a different IBAN
+  // Fetch IBANs on mount using userId from localStorage
   useEffect(() => {
-    if (formData.iban) {
-      setBalance(initialBalances[formData.iban] ?? 0);
+    const userId = localStorage.getItem("customer");
+    if (!userId) {
+      setError("User not logged in");
+      setLoadingIbans(false);
+      return;
     }
+
+    async function fetchIbans() {
+      try {
+        setLoadingIbans(true);
+        // Replace with your actual backend API endpoint to fetch IBANs by userId
+        const res = await axios.get(`/api/users/${userId}/ibans`);
+
+        if (res.data.ibans && res.data.ibans.length > 0) {
+          setIbans(res.data.ibans);
+          setFormData((prev) => ({
+            ...prev,
+            iban: res.data.ibans[0], // default selected IBAN
+          }));
+
+          // Fetch initial balance for the first IBAN
+          const balanceRes = await axios.get(
+            `/api/accounts/${res.data.ibans[0]}/balance`,
+          );
+          setBalance(balanceRes.data.balance ?? 0);
+        } else {
+          setError("No IBANs found for this user.");
+        }
+      } catch (err) {
+        setError("Failed to fetch IBANs. Please try again later.");
+      } finally {
+        setLoadingIbans(false);
+      }
+    }
+
+    fetchIbans();
+  }, []);
+
+  // When user selects a different IBAN, fetch and update balance
+  useEffect(() => {
+    async function fetchBalance() {
+      if (!formData.iban) return;
+
+      try {
+        const res = await axios.get(`/api/accounts/${formData.iban}/balance`);
+        setBalance(res.data.balance ?? 0);
+      } catch {
+        setBalance(0);
+      }
+    }
+
+    fetchBalance();
   }, [formData.iban]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setResponse(null);
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
     setError(null);
+    setResponse(null);
   };
 
   const togglePanel = () => setIsPanelOpen((prev) => !prev);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setResponse(null);
 
     const amountNum = parseFloat(formData.amount);
 
-    if (!formData.iban) {
-      setError("Please select a source IBAN.");
-      return;
-    }
-    if (!formData.destinationIban) {
-      setError("Please enter a destination IBAN.");
-      return;
-    }
-    if (!amountNum || amountNum <= 0) {
-      setError("Please enter a valid amount greater than zero.");
-      return;
-    }
-    if (amountNum > balance) {
-      setError("Insufficient balance.");
-      return;
-    }
+    if (!formData.iban) return setError("Please select a source IBAN.");
+    if (!formData.destinationIban)
+      return setError("Please enter a destination IBAN.");
+    if (!amountNum || amountNum <= 0)
+      return setError("Please enter a valid amount greater than zero.");
+    if (amountNum > balance) return setError("Insufficient balance.");
 
     setIsSubmitting(true);
 
-    // Simulate API delay
-    setTimeout(() => {
-      // Update balance locally
-      setBalance((prev) => prev - amountNum);
+    try {
+      const res = await axios.post("/api/payments", {
+        sourceIban: formData.iban,
+        destinationIban: formData.destinationIban,
+        amount: amountNum,
+        sourceCardNumber: formData.sourceCardNumber,
+        destinationCardNumber: formData.destinationCardNumber,
+        transactionType: formData.transactionType,
+        description: formData.description,
+      });
 
-      // Clear amount and other optional fields, keep IBAN selected
+      if (res.data.updatedBalance !== undefined) {
+        setBalance(res.data.updatedBalance);
+      }
+
+      setResponse(res.data.message || "🎉 Transaction processed successfully!");
+
       setFormData((prev) => ({
         ...prev,
         amount: "",
@@ -104,10 +133,14 @@ const PaymentsPage = () => {
         destinationCardNumber: "",
         description: "",
       }));
-
-      setResponse("🎉 Transaction processed successfully!");
+    } catch (err) {
+      setError(
+        err.response?.data?.error ||
+          "Something went wrong processing your transaction.",
+      );
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -152,8 +185,7 @@ const PaymentsPage = () => {
             )}
 
             <p className="mb-6 text-gray-700 font-semibold">
-              Balance for{" "}
-              <span className="font-mono">{formData.iban}</span>:{" "}
+              Balance for <span className="font-mono">{formData.iban}</span>:{" "}
               <span className="text-green-600">${balance.toFixed(2)}</span>
             </p>
 
@@ -171,15 +203,18 @@ const PaymentsPage = () => {
                   value={formData.iban}
                   onChange={handleChange}
                   required
+                  disabled={loadingIbans}
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {parsedData.ibans.map((iban) => (
+                  {ibans.map((iban) => (
                     <option key={iban} value={iban}>
                       {iban}
                     </option>
                   ))}
                 </select>
               </div>
+
+              {/* rest of form fields unchanged */}
 
               <div>
                 <label
@@ -277,9 +312,9 @@ const PaymentsPage = () => {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || loadingIbans}
                 className={`w-full py-3 rounded-lg text-white font-bold transition-colors ${
-                  isSubmitting
+                  isSubmitting || loadingIbans
                     ? "bg-blue-300 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
                 }`}
@@ -295,4 +330,3 @@ const PaymentsPage = () => {
 };
 
 export default PaymentsPage;
-

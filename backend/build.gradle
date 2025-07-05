@@ -65,7 +65,11 @@ dependencies {
     // Messaging / External APIs
     implementation 'com.sendgrid:sendgrid-java:4.9.3'
     implementation 'com.twilio.sdk:twilio:7.34.0'
-
+    
+    // Caffeine
+//    implementation 'com.github.ben-manes.caffeine:caffeine'
+    // Redis 
+    implementation 'org.springframework.data:spring-data-redis'
     // Azure (optional — verify need)
     implementation 'com.azure:azure-communication-chat:1.0.0-beta.3'
     implementation 'com.azure:azure-storage-blob:12.12.0'

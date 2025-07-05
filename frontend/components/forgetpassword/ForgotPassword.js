@@ -4,6 +4,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import "../../styles/Navigation.css";
+import "../../styles/NavDash.css";
+import "../../styles/global";
 
 const ForgotPasswordPage = () => {
   const [phone, setPhone] = useState("");

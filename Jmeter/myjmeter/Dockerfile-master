@@ -1,5 +1,0 @@
-FROM afabica234/jmeter-base:v7
-
-MAINTAINER Afabicas-lab
-		
-EXPOSE 60000

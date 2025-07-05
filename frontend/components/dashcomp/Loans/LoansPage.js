@@ -51,9 +51,13 @@ const Home = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       {/* Header */}
-      <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
-        <PanelElements />
-      </SidePanel>
+      {isPanelOpen && (
+        <aside className="w-64 bg-white shadow-md">
+          <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
+            <PanelElements />
+          </SidePanel>
+        </aside>
+      )}
       <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
 
       <div className="flex flex-1">

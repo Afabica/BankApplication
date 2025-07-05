@@ -10,7 +10,7 @@ const LogoutButton = () => {
   const handleLogout = () => {
     nookies.destroy(null, "jwt");
 
-    router.push("/signin");
+    router.push("/login");
   };
 
   return (

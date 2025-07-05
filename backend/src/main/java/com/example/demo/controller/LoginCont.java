@@ -54,7 +54,7 @@ public class LoginCont {
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("customer", customer);
-            response.put("transactions", transactions);
+            // response.put("transactions", transactions);
 
             return ResponseEntity.ok(response);
 

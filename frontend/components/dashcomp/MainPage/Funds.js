@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
-import "../../../styles/NavDash.css";
 import "../../../styles/DashPage.css";
 
 const SidePanel = dynamic(() => import("../../dashcomp/MainPage/SidePanel"), {

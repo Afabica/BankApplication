@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import axios from "axios";
 import withAuth from "../../tools/withAuth";
@@ -37,6 +37,7 @@ const InvestmentPage = () => {
       status: "Pending",
     },
   ]);
+  const [parsedData, setParsedData] = useState("");
 
   const fetchdata = () => {};
 
@@ -54,6 +55,25 @@ const InvestmentPage = () => {
     ]);
     setInvestmentAmount("");
   };
+
+  useEffect(() => {
+    const getUserDetails = async () => {
+      const customer = localStorage.getItem("Customer");
+      if (customer) {
+        try {
+          const parsed = JSON.parse(customer);
+          setParsedData(parsed);
+        } catch (err) {
+          console.error("Error parsing customer data:", err);
+          return;
+        }
+      }
+    };
+
+    getUserDetails();
+  });
+
+  console.log(parsedData);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">

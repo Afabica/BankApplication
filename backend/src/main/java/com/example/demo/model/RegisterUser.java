@@ -4,12 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "user_authentication")
@@ -20,33 +18,17 @@ public class RegisterUser {
     @Column(name = "account_id")
     private Long accountId;
 
-    @Column(name = "full_name")
-    private String fullName;
+    @Column(nullable = false, unique = true)
+    private String username;
 
-    private LocalDate dob;
-    private String address;
-    private String mobile;
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "identification_details")
-    private String identificationDetails;
-
-    @Column(name = "amount", precision = 19, scale = 2)
-    private BigDecimal amount;
-
-    @Column(name = "account_type")
-    private String accountType;
-
-    private String username;
-    private String password;
-    private String employer;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    @Column(nullable = false, unique = true)
+    private String mobile;
 
     @Column(name = "verification_code")
     private String verificationCode;
@@ -54,19 +36,21 @@ public class RegisterUser {
     @Column(name = "customer_id")
     private Long customerId;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Collection<Role> roles = new HashSet<>();
+
+    //    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    //    private ProfileEntity profile;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<RegisteredAccount> accounts = new ArrayList<>();
+    private List<BankCardsEnt> cards = new ArrayList<>();
 
-    public RegisterUser() {}
-
-    public Set getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
+    // Getters and setters
 
     public Long getAccountId() {
         return accountId;
@@ -74,70 +58,6 @@ public class RegisterUser {
 
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
-    }
-
-    public String getName() {
-        return fullName;
-    }
-
-    public void setName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public LocalDate getDob() {
-        return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getIdentificationDetails() {
-        return identificationDetails;
-    }
-
-    public void setIdentificationDetails(String identificationDetails) {
-        this.identificationDetails = identificationDetails;
-    }
-
-    public BigDecimal getAmount() {
-        return amount != null ? amount : BigDecimal.ZERO;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
     }
 
     public String getUsername() {
@@ -156,12 +76,20 @@ public class RegisterUser {
         this.password = password;
     }
 
-    public String getEmployer() {
-        return employer;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmployer(String employer) {
-        this.employer = employer;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getVerificationCode() {
@@ -179,4 +107,20 @@ public class RegisterUser {
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
     }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
+    }
+
+    //    public ProfileEntity getProfile() {
+    //        return profile;
+    //    }
+    //
+    //    public void setProfile(ProfileEntity profile) {
+    //        this.profile = profile;
+    //    }
 }

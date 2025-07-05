@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
+import "../../styles/DashPage.css";
 
 const SidePanel = dynamic(() => import("../dashcomp/MainPage/SidePanel"), {
   ssr: false,
@@ -14,7 +15,7 @@ const PanelElements = dynamic(() => import("../hedfot/PanelElements"), {
 });
 
 const HelpSupport = () => {
-  const [isPanelOpen, setIsPanelOpen] = useState(true); // default to open
+  const [isPanelOpen, setIsPanelOpen] = useState(false); // default to open
 
   const togglePanel = () => {
     setIsPanelOpen((prev) => !prev);

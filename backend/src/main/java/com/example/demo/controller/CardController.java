@@ -2,10 +2,15 @@ package com.example.demo.controller;
 
 import com.example.demo.model.BankCardsEnt;
 import com.example.demo.model.LoginUser;
+import com.example.demo.model.RegisterUser;
 import com.example.demo.repository.CardRepository;
+import com.example.demo.repository.RegisterRepo;
 import com.example.demo.service.CardService;
 
+import jakarta.persistence.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,23 +22,30 @@ public class CardController {
 
     private final CardService cardService;
     private final CardRepository cardRepository;
+    private final RegisterRepo registerRepo;
 
     private LoginUser loginUser;
 
     @Autowired
-    public CardController(CardService cardService, CardRepository cardRepository) {
+    public CardController(
+            CardService cardService, CardRepository cardRepository, RegisterRepo registerRepo) {
         this.cardService = cardService;
         this.cardRepository = cardRepository;
+        this.registerRepo = registerRepo;
     }
 
     //    @PostMapping("/newcard")
-    //    public ResponseEntity<?> addNewCard(BankCardsEnt Card) {
-    //        BankCardsEnt NewCard = cardRepository.findByCardNumber(Card.getCardNumber());
+    //    public ResponseEntity<?> addNewCard(@RequestParam("user_id") Long id, @RequestBody
+    // BankCardsEnt card) {
+    //        Optional<BankCardsEnt> cardfinder =
+    // cardRepository.findByCardNumber(card.getCardNumber());
     //        try {
-    //            if (NewCard.getCardNumber() != null) {
-    //                cardRepository.save(NewCard);
-    //                return ResponseEntity.ok("New card added successfully! " +
-    // NewCard.getCardNumber());
+    //            if (!cardfinder.isPresent()) {
+    //                String response = cardService.addUserCard(card, id);
+    //                return ResponseEntity.ok(response);
+    //            } else {
+    //                return ResponseEntity.badRequest().body("User card not added, opereration
+    // failed.");
     //            }
     //        } catch (IllegalArgumentException e) {
     //            return ResponseEntity.status(403)
@@ -42,9 +54,21 @@ public class CardController {
     //                                    + " Error: "
     //                                    + e.getMessage());
     //        }
-    //        return ResponseEntity.status(400).body("Operation not successful.");
     //    }
-    //
+    @PostMapping("/newcard")
+    public ResponseEntity<?> addNewCard(@RequestParam("user_id") Long id) {
+        RegisterUser user =
+                registerRepo
+                        .findByAccountId(id)
+                        .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        if (user != null) {
+            BankCardsEnt newCard = cardService.generateNewCard(user);
+            return ResponseEntity.ok().body("Card created successfully.");
+        } else
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body("Customer information wasn't found.");
+    }
+
     @GetMapping("/getcards")
     public ResponseEntity<?> getUserCards(@RequestParam("user_id") Long id) {
         try {

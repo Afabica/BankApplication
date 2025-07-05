@@ -32,19 +32,18 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="FooterCont bg-gray-900 text-white py-10">
-      <div className="container mx-auto px-4">
-        <div className="footer-content grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="justify-center items-center bg-gray-900 text-white py-10">
+      <div className=" justify-center container mx-auto px-4">
+        <div className="justify-center grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+          {/* Navigation Links */}
           <nav
-            className="col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-4"
+            className="md:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-6"
             aria-label="Footer navigation"
           >
             {footerSections.map((section) => (
-              <div key={section.title} className="footer-section">
-                <h4 className="footer-heading text-lg font-semibold mb-4">
-                  {section.title}
-                </h4>
-                <ul className="footer-links space-y-2">
+              <div key={section.title}>
+                <h4 className="text-lg font-semibold mb-4">{section.title}</h4>
+                <ul className="space-y-2">
                   {section.links.map((link) => (
                     <li key={link.href}>
                       <Link
@@ -60,11 +59,10 @@ const Footer = () => {
             ))}
           </nav>
 
-          {/* Optional: Social Links or App Info */}
-          <div className="footer-brand">
+          {/* Social / Brand */}
+          <div className="flex flex-col items-center md:items-start">
             <h4 className="text-lg font-semibold mb-4">Follow Us</h4>
             <div className="flex space-x-4">
-              {/* Replace with real icons */}
               <a href="#" aria-label="Facebook" className="hover:text-blue-400">
                 Fb
               </a>
@@ -78,6 +76,7 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Bottom copyright */}
         <div className="border-t border-gray-700 mt-8 pt-4 text-center text-sm">
           <p>© {currentYear} BankApp. All rights reserved.</p>
         </div>

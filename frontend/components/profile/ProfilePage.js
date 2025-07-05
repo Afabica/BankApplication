@@ -1,190 +1,155 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Header from "../../components/hedfot/DashHeader.js";
-import axios from "axios";
-import { parseCookies } from "nookies";
+import Header from "../hedfot/DashHeader";
 import dynamic from "next/dynamic";
+import axios from "axios";
 
-const SidePanel = dynamic(
-  () => import("../../components/dashcomp/MainPage/SidePanel"),
-  {
-    ssr: false,
-  },
-);
+const SidePanel = dynamic(() => import("../dashcomp/MainPage/SidePanel"), {
+  ssr: false,
+});
+const PanelElements = dynamic(() => import("../hedfot/PanelElements"), {
+  ssr: false,
+});
 
-const PanelElements = dynamic(
-  () => import("../../components/hedfot/PanelElements"),
-  {
-    ssr: false,
-  },
-);
-
-const ProfilePage = () => {
+function ProfilePage() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    bio: "",
-    location: "",
-    phone: "",
-  });
+  const [error, setError] = useState("");
+  const [formData, setFormData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-    bio: "Lorem ipsum dolor sit amet...",
-    location: "New York, USA",
-    phone: "(123) 456-7890",
-  };
+  const API = "https://localhost:8443";
 
-  //  useEffect(() => {
-  //    const fetchProfileData = async () => {
-  //      const cookies = parseCookies();
-  //      const token = cookies.jwt;
-  //      try {
-  //        const response = await axios.post(
-  //          "http://localhost:8443/api/profile/user",
-  //          {},
-  //          {
-  //            headers: {
-  //              Authentication: `Bearer ${token}`,
-  //              "Content-Type": "application/json",
-  //            },
-  //          },
-  //        );
-  //
-  //        if (response.status === 200) {
-  //          setFormData(response.data); // Assuming proper shape
-  //        }
-  //      } catch (err) {
-  //        console.error("Error fetching profile:", err);
-  //      }
-  //    };
-  //
-  //    fetchProfileData();
-  //  }, []);
+  // 1) On mount, load customer from localStorage and then fetch profile once
+  useEffect(() => {
+    const customerRaw = localStorage.getItem("customer");
+    if (!customerRaw || customerRaw === "undefined") {
+      setError("No customer data in localStorage");
+      setLoading(false);
+      return;
+    }
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const toggleEditing = () => setIsEditing((prev) => !prev);
-  const togglePanel = () => setIsPanelOpen((prev) => !prev);
-
-  const SendChanges = async () => {
-    const cookies = parseCookies();
-    const token = cookies.jwt;
+    let parsed;
     try {
-      await axios.post("http://localhost:8080/", formData, {
+      parsed = JSON.parse(customerRaw);
+    } catch (err) {
+      console.error("Error parsing customer data:", err);
+      setError("Invalid customer data");
+      setLoading(false);
+      return;
+    }
+
+    const tokenRaw = localStorage.getItem("token");
+    const token = tokenRaw?.replace(/"/g, "");
+    if (!token) {
+      setError("Authentication token missing");
+      setLoading(false);
+      return;
+    }
+
+    // 2) Now fetch profile
+    (async () => {
+      try {
+        const params = new URLSearchParams({ userId: parsed.accountId });
+        const response = await axios.get(`${API}/profile?${params}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.status === 200) {
+          setFormData(response.data);
+        } else {
+          setError("Failed to fetch profile");
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError("Error fetching profile");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []); // <- empty deps: run once
+
+  // 3) Handlers remain largely the same, but ensure they await properly and handle errors
+  const updateUserProfile = async () => {
+    const tokenRaw = localStorage.getItem("token");
+    const token = tokenRaw?.replace(/"/g, "");
+    try {
+      const response = await axios.put(`${API}/profile`, formData, {
         headers: {
-          Authentication: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
+      return response.status === 200;
     } catch (err) {
-      console.error("Failed to send changes:", err);
+      console.error("Update error:", err);
+      return false;
     }
   };
 
+  const handleSave = async () => {
+    setLoading(true);
+    const ok = await updateUserProfile();
+    setLoading(false);
+
+    if (!ok) {
+      setError("User profile wasn't updated.");
+    } else {
+      console.log("User profile updated successfully.");
+    }
+  };
+
+  const togglePanel = () => setIsPanelOpen((prev) => !prev);
+
+  if (loading) {
+    return <div className="p-6 text-center">Loading profile…</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 text-center text-red-600">{error}</div>;
+  }
+
+  // 4) Render formData once loaded
   return (
-    <div className="flex min-h-screen bg-gray-100 text-gray-900">
-      <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
-        <PanelElements />
-      </SidePanel>
+    <div className="min-w-screen mx-auto">
+      {isPanelOpen && (
+        <aside className="w-64 bg-white shadow-md">
+          <SidePanel isOpen={isPanelOpen} onClose={togglePanel}>
+            <PanelElements />
+          </SidePanel>
+        </aside>
+      )}
 
       <div className="flex-1 flex flex-col">
         <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
 
-        <div className="p-8 max-w-4xl mx-auto bg-white shadow-md rounded-xl mt-8">
-          <div className="flex items-center space-x-6">
-            <img
-              src={user.avatar}
-              alt="Avatar"
-              className="w-24 h-24 rounded-full shadow-md"
-            />
+        <div className="p-20">
+          {/* Avatar & Basic Info */}
+          <div className="flex items-center gap-6 mb-8">
+            <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden">
+              <img
+                src={formData.avatar}
+                alt="Avatar"
+                className="object-cover w-full h-full"
+              />
+            </div>
             <div>
-              <h2 className="text-2xl font-bold">{user.name}</h2>
-              <p className="text-gray-600">{user.email}</p>
+              <h1 className="text-2xl font-bold">{formData.name}</h1>
+              <p className="text-sm text-gray-600">{formData.email}</p>
             </div>
           </div>
 
-          <div className="mt-6">
-            {isEditing ? (
-              <form className="space-y-4">
-                <div>
-                  <label className="block font-medium">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium">Location</label>
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium">Phone</label>
-                  <input
-                    type="text"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium">Bio</label>
-                  <textarea
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-              </form>
-            ) : (
-              <div className="space-y-2 text-sm mt-4">
-                <p>
-                  <strong>Email:</strong> {user.email}
-                </p>
-                <p>
-                  <strong>Location:</strong> {user.location}
-                </p>
-                <p>
-                  <strong>Phone:</strong> {user.phone}
-                </p>
-                <p>
-                  <strong>Bio:</strong> {user.bio}
-                </p>
-              </div>
-            )}
-          </div>
+          {/* Editable Fields */}
+          {/* … your InputField grid here with formData, onChange, editMode … */}
 
-          <div className="mt-6 flex space-x-4">
+          {/* Save / Edit Buttons */}
+          <div className="mt-8 flex justify-end space-x-4">
             <button
-              onClick={toggleEditing}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              {isEditing ? "Cancel" : "Edit Profile"}
-            </button>
-            <button
-              onClick={SendChanges}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+              onClick={handleSave}
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
             >
               Save Changes
             </button>
@@ -193,6 +158,6 @@ const ProfilePage = () => {
       </div>
     </div>
   );
-};
+}
 
 export default ProfilePage;

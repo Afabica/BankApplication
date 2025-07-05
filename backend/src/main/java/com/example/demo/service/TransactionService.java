@@ -1,16 +1,13 @@
 package com.example.demo.service;
 
 import com.example.demo.model.BankCardsEnt;
-import com.example.demo.model.RegisterUser;
 import com.example.demo.model.Transaction;
 import com.example.demo.repository.CardRepository;
-import com.example.demo.repository.RegisterRepo;
 import com.example.demo.repository.TransactionRepo;
-
-import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,22 +17,26 @@ import java.util.List;
 public class TransactionService {
 
     private final TransactionRepo transactionRepo;
-    private final RegisterRepo registerRepo;
     private final CardRepository cardRepository;
 
     @Autowired
-    public TransactionService(
-            TransactionRepo transactionRepo,
-            RegisterRepo registerRepo,
-            CardRepository cardRepository) {
+    public TransactionService(TransactionRepo transactionRepo, CardRepository cardRepository) {
         this.transactionRepo = transactionRepo;
-        this.registerRepo = registerRepo;
         this.cardRepository = cardRepository;
     }
 
+    // Processing transaction
     @Transactional
-    public void processTransaction(Transaction transaction) {
+    public Transaction processTransaction(Transaction transaction) {
         // Fetch source and destination cards
+        List<Transaction> history =
+                transactionRepo.findByAccount_AccountId(transaction.getAccount().getAccountId());
+
+        //        List<String> alerts = FraudEngine.detect(transation, history);
+        //        if (!alerts.isEmpty()) {
+        //            transaction.setFlagged(true);
+        //            transaction.setAlerts(alerts);
+        //        }
         BankCardsEnt sourceCard =
                 cardRepository
                         .findByCardNumber(transaction.getSourceCardNumber())
@@ -47,60 +48,67 @@ public class TransactionService {
                         .orElseThrow(
                                 () -> new IllegalArgumentException("Destination card not found"));
 
-        // Get associated accounts
-        RegisterUser sourceAccount = sourceCard.getAccount();
-        RegisterUser destinationAccount = destinationCard.getAccount();
-
         BigDecimal amount = transaction.getAmount();
-        if (sourceAccount.getAmount().compareTo(amount) < 0) {
-            throw new IllegalArgumentException("Insufficient funds.");
+        if (sourceCard.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Insufficient funds on source card.");
         }
 
-        // Update balances
-        sourceAccount.setAmount(sourceAccount.getAmount().subtract(amount));
-        destinationAccount.setAmount(destinationAccount.getAmount().add(amount));
+        // Update card balances
+        sourceCard.setBalance(sourceCard.getBalance().subtract(amount));
+        destinationCard.setBalance(destinationCard.getBalance().add(amount));
 
-        // Prepare transaction data
+        // Persist updated balances
+        cardRepository.save(sourceCard);
+        cardRepository.save(destinationCard);
+
+        // Prepare transaction record
         LocalDateTime now = LocalDateTime.now();
-        transaction.setAccount(sourceAccount);
+        transaction.setAccount(sourceCard.getAccount());
+        transaction.setIban(sourceCard.getIban());
+        transaction.setDestinationIban(destinationCard.getIban());
         transaction.setTransactionDate(now);
         transaction.setCreatedAt(now);
         transaction.setUpdatedAt(now);
         transaction.setStatus("COMPLETED");
 
-        // Save changes
-        registerRepo.save(sourceAccount);
-        registerRepo.save(destinationAccount);
-        transactionRepo.save(transaction);
+        // Save transaction
+        return transactionRepo.save(transaction);
     }
 
-    public BigDecimal getCurrentBalance(Long accountId) {
-        RegisterUser user =
-                registerRepo
-                        .findByAccountId(accountId)
+    /** Retrieves current balance for a specific card by its ID. */
+    public BigDecimal getCardBalance(Long cardId) {
+        BankCardsEnt card =
+                cardRepository
+                        .findById(cardId)
                         .orElseThrow(
-                                () ->
-                                        new IllegalArgumentException(
-                                                "Account not found for ID: " + accountId));
-        return user.getAmount();
+                                () -> new IllegalArgumentException("Card not found: " + cardId));
+        return card.getBalance();
     }
 
-    public List<Transaction> fetchAllTransactions(Long accountId) {
-        try {
-            return transactionRepo.findAllByDestinationAccount_AccountId(accountId);
-        } catch (Exception e) {
-            throw new IllegalStateException("Error fetching transactions", e);
+    /** Fetch all transactions by user ID (all cards belonging to user). */
+    public List<Transaction> fetchTransactionsByUserId(Long userId) {
+        return transactionRepo.findByAccount_AccountId(userId);
+    }
+
+    /** Fetch all transactions by IBAN. */
+    public List<Transaction> fetchTransactionsByIban(String iban) {
+        return transactionRepo.findByIban(iban);
+    }
+
+    /** Fetch transactions by either user ID or IBAN. */
+    public List<Transaction> fetchAllTransactions(Object idOrIban) {
+        if (idOrIban instanceof String) {
+            return fetchTransactionsByIban((String) idOrIban);
+        } else if (idOrIban instanceof Long) {
+            return fetchTransactionsByUserId((Long) idOrIban);
+        } else {
+            throw new IllegalArgumentException(
+                    "Invalid identifier type. Must be userId (Long) or IBAN (String).");
         }
     }
 
-    public List<Transaction> fetchAllDestTransactions(Long destinationAccountId) {
-        try {
-            return transactionRepo.findAllByDestinationAccount_AccountId(destinationAccountId);
-        } catch (Exception e) {
-            throw new IllegalStateException("Error fetching destination transactions", e);
-        }
-    }
-
+    /** Delete a transaction by its ID. */
+    @Transactional
     public void deleteTransaction(Long id) {
         if (!transactionRepo.existsById(id)) {
             throw new IllegalArgumentException("Transaction with ID " + id + " not found");

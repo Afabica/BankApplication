@@ -7,8 +7,6 @@ import com.example.demo.repository.RegisterRepo;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
-import jakarta.persistence.*;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
@@ -36,12 +34,10 @@ public class JwtUtils {
     @Value("${app.jwtRefreshExpirationMs}")
     private long jwtRefreshExpirationMs;
 
-    private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-
     private SecretKey accessKey;
     private SecretKey refreshKey;
 
-    private RegisterRepo registerRepo;
+    private final RegisterRepo registerRepo;
 
     public JwtUtils(RegisterRepo registerRepo) {
         this.registerRepo = registerRepo;
@@ -49,6 +45,7 @@ public class JwtUtils {
 
     @PostConstruct
     public void init() {
+        // Create keys from your secret strings (must be properly sized)
         this.accessKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
         this.refreshKey = Keys.hmacShaKeyFor(jwtRefreshSecret.getBytes());
     }
@@ -74,13 +71,13 @@ public class JwtUtils {
                 .compact();
     }
 
-    public String generatingToken(RegisterUser user) {
-        RegisterUser regUser = registerRepo.findByUsername(user.getUsername());
+    // You can optionally have a method to generate token from RegisterUser
+    public String generateTokenFromUser(RegisterUser user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 864000000))
-                .signWith(key)
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .signWith(accessKey, SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -104,7 +101,7 @@ public class JwtUtils {
         return extractUsername(token, refreshKey);
     }
 
-    // Common token validation
+    // Common token validation logic
     private boolean validateToken(String token, SecretKey key) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -115,7 +112,7 @@ public class JwtUtils {
         }
     }
 
-    // Common method to extract username
+    // Common method to extract username (subject) from token
     private String extractUsername(String token, SecretKey key) {
         Claims claims =
                 Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
@@ -139,77 +136,3 @@ public class JwtUtils {
         return token;
     }
 }
-// package com.example.demo.jwtsecurity;
-//
-// import com.example.demo.model.RegisterUser;
-// import com.example.demo.repository.RegisterRepo;
-//
-// import io.jsonwebtoken.Claims;
-// import io.jsonwebtoken.JwtException;
-// import io.jsonwebtoken.Jwts;
-// import io.jsonwebtoken.SignatureAlgorithm;
-// import io.jsonwebtoken.security.Keys;
-//
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.stereotype.Component;
-//
-// import java.util.Date;
-//
-// import javax.crypto.SecretKey;
-//
-// @Component
-// public class JwtUtils {
-//
-//    private final RegisterRepo registerRepo;
-//
-//    @Autowired
-//    public JwtUtils(RegisterRepo registerRepo) {
-//        this.registerRepo = registerRepo;
-//    }
-//
-//    private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-//
-//    // Generate a JWT token for a given user
-//    public String generatingToken(RegisterUser user) {
-//        RegisterUser regUser = registerRepo.findByUsername(user.getUsername());
-//        return Jwts.builder()
-//                .setSubject(user.getUsername())
-//                .setIssuedAt(new Date())
-//                .setExpiration(
-//                        new Date(
-//                                System.currentTimeMillis() + 86400000)) // Token expires in 24
-// hours
-//                .signWith(key)
-//                .compact();
-//    }
-//
-//    // Extract claims from a token
-//    public Claims extractClaims(String token) {
-//        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-//    }
-//
-//    // Extract username from a token
-//    public String extractUsername(String token) {
-//        return extractClaims(token).getSubject();
-//    }
-//
-//    // Check if a token is expired
-//    public boolean isTokenExpired(String token) {
-//        return extractClaims(token).getExpiration().before(new Date());
-//    }
-//
-//    // Validate a token by comparing the username and checking expiration
-//    public boolean validateToken(String token, String username) {
-//        return (username.equals(extractUsername(token)) && !isTokenExpired(token));
-//    }
-//
-//    // Verify a token without extracting claims
-//    public boolean verifyToken(String token) {
-//        try {
-//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-//            return true;
-//        } catch (JwtException | IllegalArgumentException e) {
-//            return false;
-//        }
-//    }
-// }
