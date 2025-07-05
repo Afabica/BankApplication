@@ -1,0 +1,282 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Header from "../hedfot/DashHeader";
+import dynamic from "next/dynamic";
+import axios from "axios";
+
+const SidePanel = dynamic(() => import("../dashcomp/MainPage/SidePanel"), {
+  ssr: false,
+});
+
+const PanelElements = dynamic(() => import("../hedfot/PanelElements"), {
+  ssr: false,
+});
+
+function ProfilePage() {
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [error, setError] = useState();
+  const [token, setToken] = useState();
+  const [formData, setFormData] = useState({
+    name: "Jane Doe",
+    email: "jane@example.com",
+    phone: "+1 555-123-4567",
+    location: "New York, USA",
+    gender: "Female",
+    dob: "1992-06-15",
+    bio: "Banking pro and fintech fan",
+    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+    balance: 5120.75,
+    cardNumber: "**** **** **** 8421",
+    iban: "DE89 3704 0044 0532 0130 00",
+  });
+  const [parsedData, setParsedData] = useState(null);
+  const API = "https://localhost:8443";
+
+  const [editMode, setEditMode] = useState(false);
+
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const fetchToken = async () => {
+    if (!parsedData?.accountId) return;
+
+    setToken(localStorage.getItem("token").replace(/"/g, ""));
+    if (!token) {
+      setError("Authentiction token missing.");
+      console.error(error);
+      return;
+    }
+  };
+
+  useEffect(() => {
+    const customer = localStorage.getItem("customer");
+    if (customer && customer !== "undefined") {
+      try {
+        const parsed = JSON.parse(customer);
+        setParsedData(parsed);
+      } catch (err) {
+        console.error("Error parsing customer data:", err);
+        return;
+      }
+    }
+    const fetchProfile = async () => {
+      fetchToken();
+      try {
+        const params = new URLSearchParams();
+        if (parsedData.accountId) params.append("userId", parsedData.accountId);
+        const response = await axios.get(
+          `${API} + /profile?${params.toString()}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              ContentType: "application/json",
+            },
+          },
+        );
+        if (response.status === 200) {
+          setFormData(response.data);
+          console.log("Profile fetched successfully.");
+        } else {
+          setError("Failed to fetch profile.");
+        }
+      } catch (err) {
+        setError("Error fetching profile.");
+        console.error("Fetch error:", err);
+        return;
+      }
+    };
+
+    fetchProfile();
+  });
+
+  const updateUserProfile = async () => {
+    fetchToken();
+    const response = await axios.update(
+      `${API} + /profile?${parsedData.accountId}`,
+      {
+        formData,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    if (response === 200) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const deleteUserProfile = async () => {
+    fetchToken();
+    const response = await axios.delete(
+      `${API} + /profile?${parsedData.accountId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+  };
+
+  const handleSave = async () => {
+    setEditMode(false);
+    const response = updateUserProfile();
+    if (true) {
+      console.log("User profile updated successfully.");
+    } else {
+      setError("User profile wan't updated.");
+    }
+    console.log("Saved data:", formData);
+  };
+
+  const togglePanel = () => setIsPanelOpen((prev) => !prev);
+  // max-w-4xl
+  return (
+    <div className="min-w-screen mx-auto">
+      {isPanelOpen && (
+        <aside className="w-64 bg-white shadow-md">
+          <SidePanel isOpen={isPanelOpen} onClose={() => setIsPanelOpen(false)}>
+            <PanelElements />
+          </SidePanel>
+        </aside>
+      )}
+      <div className="flex-1 flex flex-col">
+        <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
+        <div className="p-20">
+          <div className="flex items-center gap-6 mb-8">
+            <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden">
+              <img
+                src={formData.avatar}
+                alt="Avatar"
+                className="object-cover w-full h-full"
+              />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">{formData.name}</h1>
+              <p className="text-sm text-gray-600">{formData.email}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <InputField
+                label="Name"
+                value={formData.name}
+                onChange={(val) => handleChange("name", val)}
+                disabled={!editMode}
+              />
+              <InputField
+                label="Email"
+                value={formData.email}
+                onChange={(val) => handleChange("email", val)}
+                disabled={!editMode}
+              />
+              <InputField
+                label="Phone"
+                value={formData.phone}
+                onChange={(val) => handleChange("phone", val)}
+                disabled={!editMode}
+              />
+              <InputField
+                label="Location"
+                value={formData.location}
+                onChange={(val) => handleChange("location", val)}
+                disabled={!editMode}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <InputField
+                label="Gender"
+                value={formData.gender}
+                onChange={(val) => handleChange("gender", val)}
+                disabled={!editMode}
+              />
+              <InputField
+                label="Bio"
+                value={formData.bio}
+                onChange={(val) => handleChange("bio", val)}
+                disabled={!editMode}
+              />
+              <InputField
+                label="Date of Birth"
+                value={formData.dob}
+                onChange={(val) => handleChange("dob", val)}
+                disabled={!editMode}
+              />
+            </div>
+          </div>
+
+          <div className="mt-10 bg-gray-100 rounded-xl p-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-700">
+            <div>
+              <p className="font-semibold text-gray-800">Balance</p>
+              <p>${formData.balance.toLocaleString()}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-800">Card Number</p>
+              <p>{formData.cardNumber}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-800">IBAN</p>
+              <p>{formData.iban}</p>
+            </div>
+          </div>
+
+          <div className="mt-8 flex justify-end space-x-4">
+            {!editMode ? (
+              <button
+                onClick={() => setEditMode(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Edit Profile
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  Save Changes
+                </button>
+                <button
+                  onClick={() => setEditMode(false)}
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InputField({ label, value, onChange, disabled }) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        {label}
+      </label>
+      <input
+        type="text"
+        className={`w-full px-3 py-2 border ${
+          disabled ? "bg-gray-100" : "bg-white"
+        } border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+      />
+    </div>
+  );
+}
+
+export default ProfilePage;

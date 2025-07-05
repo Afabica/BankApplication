@@ -1,63 +1,63 @@
-name: Second Workflow
-
-on: 
-  workflow_run:
-    workflows: ["First Workflow"] 
-    types:
-      - completed
-
-
-env: 
-  CLUSTER_NAME: BankCluster
-  RESOURCE_GROUP: Kubernetes
-  NAMESPACE: https-con
-
-jobs: 
-  build-and-deploy:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Azure Login 
-        uses: azure/login@v1
-        with: 
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Set AKS context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: ${{ env.RESOURCE_GROUP }}
-          cluster-name: ${{ env.CLUSTER_NAME }}
-
-      - name: Create namespace 
-        run: kubectl create namespace https-con || echo "Namespace already exists"
-
-      - name: Create docker registry secret
-        uses: azure/k8s-create-secret@v1
-        with:
-            secret-name: dockerhub-secret
-            namespace: https-con
-            container-registry-url: https://index.docker.io/v1/
-            container-registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
-            container-registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-
-      - name: Deploy Spring Boot app
-        run: |
-            kubectl apply -f AppDeploy/backend-deploy.yaml -n ${{ env.NAMESPACE }}
-            kubectl apply -f AppDeploy/backend-svc.yaml -n ${{ env.NAMESPACE }}
-            kubectl rollout status deployment/backend-deploy -n ${{ env.NAMESPACE }}
-
-      - name: Deploy Next.js app
-        run: |
-          kubectl apply -f AppDeploy/frontend-deploy.yaml -n ${{ env.NAMESPACE }}
-          kubectl apply -f AppDeploy/frontend-svc.yaml -n ${{ env.NAMESPACE }}
-          kubectl rollout status deployment/nextjs-deployment -n ${{ env.NAMESPACE }}
-
-      - name: Deploy Nginx server
-        run: |
-          kubectl apply -f AppDeploy/nginx-deploy.yaml -n ${{ env.NAMESPACE }}
-          kubectl apply -f AppDeploy/nginx-configmap.yaml -n ${{ env.NAMESPACE }}
-          kubectl apply -f AppDeploy/nginx-svc.yaml -n ${{ env.NAMESPACE }}
-
+#name: Second Workflow
+#
+#on: 
+#  workflow_run:
+#    workflows: ["First Workflow"] 
+#    types:
+#      - completed
+#
+#
+#env: 
+#  CLUSTER_NAME: BankCluster
+#  RESOURCE_GROUP: Kubernetes
+#  NAMESPACE: https-con
+#
+#jobs: 
+#  build-and-deploy:
+#    runs-on: ubuntu-22.04
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Azure Login 
+#        uses: azure/login@v1
+#        with: 
+#          creds: ${{ secrets.AZURE_CREDENTIALS }}
+#
+#      - name: Set AKS context
+#        uses: azure/aks-set-context@v3
+#        with:
+#          resource-group: ${{ env.RESOURCE_GROUP }}
+#          cluster-name: ${{ env.CLUSTER_NAME }}
+#
+#      - name: Create namespace 
+#        run: kubectl create namespace https-con || echo "Namespace already exists"
+#
+#      - name: Create docker registry secret
+#        uses: azure/k8s-create-secret@v1
+#        with:
+#            secret-name: dockerhub-secret
+#            namespace: https-con
+#            container-registry-url: https://index.docker.io/v1/
+#            container-registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
+#            container-registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
+#
+#
+#      - name: Deploy Spring Boot app
+#        run: |
+#            kubectl apply -f AppDeploy/backend-deploy.yaml -n ${{ env.NAMESPACE }}
+#            kubectl apply -f AppDeploy/backend-svc.yaml -n ${{ env.NAMESPACE }}
+#            kubectl rollout status deployment/backend-deploy -n ${{ env.NAMESPACE }}
+#
+#      - name: Deploy Next.js app
+#        run: |
+#          kubectl apply -f AppDeploy/frontend-deploy.yaml -n ${{ env.NAMESPACE }}
+#          kubectl apply -f AppDeploy/frontend-svc.yaml -n ${{ env.NAMESPACE }}
+#          kubectl rollout status deployment/nextjs-deployment -n ${{ env.NAMESPACE }}
+#
+#      - name: Deploy Nginx server
+#        run: |
+#          kubectl apply -f AppDeploy/nginx-deploy.yaml -n ${{ env.NAMESPACE }}
+#          kubectl apply -f AppDeploy/nginx-configmap.yaml -n ${{ env.NAMESPACE }}
+#          kubectl apply -f AppDeploy/nginx-svc.yaml -n ${{ env.NAMESPACE }}
+#
