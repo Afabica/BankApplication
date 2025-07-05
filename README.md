@@ -27,7 +27,7 @@ Summary of account in short manner like balances, recent transactions and alerts
 ### Monitoring page
 Real-time system performance metrics visualized with Grafana, showing API latency currently moment only for authentication process.
 
-![Monitoring](images/grafana-monitoring/png)
+![Monitoring](images/grafana-monitoring.jpg)
 
 
 

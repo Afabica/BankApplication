@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import { getExchangeRates } from "./getExchangeRates";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const ExchangeRatesTable = () => {
   const [exchangeRates, setExchangeRates] = useState(null);
@@ -87,10 +88,12 @@ const ExchangeRatesTable = () => {
       </div>
 
       <ReactPaginate
-        previousLabel={"← Prev"}
-        nextLabel={"Next →"}
+        previousLabel={<ChevronLeft />}
+        nextLabel={<ChevronRight />}
         pageCount={pageCount}
         onPageChange={handlePageClick}
+        pageRangeDisplayed={0}
+        marginPagesDisplayed={0}
         containerClassName="flex justify-center mt-6 space-x-2 select-none"
         pageClassName="px-3 py-1 border border-gray-300 rounded cursor-pointer hover:bg-indigo-600 hover:text-white"
         previousClassName="px-3 py-1 border border-gray-300 rounded cursor-pointer hover:bg-indigo-600 hover:text-white"

@@ -32,6 +32,59 @@ function Home() {
   const [parsedData, setParsedData] = useState([""]);
   const [ibans, setIbans] = useState([]);
 
+  const payments = [
+    {
+      id: "txn_001",
+      date: "2025-06-28",
+      description: "Payment to John Doe",
+      ibanFrom: "DE89 3704 0044 0532 0130 00",
+      ibanTo: "DE45 5001 0517 5407 3249 31",
+      amount: -150.0,
+      currency: "EUR",
+      status: "Completed",
+    },
+    {
+      id: "txn_002",
+      date: "2025-06-27",
+      description: "Salary deposit",
+      ibanFrom: "Company Payroll",
+      ibanTo: "DE89 3704 0044 0532 0130 00",
+      amount: 2500.0,
+      currency: "EUR",
+      status: "Completed",
+    },
+    {
+      id: "txn_003",
+      date: "2025-06-26",
+      description: "Electricity bill payment",
+      ibanFrom: "DE89 3704 0044 0532 0130 00",
+      ibanTo: "DE91 1000 0000 0123 4567 89",
+      amount: -75.32,
+      currency: "EUR",
+      status: "Pending",
+    },
+    {
+      id: "txn_004",
+      date: "2025-06-25",
+      description: "Refund from Amazon",
+      ibanFrom: "DE89 3704 0044 0532 0130 00",
+      ibanTo: "Amazon Payments",
+      amount: 45.67,
+      currency: "EUR",
+      status: "Completed",
+    },
+    {
+      id: "txn_005",
+      date: "2025-06-24",
+      description: "Monthly subscription fee",
+      ibanFrom: "DE89 3704 0044 0532 0130 00",
+      ibanTo: "Netflix",
+      amount: -13.99,
+      currency: "EUR",
+      status: "Completed",
+    },
+  ];
+
   const promotionsData = [
     {
       title: "Summer Sale",
@@ -76,6 +129,7 @@ function Home() {
     const customer = fetchProfile();
     if (customer) {
       setParsedData(customer);
+      setTransactions(payments);
       console.log("Customer data fetched.");
     } else {
       console.warn("Customer data not fetched.");
@@ -162,8 +216,8 @@ function Home() {
             <h1 className="text-3xl font-bold mb-3">
               Welcome, {parsedData?.username || "User"}
             </h1>
-            <p>Balance: {parsedData?.balance ?? "N/A"}</p>
-            <p>Card Number: {parsedData?.cardNumber ?? "N/A"}</p>
+            {/*<p>Balance: {parsedData?.balance ?? "N/A"}</p>
+            <p>Card Number: {parsedData?.cardNumber ?? "N/A"}</p>*/}
           </div>
 
           {/* Stats Section */}
@@ -226,7 +280,8 @@ function Home() {
                         />
                       </td>
                       <td className="p-3">
-                        {new Date(tx.transactionDate).toLocaleDateString()}
+                        {tx.date}
+                        {/*{new Date(tx.transactionDate).toLocaleDateString()}*/}
                       </td>
                       <td className="p-3">{tx.description || "-"}</td>
                       <td className="p-3 text-right">

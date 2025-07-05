@@ -72,21 +72,19 @@ export default function VerticalBankCarousel() {
     }
   };
 
-  //  const addCard = () => {
-  //    const newCard = {
-  //      id: Date.now(),
-  //      bank: `Bank ${String.fromCharCode(65 + (cards.length % 26))}`,
-  //      cardNumber: `**** **** **** ${Math.floor(1000 + Math.random() * 9000)}`,
-  //      balance: `$${(Math.random() * 10000).toFixed(2)}`,
-  //    };
-  //    setCards((prev) => [...prev, newCard]);
-  //  };
+  const addCard = () => {
+    const newCard = {
+      id: Date.now(),
+      bank: `Bank ${String.fromCharCode(65 + (cards.length % 26))}`,
+      cardNumber: `**** **** **** ${Math.floor(1000 + Math.random() * 9000)}`,
+      balance: `$${(Math.random() * 10000).toFixed(2)}`,
+    };
+    setCards((prev) => [...prev, newCard]);
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center p-8">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">
-        Bank Card Carousel
-      </h1>
+      <h1 className="text-3xl font-bold mb-8 text-gray-800">Cards</h1>
 
       <div className="relative w-[360px] h-[280px]">
         <AnimatePresence>
@@ -104,7 +102,7 @@ export default function VerticalBankCarousel() {
                 exit={{ y: 200, opacity: 0, rotate: angle + 10 }}
                 transition={{ duration: 0.6, type: "spring" }}
                 style={{ zIndex: cards.length - index }}
-                className={`absolute w-full h-[180px] bg-gradient-to-br ${gradient} text-white p-6 rounded-2xl shadow-xl cursor-pointer`}
+                className={`absolute w-full h-[200px] bg-gradient-to-br ${gradient} text-white p-6 rounded-2xl shadow-xl cursor-pointer`}
                 onClick={() => deleteCard(card.id)}
               >
                 <div className="flex justify-between">
@@ -129,7 +127,7 @@ export default function VerticalBankCarousel() {
       </button>
 
       <button
-        onClick={requestNewCard}
+        onClick={addCard}
         className="mt-6 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg shadow"
       >
         Add New Card
