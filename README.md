@@ -36,6 +36,36 @@ Real-time system performance metrics visualized with Grafana, showing APIlatency
 
 ![Monitoring](images/grafana-monitoring.jpg)
 
+## Features 
+
+- JWT Authentication + Registration & 2FA via Twilio OTP 
+- IBAN-based transaction processing
+- Encrypted password storage
+- Protected frontend routes
+- Real-time system monitoring (Grafana + Prometheus)
+- User card generation service (in process)
+- Notifications system for user dashboard (in process)
+- RBAC for role based access (in process)
+
+
+## Tech Stack 
+1. Frontend: `Next.js, React, Tailwind Css, Css`
+2. Backend: `Spring Boot, PostgreSQL, Twilio, Redis`
+3. Monitoring and preformance test: `Prometheus, Grafana, Jmeter`
+4. Security: JWT, 2FA, Bcrypt, HS512, RBAC(in process), HTTPS
+
+## 🚀 Getting Started 
+
+```bash
+npm install
+```
+Command install all necessary dependencies listed in package.json.
+```bash
+npm run dev
+```
+Starts the frontend in development mode on https://localhost:3000
+
+
 ## Installation of packages for work with React and Next.js
 
 `npm install next --force`

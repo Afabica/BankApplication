@@ -43,6 +43,7 @@ public class ProfileService {
      */
     @Transactional
     public ProfileEntity createProfile(Long userId, ProfileEntity dto) {
+        // Fetch the user entity
         RegisterUser user =
                 registerRepo
                         .findById(userId)
@@ -51,20 +52,27 @@ public class ProfileService {
                                         new IllegalArgumentException(
                                                 "User not found for id: " + userId));
 
-        // Prevent duplicate profile
+        // Check if profile already exists for this user
         if (profileRepo.existsById(userId)) {
             throw new IllegalArgumentException("Profile already exists for user id: " + userId);
         }
 
         ProfileEntity profile = new ProfileEntity();
-        profile.setUser(user);
+        //        profile.setUser(user); // Set user relation
+
+        // Copy fields from DTO to entity
+        profile.setId(dto.getId());
         profile.setFullName(dto.getFullName());
         profile.setDob(dto.getDob());
         profile.setAddress(dto.getAddress());
         profile.setMobile(dto.getMobile());
+        profile.setPassNumber(dto.getPassNumber()); // If you have this field
+        profile.setGender(dto.getGender()); // If you have this field
         profile.setIdentificationDetails(dto.getIdentificationDetails());
         profile.setAccountType(dto.getAccountType());
         profile.setEmployer(dto.getEmployer());
+        profile.setCreatedAt(dto.getCreatedAt()); // If you allow client to set
+        profile.setUpdatedAt(dto.getUpdatedAt()); // Usually updated automatically
 
         return profileRepo.save(profile);
     }
@@ -88,13 +96,18 @@ public class ProfileService {
                                                 "Cannot update; profile not found for id: "
                                                         + userId));
 
+        // Update fields from DTO
+        System.out.println("FULL USER NAME: " + dto.getFullName());
         existing.setFullName(dto.getFullName());
         existing.setDob(dto.getDob());
         existing.setAddress(dto.getAddress());
         existing.setMobile(dto.getMobile());
+        existing.setPassNumber(dto.getPassNumber());
+        existing.setGender(dto.getGender());
         existing.setIdentificationDetails(dto.getIdentificationDetails());
         existing.setAccountType(dto.getAccountType());
         existing.setEmployer(dto.getEmployer());
+        existing.setUpdatedAt(dto.getUpdatedAt()); // You may want to set current time here instead
 
         return profileRepo.save(existing);
     }

@@ -1,0 +1,54 @@
+FROM eclipse-temurin:8-jdk-alpine
+
+ARG JMETER_VERSION=5.5
+
+# Environment variables
+ENV JMETER_HOME /jmeter/apache-jmeter-${JMETER_VERSION}
+ENV PATH $JMETER_HOME/bin:$PATH
+
+# Install necessary tools
+RUN apk update && \
+    apk add --no-cache \
+        curl \
+        unzip \
+        vim \
+        wget \
+        ca-certificates \
+        libstdc++ \
+        bash
+
+RUN curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage && \
+    chmod +x nvim.appimage && \
+    mv nvim.appimage /usr/local/bin/nvim
+
+# Install JMeter
+RUN mkdir -p /jmeter && \
+    cd /jmeter && \
+    curl -LO https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz && \
+    tar -xzf apache-jmeter-${JMETER_VERSION}.tgz && \
+    rm apache-jmeter-${JMETER_VERSION}.tgz
+
+# Install Prometheus Plugin
+COPY ./jmeter-prometheus-plugin-0.7.2-SNAPSHOT.jar /jmeter/apache-jmeter-5.5/lib/ext/
+
+# Copy Metrics Server
+COPY ./metrics-server-1.0.jar /jmeter/apache-jmeter-5.5/demo-1.0-all.jar 
+
+# Copy launch script
+COPY ./script.sh /jmeter/apache-jmeter-5.5/script.sh
+RUN chmod +x /jmeter/apache-jmeter-5.5/script.sh
+
+# Copy test plans
+COPY ./test /jmeter/apache-jmeter-${JMETER_VERSION}/test/
+RUN chmod -R 777 /jmeter/apache-jmeter-${JMETER_VERSION}/test
+
+# Set working directory
+WORKDIR /jmeter/apache-jmeter-${JMETER_VERSION}
+
+# Start Metrics Server first, then JMeter
+##CMD ["sh", "-c", "java -jar demo-1.0-all.jar & sleep 2 && jmeter -n -t /jmeter/apache-jmeter-5.5/test/login_test1.jmx -l /jmeter/apache-jmeter-5.5/test/results.csv -Jprometheus.listener.port=9270"]
+CMD ["sh", "-c", jmeter -n -t /jmeter/apache-jmeter-5.5/test/login_test.jmx -l /jmeter/apache-jmeter-5.5/test/results.jtl]
+
+
+# Expose Prometheus metrics port
+EXPOSE 9270

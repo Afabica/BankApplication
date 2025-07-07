@@ -73,6 +73,7 @@ public class SecurityConfig {
                         auth ->
                                 auth.requestMatchers(
                                                 "/api/login",
+                                                "/profilr/**",
                                                 "/api/register",
                                                 "/api/otp/send",
                                                 "/api/otp/verify",

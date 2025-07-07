@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import CreateProfile from "./ProfileForm";
 
 export default function RegisterPage() {
   const API = "https://localhost:8443";
@@ -142,65 +143,7 @@ export default function RegisterPage() {
             </button>
           </form>
         ) : (
-          <form onSubmit={submitProfile} className="space-y-4">
-            <h2 className="text-xl font-semibold text-center">
-              Step 2: Profile Details
-            </h2>
-            <input
-              name="fullName"
-              placeholder="Full Name"
-              value={profile.fullName}
-              onChange={handleProfileChange}
-              required
-              className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              name="dob"
-              type="date"
-              placeholder="Date of Birth"
-              value={profile.dob}
-              onChange={handleProfileChange}
-              required
-              className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              name="address"
-              placeholder="Address"
-              value={profile.address}
-              onChange={handleProfileChange}
-              required
-              className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              name="identificationDetails"
-              placeholder="ID Details"
-              value={profile.identificationDetails}
-              onChange={handleProfileChange}
-              className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              name="accountType"
-              placeholder="Account Type"
-              value={profile.accountType}
-              onChange={handleProfileChange}
-              required
-              className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              name="employer"
-              placeholder="Employer"
-              value={profile.employer}
-              onChange={handleProfileChange}
-              className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {error && <p className="text-red-600 text-sm">{error}</p>}
-            <button
-              type="submit"
-              className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
-            >
-              Complete Registration
-            </button>
-          </form>
+          <CreateProfile />
         )}
       </div>
     </div>

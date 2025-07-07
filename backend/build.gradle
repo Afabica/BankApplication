@@ -1,7 +1,6 @@
-
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.3' // verify latest version
+    id 'org.springframework.boot' version '3.2.3'
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
@@ -25,37 +24,33 @@ dependencyManagement {
 }
 
 dependencies {
-    // Spring Boot Starters
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    // Core Spring Boot starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'              // MVC
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'         // JPA
+    implementation 'org.springframework.boot:spring-boot-starter-security'         // Security
+    implementation 'org.springframework.boot:spring-boot-starter-cache'            // Caching
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'     // MongoDB
 
-    // Security
-    implementation 'org.springframework.security:spring-security-web'
-    implementation 'org.springframework.security:spring-security-config'
-
-    // PDF 
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // PDF generation
     implementation 'com.itextpdf:itext7-core:7.2.5'
-
-    // JsonIgnore
 
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // for Jackson JSON binding
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-    // JSON
+    // JSON handling
     implementation 'com.fasterxml.jackson.core:jackson-databind'
+
     // Database
     runtimeOnly 'com.h2database:h2'
     implementation 'org.postgresql:postgresql:42.6.0'
     implementation 'com.zaxxer:HikariCP'
 
-    // UI and Documentation
+    // OpenAPI / Swagger UI
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.10'
+
+    // Thymeleaf + Spring Security integration
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.2.RELEASE'
 
     // Utilities
@@ -65,12 +60,11 @@ dependencies {
     // Messaging / External APIs
     implementation 'com.sendgrid:sendgrid-java:4.9.3'
     implementation 'com.twilio.sdk:twilio:7.34.0'
-    
-    // Caffeine
-//    implementation 'com.github.ben-manes.caffeine:caffeine'
-    // Redis 
+
+    // Redis (for caching/session/etc.)
     implementation 'org.springframework.data:spring-data-redis'
-    // Azure (optional — verify need)
+
+    // Azure SDKs (if needed)
     implementation 'com.azure:azure-communication-chat:1.0.0-beta.3'
     implementation 'com.azure:azure-storage-blob:12.12.0'
     implementation 'com.azure.spring:azure-spring-boot-starter-storage:3.14.0'
@@ -82,7 +76,7 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'

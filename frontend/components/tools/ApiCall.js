@@ -1,7 +1,7 @@
 // tools/fetchProfile.js
 "use client";
 
-export default function fetchProfile() {
+export const fetchCustomerInfo = () => {
   try {
     const storedCustomer = localStorage.getItem("customer");
     if (!storedCustomer) return null;
@@ -13,4 +13,14 @@ export default function fetchProfile() {
     console.error("Failed to parse stored customer data", e);
     return null;
   }
-}
+};
+
+export const fetchToken = (e) => {
+  if (!e?.accountId) return;
+  const token = localStorage.getItem("token")?.replace(/"/g, "");
+  if (!token) {
+    return "Authentication token missing";
+  } else {
+    return token;
+  }
+};
