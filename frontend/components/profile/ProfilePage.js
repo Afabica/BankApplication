@@ -15,7 +15,17 @@ const PanelElements = dynamic(() => import("../hedfot/PanelElements"), {
 function ProfilePage() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [error, setError] = useState("");
-  const [formData, setFormData] = useState(null);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    dob: "",
+    address: "",
+    mobile: "",
+    passNumber: "",
+    gender: "",
+    identificationDetails: "",
+    accountType: "",
+    employer: "",
+  });
   const [loading, setLoading] = useState(true);
 
   const API = "https://localhost:8443";
@@ -70,19 +80,23 @@ function ProfilePage() {
         setLoading(false);
       }
     })();
-  }, []); // <- empty deps: run once
+  }, []);
 
-  // 3) Handlers remain largely the same, but ensure they await properly and handle errors
+  // API for handle update of user profile
   const updateUserProfile = async () => {
     const tokenRaw = localStorage.getItem("token");
     const token = tokenRaw?.replace(/"/g, "");
     try {
-      const response = await axios.put(`${API}/profile`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      const response = await axios.put(
+        `${API}/profile/${formData.accountId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
       return response.status === 200;
     } catch (err) {
       console.error("Update error:", err);
@@ -90,6 +104,7 @@ function ProfilePage() {
     }
   };
 
+  // Function for handle saving profile
   const handleSave = async () => {
     setLoading(true);
     const ok = await updateUserProfile();
@@ -102,6 +117,7 @@ function ProfilePage() {
     }
   };
 
+  // Addition for side panel functionality
   const togglePanel = () => setIsPanelOpen((prev) => !prev);
 
   if (loading) {

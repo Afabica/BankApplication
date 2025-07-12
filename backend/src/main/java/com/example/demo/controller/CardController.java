@@ -9,6 +9,8 @@ import com.example.demo.service.CardService;
 
 import jakarta.persistence.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,8 @@ public class CardController {
     private final CardService cardService;
     private final CardRepository cardRepository;
     private final RegisterRepo registerRepo;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CardController.class);
 
     private LoginUser loginUser;
 
@@ -82,6 +86,21 @@ public class CardController {
             return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Internal Server Error"));
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/deleting")
+    public ResponseEntity<?> deleteUserCard(@RequestParam("user_id") Long id) {
+        try {
+            String del_response = cardService.deleteCardById(id);
+            if (!del_response.isEmpty()) {
+                return ResponseEntity.ok().body(del_response);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body("During executing function error occured.");
         }
     }
 
