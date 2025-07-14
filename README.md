@@ -22,7 +22,7 @@ The project is a secure full-stack online baking simulation, built to demonstrat
 ### Login Page
 
 Secure login with username, password, and two-factor authentication (2FA).
-![Login](images/login.png)
+![Login](images/login_page.png)
 
 ### Dashboard page
 
