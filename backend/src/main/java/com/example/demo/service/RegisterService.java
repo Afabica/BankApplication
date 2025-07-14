@@ -58,6 +58,18 @@ public class RegisterService {
                 .orElseThrow(() -> new IllegalArgumentException("Unexisting id has passed"));
     }
 
+    public RegisterUser updateUserPassword(Long userId, RegisterUser newInfo) {
+        RegisterUser user =
+                registerRepo
+                        .findById(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("Account not fraud"));
+        if (user.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(newInfo.getPassword()));
+        }
+
+        return registerRepo.save(user);
+    }
+
     public void deleteUserAccount(Long account_id) {
         // You should delete related entities carefully to avoid foreign key constraint errors
         // Assuming that cardRepository and transactionRepo have methods to delete by userId

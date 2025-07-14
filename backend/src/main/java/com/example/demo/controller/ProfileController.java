@@ -10,35 +10,35 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/profile")
 public class ProfileController {
 
-    private final ProfileService service;
+    private final ProfileService profileService;
 
     @Autowired
-    public ProfileController(ProfileService service) {
-        this.service = service;
+    public ProfileController(ProfileService profileService) {
+        this.profileService = profileService;
     }
 
     @GetMapping("/{id}")
     public ProfileEntity get(@PathVariable Long id) {
-        return service.getProfile(id);
+        return profileService.getProfile(id);
     }
 
     /** Create a profile for the user with given ID. */
     @PostMapping("/{id}")
     public ProfileEntity create(
             @PathVariable("id") Long id, @RequestBody ProfileEntity profileEntity) {
-        return service.createProfile(id, profileEntity);
+        return profileService.createProfile(id, profileEntity);
     }
 
     /** Update the profile for the user with given ID. */
     @PutMapping("/{id}")
     public ProfileEntity update(
             @PathVariable("id") Long id, @RequestBody ProfileEntity profileEntity) {
-        return service.updateProfile(id, profileEntity);
+        return profileService.updateProfile(id, profileEntity);
     }
 
     /** Delete the profile for the user with given ID. */
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        service.deleteProfile(id);
+        profileService.deleteProfile(id);
     }
 }

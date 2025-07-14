@@ -12,13 +12,19 @@ const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), {
 });
 
 const PaymentsPage = () => {
-  // State for user IBANs fetched from backend
+  const API = "https://localhost:8443";
   const [ibans, setIbans] = useState([]);
   const [balance, setBalance] = useState(0);
-  const [loadingIbans, setLoadingIbans] = useState(true); // loading flag for fetching ibans
+  const [loadingIbans, setLoadingIbans] = useState(true);
 
-  // Form state
-  const [formData, setFormData] = useState([]);
+  const [formData, setFormData] = useState({
+    iban: "",
+    destinationIban: "",
+    amount: "",
+    sourceCardNumber: "",
+    destinationCardNumber: "",
+    description: "",
+  });
 
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
@@ -27,9 +33,28 @@ const PaymentsPage = () => {
 
   // Fetch IBANs on mount using userId from localStorage
   useEffect(() => {
-    const userId = localStorage.getItem("customer");
-    if (!userId) {
-      setError("User not logged in");
+    const customerRaw = localStorage.getItem("customer");
+    if (!customerRaw) {
+      setError("User not logged in.");
+      setLoadingIbans(false);
+      return;
+    }
+
+    let customer;
+    try {
+      customer = JSON.parse(customerRaw);
+    } catch (err) {
+      setError("Invalid customer data.");
+      setLoadingIbans(false);
+      return;
+    }
+
+    const accountId = customer.accountId;
+    const tokenRaw = localStorage.getItem("token");
+    const token = tokenRaw?.replace(/"/g, "");
+
+    if (!token) {
+      setError("Authentication token missing.");
       setLoadingIbans(false);
       return;
     }
@@ -37,35 +62,44 @@ const PaymentsPage = () => {
     async function fetchIbans() {
       try {
         setLoadingIbans(true);
-        // Replace with your actual backend API endpoint to fetch IBANs by userId
-        const res = await axios.get(`/api/users/${userId}/ibans`);
+        const res = await axios.get(
+          `${API}/profcards/getcards?user_id=${accountId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
 
-        if (res.data.ibans && res.data.ibans.length > 0) {
-          setIbans(res.data.ibans);
+        if (Array.isArray(res.data) && res.data.length > 0) {
+          const ibansList = res.data.map((card) => card.iban); // assuming each card has an `iban` field
+          setIbans(ibansList);
+
           setFormData((prev) => ({
             ...prev,
-            iban: res.data.ibans[0], // default selected IBAN
+            iban: ibansList[0],
           }));
 
-          // Fetch initial balance for the first IBAN
-          const balanceRes = await axios.get(
-            `/api/accounts/${res.data.ibans[0]}/balance`,
-          );
-          setBalance(balanceRes.data.balance ?? 0);
+          //          const balanceRes = await axios.get(
+          //            `/api/accounts/${ibansList[0]}/balance`,
+          //          );
+          //          setBalance(balanceRes.data.balance ?? 0);
         } else {
-          setError("No IBANs found for this user.");
+          setError("No cards/IBANs found for this user.");
         }
       } catch (err) {
+        console.error(err);
         setError("Failed to fetch IBANs. Please try again later.");
       } finally {
         setLoadingIbans(false);
       }
     }
-
+    //
     fetchIbans();
   }, []);
 
-  // When user selects a different IBAN, fetch and update balance
+  // Update balance when IBAN changes
   useEffect(() => {
     async function fetchBalance() {
       if (!formData.iban) return;
@@ -115,7 +149,6 @@ const PaymentsPage = () => {
         amount: amountNum,
         sourceCardNumber: formData.sourceCardNumber,
         destinationCardNumber: formData.destinationCardNumber,
-        transactionType: formData.transactionType,
         description: formData.description,
       });
 
@@ -190,6 +223,7 @@ const PaymentsPage = () => {
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Source IBAN */}
               <div>
                 <label
                   htmlFor="iban"
@@ -213,15 +247,12 @@ const PaymentsPage = () => {
                   ))}
                 </select>
               </div>
-
-              {/* rest of form fields unchanged */}
-
               <div>
                 <label
                   htmlFor="destinationIban"
                   className="block mb-2 font-medium text-gray-700"
                 >
-                  Destination IBAN
+                  Destination Iban
                 </label>
                 <input
                   type="text"
@@ -234,7 +265,6 @@ const PaymentsPage = () => {
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-
               <div>
                 <label
                   htmlFor="amount"
@@ -309,6 +339,9 @@ const PaymentsPage = () => {
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              {/* Other form fields remain unchanged (destinationIban, amount, etc.) */}
+
+              {/* ... existing inputs here ... */}
 
               <button
                 type="submit"

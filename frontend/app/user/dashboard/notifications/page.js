@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 //import NotificationsPage from "../../../components/dashcomp/Notifications.js";
-import NotificationsPage from "../../../components/dashcomp/Notifications/Notifications";
+import NotificationsPage from "../../../../components/dashcomp/Notifications/Notifications";
 
 const Notifications = () => {
   return (

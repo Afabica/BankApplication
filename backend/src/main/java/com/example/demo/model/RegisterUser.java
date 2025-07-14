@@ -50,6 +50,10 @@ public class RegisterUser {
     @JsonIgnore
     private List<BankCardsEnt> cards = new ArrayList<>();
 
+    @Transient 
+    private String oldPassword; 
+
+
     // Getters and setters
 
     public Long getAccountId() {
@@ -74,6 +78,10 @@ public class RegisterUser {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getOldPassword() { 
+        return oldPassword;
     }
 
     public String getEmail() {

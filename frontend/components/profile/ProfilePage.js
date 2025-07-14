@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../hedfot/DashHeader";
 import dynamic from "next/dynamic";
 import axios from "axios";
+import fetchToken from "../tools/ApiCall";
 
 const SidePanel = dynamic(() => import("../dashcomp/MainPage/SidePanel"), {
   ssr: false,
@@ -15,6 +16,8 @@ const PanelElements = dynamic(() => import("../hedfot/PanelElements"), {
 function ProfilePage() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     dob: "",
@@ -25,12 +28,13 @@ function ProfilePage() {
     identificationDetails: "",
     accountType: "",
     employer: "",
+    avatar: "",
+    email: "",
+    accountId: "",
   });
-  const [loading, setLoading] = useState(true);
 
   const API = "https://localhost:8443";
 
-  // 1) On mount, load customer from localStorage and then fetch profile once
   useEffect(() => {
     const customerRaw = localStorage.getItem("customer");
     if (!customerRaw || customerRaw === "undefined") {
@@ -50,6 +54,7 @@ function ProfilePage() {
     }
 
     const tokenRaw = localStorage.getItem("token");
+    //    const tokenRaw = fetchToken();
     const token = tokenRaw?.replace(/"/g, "");
     if (!token) {
       setError("Authentication token missing");
@@ -57,11 +62,9 @@ function ProfilePage() {
       return;
     }
 
-    // 2) Now fetch profile
     (async () => {
       try {
-        const params = new URLSearchParams({ userId: parsed.accountId });
-        const response = await axios.get(`${API}/profile?${params}`, {
+        const response = await axios.get(`${API}/profile/${parsed.accountId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -69,7 +72,11 @@ function ProfilePage() {
         });
 
         if (response.status === 200) {
-          setFormData(response.data);
+          setFormData((prev) => ({
+            ...prev,
+            ...response.data,
+            accountId: parsed.accountId,
+          }));
         } else {
           setError("Failed to fetch profile");
         }
@@ -82,10 +89,10 @@ function ProfilePage() {
     })();
   }, []);
 
-  // API for handle update of user profile
   const updateUserProfile = async () => {
     const tokenRaw = localStorage.getItem("token");
     const token = tokenRaw?.replace(/"/g, "");
+
     try {
       const response = await axios.put(
         `${API}/profile/${formData.accountId}`,
@@ -99,12 +106,11 @@ function ProfilePage() {
       );
       return response.status === 200;
     } catch (err) {
-      console.error("Update error:", err);
+      console.erro("Update error:", err);
       return false;
     }
   };
 
-  // Function for handle saving profile
   const handleSave = async () => {
     setLoading(true);
     const ok = await updateUserProfile();
@@ -117,18 +123,18 @@ function ProfilePage() {
     }
   };
 
-  // Addition for side panel functionality
   const togglePanel = () => setIsPanelOpen((prev) => !prev);
 
-  if (loading) {
-    return <div className="p-6 text-center">Loading profile…</div>;
-  }
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-  if (error) {
-    return <div className="p-6 text-center text-red-600">{error}</div>;
-  }
+  if (loading) return <div className="p-6 text-center">Loading profile…</div>;
+  if (error) return <div className="p-6 text-center text-red-600">{error}</div>;
 
-  // 4) Render formData once loaded
   return (
     <div className="min-w-screen mx-auto">
       {isPanelOpen && (
@@ -142,33 +148,84 @@ function ProfilePage() {
       <div className="flex-1 flex flex-col">
         <Header togglePanel={togglePanel} isPanelOpen={isPanelOpen} />
 
-        <div className="p-20">
-          {/* Avatar & Basic Info */}
+        <div className="p-10 max-w-4xl mx-auto">
           <div className="flex items-center gap-6 mb-8">
             <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden">
-              <img
-                src={formData.avatar}
-                alt="Avatar"
-                className="object-cover w-full h-full"
-              />
+              {formData.avatar ? (
+                <img
+                  src={formData.avatar}
+                  alt="Avatar"
+                  className="object-cover w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-500">
+                  N/A
+                </div>
+              )}
             </div>
             <div>
-              <h1 className="text-2xl font-bold">{formData.name}</h1>
-              <p className="text-sm text-gray-600">{formData.email}</p>
+              <h1 className="text-2xl font-bold">{formData.fullName}</h1>
+              <p className="text-sm text-gray-600">
+                {formData.email || "No email"}
+              </p>
             </div>
           </div>
 
-          {/* Editable Fields */}
-          {/* … your InputField grid here with formData, onChange, editMode … */}
+          {/* Form fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { label: "Full Name", name: "fullName" },
+              { label: "Date of Birth", name: "dob", type: "date" },
+              { label: "Address", name: "address" },
+              { label: "Mobile", name: "mobile" },
+              { label: "Passport Number", name: "passNumber" },
+              { label: "Gender", name: "gender" },
+              {
+                label: "Identification Details",
+                name: "identificationDetails",
+              },
+              { label: "Account Type", name: "accountType" },
+              { label: "Employer", name: "employer" },
+            ].map((field) => (
+              <div key={field.name}>
+                <label className="block text-sm font-medium mb-1">
+                  {field.label}
+                </label>
+                <input
+                  type={field.type || "text"}
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  className="w-full border px-3 py-2 rounded shadow-sm"
+                />
+              </div>
+            ))}
+          </div>
 
-          {/* Save / Edit Buttons */}
           <div className="mt-8 flex justify-end space-x-4">
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Save Changes
-            </button>
+            {!editMode ? (
+              <button
+                onClick={() => setEditMode(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Edit Profile
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  Save Changes
+                </button>
+                <button
+                  onClick={() => setEditMode(false)}
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

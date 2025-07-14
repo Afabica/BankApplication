@@ -148,44 +148,44 @@ function Home() {
     //    getUserDetails();
   }, []);
   // Fetch transactions
-  //  useEffect(() => {
-  //    const fetchTransactions = async () => {
-  //      if (!parsedData?.accountId) return;
-  //
-  //      const token = localStorage.getItem("token")?.replace(/"/g, "");
-  //      if (!token) {
-  //        setError("Authentication token missing.");
-  //        return;
-  //      }
-  //
-  //      try {
-  //        const params = new URLSearchParams();
-  //        if (parsedData.iban) params.append("iban", parsedData.iban);
-  //        if (parsedData.accountId) params.append("userId", parsedData.accountId);
-  //
-  //        const response = await axios.get(
-  //          `https://localhost:8443/operations/translist?${params.toString()}`,
-  //          {
-  //            headers: {
-  //              Authorization: `Bearer ${parsedData.token}`,
-  //              "Content-Type": "application/json",
-  //            },
-  //          },
-  //        );
-  //
-  //        if (response.status === 200) {
-  //          setTransactions(response.data);
-  //        } else {
-  //          setError("Failed to fetch transactions.");
-  //        }
-  //      } catch (err) {
-  //        setError("Error fetching transactions.");
-  //        console.error("Fetch error:", err);
-  //      }
-  //    };
-  //
-  //    fetchTransactions();
-  //  }, [parsedData]);
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      if (!parsedData?.accountId) return;
+
+      const token = localStorage.getItem("token")?.replace(/"/g, "");
+      if (!token) {
+        setError("Authentication token missing.");
+        return;
+      }
+
+      try {
+        const params = new URLSearchParams();
+        if (parsedData.iban) params.append("iban", parsedData.iban);
+        if (parsedData.accountId) params.append("userId", parsedData.accountId);
+
+        const response = await axios.get(
+          `https://localhost:8443/operations/translist?${params.toString()}`,
+          {
+            headers: {
+              Authorization: `Bearer ${parsedData.token}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        if (response.status === 200) {
+          setTransactions(response.data);
+        } else {
+          setError("Failed to fetch transactions.");
+        }
+      } catch (err) {
+        setError("Error fetching transactions.");
+        console.error("Fetch error:", err);
+      }
+    };
+
+    fetchTransactions();
+  }, [parsedData]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">

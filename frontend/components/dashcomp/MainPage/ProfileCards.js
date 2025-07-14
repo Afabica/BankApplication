@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import SendMoneyQuickAction from "./SendMoneyQuickAction";
-import fetchProfile from "../../tools/ApiCall";
+import fetchCustomerInfo from "../../tools/ApiCall";
 import axios from "axios";
 
 const gradients = [
@@ -19,6 +19,7 @@ export default function VerticalBankCarousel() {
   const API = "https://localhost:8443";
   const [userDetails, setUserDetails] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
   const [cards, setCards] = useState([
     {
       id: "",
@@ -28,12 +29,57 @@ export default function VerticalBankCarousel() {
   ]);
 
   useEffect(() => {
-    const customer = fetchProfile();
-    if (customer) {
-      setUserDetails(customer);
-    } else {
+    const customerRaw = localStorage.getItem("customer");
+    if (!customerRaw || customerRaw === "undefined") {
+      setError("No customer data in localStorage");
+      setLoading(false);
       return;
     }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(customerRaw);
+      setUserDetails(parsed); // 🟢 Save it for requestNewCard
+    } catch (err) {
+      console.error("Error parsing customer data:", err);
+      setError("Invalid customer data");
+      setLoading(false);
+      return;
+    }
+
+    const tokenRaw = localStorage.getItem("token");
+    const token = tokenRaw?.replace(/"/g, "");
+    if (!token) {
+      setError("Authentication token missing");
+      setLoading(false);
+      return;
+    }
+
+    (async () => {
+      try {
+        const response = await axios.get(
+          `${API}/profcards/getcards?user_id=${parsed.accountId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        if (response.status === 200) {
+          // ✅ Assuming response.data is an array of card objects
+          setCards(response.data || []);
+        } else {
+          setError("Failed to fetch user cards");
+        }
+      } catch (err) {
+        console.error("Fetch error: ", err);
+        setError("Error fetching profile");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   const nextCard = () => {
@@ -109,7 +155,7 @@ export default function VerticalBankCarousel() {
                   <h2 className="text-xl font-semibold">{card.bank}</h2>
                   <div className="w-10 h-6 bg-white bg-opacity-20 rounded-sm"></div>
                 </div>
-                <p className="mt-4 tracking-widest">{card.cardNumber}</p>
+                <p className="mt-4 tracking-widest">{card.iban}</p>
                 <div className="mt-auto pt-4 text-2xl font-bold">
                   {card.balance}
                 </div>
@@ -127,7 +173,7 @@ export default function VerticalBankCarousel() {
       </button>
 
       <button
-        onClick={addCard}
+        onClick={requestNewCard}
         className="mt-6 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg shadow"
       >
         Add New Card

@@ -93,9 +93,19 @@ public class ProfileService {
                         .orElseThrow(
                                 () ->
                                         new IllegalArgumentException(
-                                                "Cannot update; profile not found for id: "
+                                                "Cannot update profile not found for id: "
+                                                        + userId));
+        RegisterUser user =
+                registerRepo
+                        .findById(userId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Cannot update user register data for id: "
                                                         + userId));
 
+        user.setMobile(dto.getMobile());
+        registerRepo.save(user);
         // Update fields from DTO
         System.out.println("FULL USER NAME: " + dto.getFullName());
         existing.setFullName(dto.getFullName());

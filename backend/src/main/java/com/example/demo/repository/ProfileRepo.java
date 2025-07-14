@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface ProfileRepo extends JpaRepository<ProfileEntity, Long> {
     Optional<ProfileEntity> findOneById(Long id);
 
+    Optional<ProfileEntity> findByMobile(String mobile);
+
     boolean findByFullName(String fullName);
 }

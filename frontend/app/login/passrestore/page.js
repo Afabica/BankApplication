@@ -1,9 +1,13 @@
 "use client";
 
 import React from "react";
-import Footer from "../../../../components/hedfot/FooterHome.js";
-import Header from "../../../../components/hedfot/HeaderHome.js";
-import ForgotPassword from "../../../../components/forgetpassword/ForgotPassword";
+import Footer from "../../../components/hedfot/FooterHome";
+import Header from "../../../components/hedfot/HeaderHome.js";
+import ForgotPassword from "../../../components/forgetpassword/ForgotPassword";
+
+import "../../../styles/Navigation.css";
+import "../../../styles/NavDash.css";
+import "../../../styles/global.css";
 
 export default function PassRestore() {
   return (

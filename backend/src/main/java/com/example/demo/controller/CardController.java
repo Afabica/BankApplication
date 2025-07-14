@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -67,6 +68,7 @@ public class CardController {
                         .orElseThrow(() -> new EntityNotFoundException("User not found"));
         if (user != null) {
             BankCardsEnt newCard = cardService.generateNewCard(user);
+            cardRepository.save(newCard);
             return ResponseEntity.ok().body("Card created successfully.");
         } else
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)

@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
-import org.slg4j.LoggerFactory;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private final JwtUtils jwtUtils;
     private final CustomerUserDetailsService customerUserDetailsService;
-    private static final List<String> PUBLIC_ENDPOINT = List.of("/login", "register");
+    private static final List<String> PUBLIC_ENDPOINTS = List.of("/login", "register");
 
     @Autowired
     public JwtAuthenticationFilter(
@@ -81,12 +81,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String extractJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startWith("bearer ")) {
-            return bearerToken.substring(7);
+        if (bearerToken != null && bearerToken.toLowerCase().startsWith("bearer ")) {
+            return bearerToken.substring(7); // Removes "Bearer " prefix
         }
 
         String tokenFromParam = request.getParameter("token");
-        if (tokenFromParam != null) return tokenFromParam;
+        if (tokenFromParam != null) {
+            return tokenFromParam;
+        }
 
         return null;
     }

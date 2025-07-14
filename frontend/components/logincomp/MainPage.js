@@ -128,7 +128,7 @@ const SignInPage = () => {
 
         <div className="mt-4 text-center">
           <Link
-            href="/signin/passrestore"
+            href="/login/passrestore"
             className="text-sm text-blue-600 hover:underline"
           >
             Forgot password?

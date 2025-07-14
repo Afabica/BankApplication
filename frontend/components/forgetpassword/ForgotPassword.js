@@ -4,9 +4,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import "../../styles/Navigation.css";
-import "../../styles/NavDash.css";
-import "../../styles/global";
 
 const ForgotPasswordPage = () => {
   const [phone, setPhone] = useState("");
@@ -83,10 +80,10 @@ const ForgotPasswordPage = () => {
 
   return (
     <div
-      className="flex items-right justify-right min-h-screen bg-gray-100"
+      className="flex bg-cover bg-center items-center justify-center min-h-screen bg-gray-100"
       style={{ backgroundImage: "url(../../images/SecureBank.jpeg)" }}
     >
-      <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
+      <div className="flex flex-col w-[700px] h-[500px] max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-bold text-center text-gray-800">
           Forgot Password
         </h2>

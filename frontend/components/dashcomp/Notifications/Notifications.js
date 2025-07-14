@@ -3,14 +3,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import "../../../styles/DashPage.css";
 
 const Header = dynamic(() => import("../../hedfot/DashHeader"), { ssr: false });
-const SidePanel = dynamic(() => import("../../hedfot/DashHeader"), {
-  ssr: false,
+const SidePanel = dynamic(() => import("../MainPage/SidePanel"), {
+  ssr: true,
 });
 const PanelElements = dynamic(() => import("../../hedfot/PanelElements"), {
-  ssr: false,
+  ssr: true,
 });
 
 const NotificationsPage = () => {
