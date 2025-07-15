@@ -1,128 +1,72 @@
-//package com.example.demo.service;
-//
-//import static org.assertj.core.api.Assertions.*;
-//import static org.mockito.Mockito.*;
-//
-//import com.example.demo.model.*;
-//import com.example.demo.repository.*;
-//
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.*;
-//
-//import java.math.BigDecimal;
-//import java.util.*;
-//
-//class TransactionServiceTest {
-//
-//    @Mock private TransactionRepo transactionRepo;
-//
-//    @Mock private RegisterRepo registerRepo;
-//
-//    @Mock private RegisteredAccountRepo accountRepo;
-//
-//    @InjectMocks private TransactionService transactionService;
-//
-//    @BeforeEach
-//    void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//    }
-//
-//    @Test
-//    void testProcessTransaction_Successful() {
-//        RegisteredAccount source = new RegisteredAccount();
-//        source.setIban("SRC123");
-//        source.setBalance(new BigDecimal("1000.00"));
-//
-//        RegisteredAccount destination = new RegisteredAccount();
-//        destination.setIban("DST456");
-//        destination.setBalance(new BigDecimal("500.00"));
-//
-//        Transaction tx = new Transaction();
-//        tx.setIban("SRC123");
-//        tx.setDestinationIban("DST456");
-//        tx.setAmount(new BigDecimal("200.00"));
-//
-//        when(accountRepo.findByIban("SRC123")).thenReturn(Optional.of(source));
-//        when(accountRepo.findByIban("DST456")).thenReturn(Optional.of(destination));
-//
-//        transactionService.processTransaction(tx);
-//
-//        assertThat(source.getBalance()).isEqualByComparingTo("800.00");
-//        assertThat(destination.getBalance()).isEqualByComparingTo("700.00");
-//        assertThat(tx.getStatus()).isEqualTo("COMPLETED");
-//        assertThat(tx.getTransactionDate()).isNotNull();
-//
-//        verify(accountRepo).save(source);
-//        verify(accountRepo).save(destination);
-//        verify(transactionRepo).save(tx);
-//    }
-//
-//    @Test
-//    void testProcessTransaction_InsufficientFunds() {
-//        RegisteredAccount source = new RegisteredAccount();
-//        source.setIban("SRC123");
-//        source.setBalance(new BigDecimal("100.00"));
-//
-//        RegisteredAccount destination = new RegisteredAccount();
-//        destination.setIban("DST456");
-//        destination.setBalance(new BigDecimal("500.00"));
-//
-//        Transaction tx = new Transaction();
-//        tx.setIban("SRC123");
-//        tx.setDestinationIban("DST456");
-//        tx.setAmount(new BigDecimal("200.00"));
-//
-//        when(accountRepo.findByIban("SRC123")).thenReturn(Optional.of(source));
-//        when(accountRepo.findByIban("DST456")).thenReturn(Optional.of(destination));
-//
-//        assertThatThrownBy(() -> transactionService.processTransaction(tx))
-//                .isInstanceOf(IllegalArgumentException.class)
-//                .hasMessage("Insufficient funds.");
-//    }
-//
-//    @Test
-//    void testDeleteTransaction_Successful() {
-//        when(transactionRepo.existsById(1L)).thenReturn(true);
-//
-//        transactionService.deleteTransaction(1L);
-//
-//        verify(transactionRepo).deleteById(1L);
-//    }
-//
-//    @Test
-//    void testDeleteTransaction_NotFound() {
-//        when(transactionRepo.existsById(2L)).thenReturn(false);
-//
-//        assertThatThrownBy(() -> transactionService.deleteTransaction(2L))
-//                .isInstanceOf(RuntimeException.class)
-//                .hasMessageContaining("Transaction with ID 2 not found");
-//    }
-//
-//    @Test
-//    void testFindOneTransaction_ReturnsTransaction() {
-//        Transaction tx = new Transaction();
-//        when(transactionRepo.findOneByAccountId(1L)).thenReturn(tx);
-//
-//        Transaction result = transactionService.findOneTransaction(1L);
-//        assertThat(result).isEqualTo(tx);
-//    }
-//
-//    @Test
-//    void testFetchAllTransactions_ReturnsList() {
-//        List<Transaction> transactions = List.of(new Transaction(), new Transaction());
-//        when(transactionRepo.findAllByAccountId(1L)).thenReturn(transactions);
-//
-//        List<Transaction> result = transactionService.fetchAllTransactions(1L);
-//        assertThat(result).hasSize(2);
-//    }
-//
-//    @Test
-//    void testFindByUsername_ReturnsCustomer() {
-//        Customer customer = new Customer();
-//        when(customerRepo.findByUsername("user1")).thenReturn(customer);
-//
-//        Customer result = transactionService.findByUsername("user1");
-//        assertThat(result).isEqualTo(customer);
-//    }
-//}
+package com.example.com.service;
+
+import com.eaxmple.demo.service.TransactionService;
+import com.example.demo.model.BankCardsEnt;
+import com.example.demo.model.RegisterUser;
+import com.example.demo.model.Transaction;
+import com.example.demo.repository.CardRepository;
+import com.example.demo.repository.TransactionRepo;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+@SpringBootTest
+@Transactional
+class TransactionServiceTest {
+
+    @Autowired private final TransactionRepo transactionRepo;
+
+    @Autowired private final CardRepository cardRepository;
+
+    @Autowired private final TransactionService transactionService;
+
+    private RegisterUser testUser;
+    private BankCardsEnt testCard;
+
+    @BeforeEach
+    void setUp() {
+        testUser = new RegisterUser();
+        testUser.setId(1L);
+        registerRepo.save(testUser);
+
+        testCard = new BankCardsEnt();
+        testCard.setId(1L);
+        testCard.setAccount(testUser);
+        testCard.setBalance(BigDecimal.valudof(1000));
+        testCard.setIsACtive(true);
+    }
+
+    @Test
+    void craeteTransaction_shouldPersistTransaction() {
+        TransactionEntity txn =
+                transactionService.createTransaction(
+                        testCard.getId(), BigDecimal.valueOf(100), "Test Payment");
+
+        assertNotNull(txn.getId());
+        assertEquals(BigDecimal.valueOf(100), txn.getDescription());
+        assertEquals(testCard.getId(), txn.getCard().getId());
+    }
+
+    @Test
+    void getTransactionForCard_returnTransactions() {
+        transactionService.createTransaction(
+                testCard.getId(), BigDecimal.valueOf(200), "First Txn");
+        transactionService.createTransaction(
+                testCard.getId(), BigDecimal.valueOf(300), "Second Txn");
+        List<Transaction> txns = transactionService.getTransactionsForCard(testCard.getId());
+    }
+
+    @Test
+    void createTransaction_throwsIfCardNotFound() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    transactionService.createTransaction(
+                            999L, BigDecimal.valueOf(50), "Should fail");
+                });
+    }
+}
