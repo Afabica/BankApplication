@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Home from "../../../components/dashcomp/Loans/LoansPage";
+import Home from "../../../../components/dashcomp/Loans/LoansPage";
 
 const Page = () => {
   return (

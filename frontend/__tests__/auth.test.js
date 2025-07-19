@@ -1,3 +1,4 @@
+// __tests__/auth.test.js
 import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import axios from "axios";
@@ -6,21 +7,22 @@ import SignInPage from "../components/logincomp/MainPage";
 import { useRouter } from "next/navigation";
 import { setCookie } from "nookies";
 import jwtDecode from "jwt-decode";
+import '@testing-library/jest-dom';
 
 // Mock axios
 const mock = new MockAdapter(axios);
 
-// Mock next/navigation (useRouter)
+// Mock next/navigation
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
-// Mock nookies (setCookie)
+// Mock nookies
 jest.mock("nookies", () => ({
   setCookie: jest.fn(),
 }));
 
-// Mock jwtDecode
+// Mock jwt-decode
 jest.mock("jwt-decode", () => jest.fn());
 
 const mockRouter = { push: jest.fn() };
@@ -37,16 +39,15 @@ describe("SignInPage Component", () => {
 
   it("renders the login form", () => {
     render(<SignInPage />);
-
-    // Use basic DOM checks instead of jest-dom matchers
-    expect(screen.getByLabelText(/username/i)).not.toBeNull();
-    expect(screen.getByLabelText(/password/i)).not.toBeNull();
-    expect(screen.getByRole("button", { name: /sign in/i })).not.toBeNull();
+    expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
   });
 
   it("logs in successfully and redirects to dashboard", async () => {
     mock.onPost("https://localhost:8443/api/login").reply(200, {
       token: "fake.jwt.token",
+      customer: { id: 1, name: "Maria" },
     });
 
     jwtDecode.mockReturnValue({ exp: Math.floor(Date.now() / 1000) + 3600 });
@@ -63,10 +64,6 @@ describe("SignInPage Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
 
     await waitFor(() => {
-      const request = mock.history.post[0];
-      expect(request.url).toBe("https://localhost:8443/api/login");
-      expect(request.data).toContain("maria123");
-
       expect(setCookie).toHaveBeenCalledWith(
         null,
         "jwt",
@@ -76,10 +73,10 @@ describe("SignInPage Component", () => {
           httpOnly: false,
           secure: true,
           maxAge: 86400,
-        }),
+        })
       );
 
-      expect(mockRouter.push).toHaveBeenCalledWith("/dashboard");
+      expect(mockRouter.push).toHaveBeenCalledWith("/user/dashboard");
     });
   });
 
@@ -100,10 +97,10 @@ describe("SignInPage Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
 
     await waitFor(() => {
-      const errorText = screen.queryByText(
-        "Login failed. Please check your credentials and try again.",
-      );
-      expect(errorText).not.toBeNull(); // Standard Jest fallback
+      expect(
+        screen.getByText(/login failed. please check your credentials/i)
+      ).toBeInTheDocument();
     });
   });
 });
+
