@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import ThemeChanger from "../../tools/ThemeChanger.js";
 import "../../../styles/NavDash.css";
 import axios from "axios";
 import dynamic from "next/dynamic";
