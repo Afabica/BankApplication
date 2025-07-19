@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import FundsPage from "../../../components/dashcomp/MainPage/Funds";
+import FundsPage from "../../../../components/dashcomp/MainPage/Funds";
 
 const Funds = () => {
   return (
