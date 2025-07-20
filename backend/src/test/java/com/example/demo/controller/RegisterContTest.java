@@ -8,23 +8,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.demo.model.RegisterUser;
 import com.example.demo.service.RegisterService;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(RegisterCont.class)
 class RegisterContTest {
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired MockMvc mockMvc;
+    @Autowired RegisterService registerService;
 
-    @MockBean private RegisterService registerService;
-
-    @Test
     void registerUser_shouldReturnCreateUser() throws Exception {
         RegisterUser mockUser = new RegisterUser();
-        mockUser.setId(1L);
+        mockUser.setAccountId(1L);
         mockUser.setUsername("testuser");
         mockUser.setMobile("1234567890");
 
@@ -41,10 +38,10 @@ class RegisterContTest {
 
         mockMvc.perform(
                         post("/api/register")
-                                .contentType(MediaType.APPLICATION.JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
                                 .content(userJson))
-                .andExcept(status().isOk())
-                .andExcept(jsonPath("$.id").value(1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.username").value("testuser"))
                 .andExpect(jsonPath("$.mobile").value("1234567890"));
     }

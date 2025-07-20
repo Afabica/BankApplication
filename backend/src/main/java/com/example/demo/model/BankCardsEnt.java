@@ -78,6 +78,10 @@ public class BankCardsEnt {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public RegisterUser getAccount() {
         return account;
     }
